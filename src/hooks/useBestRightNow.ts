@@ -39,22 +39,22 @@ export function useBestRightNow(limit: number = 5): BestRightNowState {
     const aboveThreshold = topResults.filter(r => r.rightNowScore >= MINIMUM_THRESHOLD);
     if (aboveThreshold.length < MINIMUM_RESULTS) {
       shouldFallback = true;
-      fallbackReason = 'Sunny options are limited right now';
+      fallbackReason = "Easy choices nearby right now";
     }
     
     // Condition 2: Top patio score < 65
     if (topResults.length > 0 && topResults[0].rightNowScore < MINIMUM_THRESHOLD) {
       shouldFallback = true;
-      fallbackReason = 'Sun conditions aren\'t ideal right now';
+      fallbackReason = "Good choices without going far";
     }
     
     // Condition 3: All patios have unknown sun_profile
     const allUnknown = topResults.every(r => 
-      !r.patio.sun_profile || r.patio.sun_profile === 'unknown'
+      !r.patio.sun_profile || r.patio.sun_profile === "unknown"
     );
     if (topResults.length > 0 && allUnknown) {
       shouldFallback = true;
-      fallbackReason = 'Limited sun data available';
+      fallbackReason = "Solid spots within a short walk";
     }
     
     return { results: topResults, allRanked: allResults, shouldFallback, fallbackReason };
