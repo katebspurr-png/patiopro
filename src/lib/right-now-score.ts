@@ -125,37 +125,37 @@ function generateWhyNowText(
     const lastCheck = new Date(patio.last_sun_check_at);
     const hoursSince = Math.round((Date.now() - lastCheck.getTime()) / (1000 * 60 * 60));
     if (hoursSince <= 1) {
-      return "Sunny reports in the last hour";
+      return "Sunny reports today";
     }
-    return `Trending sunny today`;
+    return "Trending sunny this afternoon";
   }
   
   // Priority 2: Time-of-day match
   if (timeBonus >= 10) {
     const timeLabels: Record<TimeOfDay, string> = {
-      morning: 'morning sun',
-      midday: 'midday sun',
-      afternoon: 'afternoon sun'
+      morning: "Starting to brighten up",
+      midday: "Bright right now",
+      afternoon: "Perfect for afternoon sun"
     };
-    return `Perfect for ${timeLabels[currentTimeBucket]}`;
+    return timeLabels[currentTimeBucket];
   }
   
-  if (timeBonus >= 5 && patio.sun_profile === 'mixed') {
-    return "Mixed sun but good right now";
+  if (timeBonus >= 5 && patio.sun_profile === "mixed") {
+    return "Some sun, some shade";
   }
   
   // Priority 3: High base sun score
   if (baseScore >= 90) {
-    return "Excellent sun exposure";
+    return "Catching the sun right now";
   }
   
   // Priority 4: Sheltered tag
-  if (patio.tags?.includes('sheltered')) {
-    return "Sheltered and bright right now";
+  if (patio.tags?.includes("sheltered")) {
+    return "Comfortable with changing light";
   }
   
   // Fallback
-  return "Good light right now";
+  return "Good light for this time of day";
 }
 
 /**

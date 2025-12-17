@@ -188,12 +188,12 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
               {isNearYouMode ? (
                 <>
                   <Navigation className="h-5 w-5 text-primary" />
-                  <h2 className="font-display font-semibold">Best Near You</h2>
+                  <h2 className="font-display font-semibold">Great patios near you</h2>
                 </>
               ) : (
                 <>
                   <Sun className="h-5 w-5 text-sunny" />
-                  <h2 className="font-display font-semibold">Best Right Now</h2>
+                  <h2 className="font-display font-semibold">Best patios right now</h2>
                 </>
               )}
             </div>
@@ -204,16 +204,22 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
           
           <div className="flex items-center gap-2 flex-wrap">
             {isNearYouMode ? (
-              <LocationBadge source={nearYou.locationSource} />
+              <>
+                <LocationBadge source={nearYou.locationSource} />
+                {/* Show helpful subtext */}
+                {rightNow.shouldFallback && !manualMode && rightNow.fallbackReason && (
+                  <span className="text-xs text-muted-foreground">
+                    {rightNow.fallbackReason}
+                  </span>
+                )}
+              </>
             ) : (
-              <TimeBucketBadge bucket={rightNow.currentTimeBucket} />
-            )}
-            
-            {/* Show fallback reason if auto-triggered */}
-            {isNearYouMode && rightNow.shouldFallback && !manualMode && rightNow.fallbackReason && (
-              <span className="text-xs text-muted-foreground">
-                {rightNow.fallbackReason}
-              </span>
+              <>
+                <TimeBucketBadge bucket={rightNow.currentTimeBucket} />
+                <span className="text-xs text-muted-foreground">
+                  Great light for this time of day
+                </span>
+              </>
             )}
           </div>
         </div>
@@ -230,8 +236,9 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
                 Something went wrong. Please try again.
               </div>
             ) : displayResults.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                No patios available right now
+              <div className="text-center py-12">
+                <p className="font-medium">{"Here's what works nearby"}</p>
+                <p className="text-sm text-muted-foreground mt-1">These spots are open and close right now</p>
               </div>
             ) : (
               <>
@@ -279,12 +286,12 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
               {isNearYouMode ? (
                 <>
                   <Sun className="h-3 w-3 mr-1.5" />
-                  Switch to Best Right Now
+                  Show sunny picks instead
                 </>
               ) : (
                 <>
                   <Navigation className="h-3 w-3 mr-1.5" />
-                  Switch to Best Near You
+                  Show nearby picks instead
                 </>
               )}
             </Button>

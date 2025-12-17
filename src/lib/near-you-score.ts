@@ -72,46 +72,46 @@ function generateWhyNearText(
   patio: PatioWithStatus
 ): string {
   const walkingMinutes = Math.round(distanceMeters / 83.33);
-  const walkText = walkingMinutes <= 1 ? '1 min walk' : `${walkingMinutes} min walk`;
+  const walkText = walkingMinutes <= 1 ? "1 min walk" : `${walkingMinutes} min walk`;
   
   // Check if it has decent sun
   if (sunScore >= 85) {
-    return `${walkText} · great sun`;
+    return `${walkText} · bright right now`;
   }
   
   if (sunScore >= 70) {
-    if (patio.sun_profile === 'afternoon') {
+    if (patio.sun_profile === "afternoon") {
       return `${walkText} · good afternoon light`;
     }
-    if (patio.sun_profile === 'morning') {
+    if (patio.sun_profile === "morning") {
       return `${walkText} · nice morning sun`;
     }
-    return `${walkText} · decent sun`;
+    return `${walkText} · good light right now`;
   }
   
   // Check for tag-based descriptions
-  if (patio.tags?.includes('sheltered')) {
-    return `Nearby and sheltered`;
+  if (patio.tags?.includes("sheltered")) {
+    return "Nearby and comfortable";
   }
   
-  if (patio.tags?.includes('waterfront')) {
+  if (patio.tags?.includes("waterfront")) {
     return `Close by · waterfront`;
   }
   
-  if (patio.tags?.includes('rooftop')) {
+  if (patio.tags?.includes("rooftop")) {
     return `Close by · rooftop`;
   }
   
   // Distance-based fallbacks
   if (distanceMeters <= 300) {
-    return `Very close · worth a look`;
+    return "Short walk · nice this time of day";
   }
   
   if (sunScore >= 50) {
-    return `Close by · mixed sun`;
+    return `Close by · good brightness overall`;
   }
   
-  return `Not perfect sun, but very close`;
+  return "Easy walk · worth stepping out for";
 }
 
 /**
