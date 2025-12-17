@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -18,12 +19,26 @@ import { Header } from "@/components/Header";
 import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
+import { ALLOWED_TAGS } from "@/lib/sun-profile";
+
+const TAG_LABELS: Record<string, string> = {
+  waterfront: "🌊 Waterfront",
+  dog_friendly: "🐕 Dog Friendly",
+  heated: "🔥 Heated",
+  beer_garden: "🍺 Beer Garden",
+  rooftop: "🏙️ Rooftop",
+  brunch: "🥞 Brunch",
+  sheltered: "⛱️ Sheltered",
+  courtyard: "🌿 Courtyard",
+  patio_bar: "🍹 Patio Bar",
+};
 
 const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
   const [showBestRightNow, setShowBestRightNow] = useState(false);
   
@@ -38,8 +53,16 @@ const Index = () => {
     });
     return Array.from(uniqueNeighborhoods).sort();
   }, [patios]);
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
   
-  // Filter patios by search, sunny status, and neighborhood
+  // Filter patios by search, sunny status, neighborhood, and tags
   const filteredPatios = useMemo(() => {
     let filtered = patios;
     
@@ -59,9 +82,15 @@ const Index = () => {
     if (selectedNeighborhood !== "all") {
       filtered = filtered.filter(p => p.neighborhood === selectedNeighborhood);
     }
+    // Tag filter - patio must have ALL selected tags
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(p => 
+        selectedTags.every(tag => p.tags?.includes(tag))
+      );
+    }
     // Sort by sun_score descending
     return filtered.sort((a, b) => (b.sun_score ?? 50) - (a.sun_score ?? 50));
-  }, [patios, sunnyOnly, selectedNeighborhood, searchQuery]);
+  }, [patios, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -143,6 +172,34 @@ const Index = () => {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Tag Filter Chips */}
+        <div className="absolute top-[168px] left-4 right-16 z-10">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+            {ALLOWED_TAGS.map((tag) => (
+              <Badge
+                key={tag}
+                variant={selectedTags.includes(tag) ? "default" : "outline"}
+                className={`cursor-pointer whitespace-nowrap text-xs px-2 py-1 transition-all ${
+                  selectedTags.includes(tag)
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-background/95 backdrop-blur hover:bg-muted"
+                }`}
+                onClick={() => toggleTag(tag)}
+              >
+                {TAG_LABELS[tag] || tag}
+              </Badge>
+            ))}
+            {selectedTags.length > 0 && (
+              <button
+                onClick={() => setSelectedTags([])}
+                className="text-xs text-muted-foreground hover:text-foreground px-2 whitespace-nowrap"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Best Right Now Button - Floating on map */}
