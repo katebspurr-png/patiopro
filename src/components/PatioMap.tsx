@@ -18,6 +18,16 @@ const statusColors = {
   unknown: '#94a3b8',
 };
 
+// Escape HTML to prevent XSS
+function escapeHtml(unsafe: string): string {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 const STORAGE_KEY = 'mapbox_token';
 
 export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
@@ -112,8 +122,8 @@ export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
       const popup = new mapboxgl.Popup({ offset: 25, closeButton: false })
         .setHTML(`
           <div style="padding: 8px; font-family: system-ui, sans-serif;">
-            <strong style="font-size: 14px;">${patio.name}</strong>
-            <p style="margin: 4px 0 0; font-size: 12px; color: #666;">${patio.neighborhood || patio.address || ''}</p>
+            <strong style="font-size: 14px;">${escapeHtml(patio.name)}</strong>
+            <p style="margin: 4px 0 0; font-size: 12px; color: #666;">${escapeHtml(patio.neighborhood || patio.address || '')}</p>
           </div>
         `);
 
