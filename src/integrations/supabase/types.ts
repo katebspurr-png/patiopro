@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          created_at: string
+          enable_confidence_level: boolean
+          enable_crowd_sun_feedback: boolean
+          enable_seasonal_adjustment: boolean
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enable_confidence_level?: boolean
+          enable_crowd_sun_feedback?: boolean
+          enable_seasonal_adjustment?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enable_confidence_level?: boolean
+          enable_crowd_sun_feedback?: boolean
+          enable_seasonal_adjustment?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string | null
@@ -83,22 +110,30 @@ export type Database = {
         Row: {
           address: string | null
           best_time_to_visit: string | null
+          confidence_level:
+            | Database["public"]["Enums"]["confidence_level"]
+            | null
           created_at: string | null
           hours: string | null
           id: string
           instagram: string | null
           is_active: boolean | null
+          last_sun_check_at: string | null
           lat: number
           lng: number
           name: string
           neighborhood: string | null
+          not_sunny_votes: number
           phone: string | null
+          seasonal_adjustment_notes: string | null
           source: string | null
           sun_notes: string | null
           sun_profile: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score: number | null
           sun_score_base: number | null
           sun_score_reason: string | null
+          sun_score_tuned: number | null
+          sunny_votes: number
           tags: string[] | null
           updated_at: string | null
           website: string | null
@@ -106,22 +141,30 @@ export type Database = {
         Insert: {
           address?: string | null
           best_time_to_visit?: string | null
+          confidence_level?:
+            | Database["public"]["Enums"]["confidence_level"]
+            | null
           created_at?: string | null
           hours?: string | null
           id?: string
           instagram?: string | null
           is_active?: boolean | null
+          last_sun_check_at?: string | null
           lat: number
           lng: number
           name: string
           neighborhood?: string | null
+          not_sunny_votes?: number
           phone?: string | null
+          seasonal_adjustment_notes?: string | null
           source?: string | null
           sun_notes?: string | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score?: number | null
           sun_score_base?: number | null
           sun_score_reason?: string | null
+          sun_score_tuned?: number | null
+          sunny_votes?: number
           tags?: string[] | null
           updated_at?: string | null
           website?: string | null
@@ -129,22 +172,30 @@ export type Database = {
         Update: {
           address?: string | null
           best_time_to_visit?: string | null
+          confidence_level?:
+            | Database["public"]["Enums"]["confidence_level"]
+            | null
           created_at?: string | null
           hours?: string | null
           id?: string
           instagram?: string | null
           is_active?: boolean | null
+          last_sun_check_at?: string | null
           lat?: number
           lng?: number
           name?: string
           neighborhood?: string | null
+          not_sunny_votes?: number
           phone?: string | null
+          seasonal_adjustment_notes?: string | null
           source?: string | null
           sun_notes?: string | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score?: number | null
           sun_score_base?: number | null
           sun_score_reason?: string | null
+          sun_score_tuned?: number | null
+          sunny_votes?: number
           tags?: string[] | null
           updated_at?: string | null
           website?: string | null
@@ -171,6 +222,50 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      sun_checks: {
+        Row: {
+          created_at: string
+          device_fingerprint: string | null
+          id: string
+          notes: string | null
+          patio_id: string
+          time_of_day: Database["public"]["Enums"]["time_of_day"]
+          user_id: string | null
+          visited_at: string
+          was_sunny: boolean
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint?: string | null
+          id?: string
+          notes?: string | null
+          patio_id: string
+          time_of_day: Database["public"]["Enums"]["time_of_day"]
+          user_id?: string | null
+          visited_at?: string
+          was_sunny: boolean
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string | null
+          id?: string
+          notes?: string | null
+          patio_id?: string
+          time_of_day?: Database["public"]["Enums"]["time_of_day"]
+          user_id?: string | null
+          visited_at?: string
+          was_sunny?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sun_checks_patio_id_fkey"
+            columns: ["patio_id"]
+            isOneToOne: false
+            referencedRelation: "patios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sun_reports: {
         Row: {
@@ -249,6 +344,14 @@ export type Database = {
     }
     Functions: {
       backfill_sun_score_base: { Args: never; Returns: number }
+      can_submit_sun_check: {
+        Args: {
+          p_device_fingerprint?: string
+          p_patio_id: string
+          p_user_id?: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -261,9 +364,11 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       busy_status: "quiet" | "medium" | "busy"
+      confidence_level: "low" | "medium" | "high"
       submission_status: "pending" | "approved" | "rejected"
       sun_profile_type: "morning" | "midday" | "afternoon" | "mixed" | "unknown"
       sun_status: "sunny" | "part_shade" | "shaded"
+      time_of_day: "morning" | "midday" | "afternoon"
       wind_status: "calm" | "breezy" | "windy"
     }
     CompositeTypes: {
@@ -394,9 +499,11 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       busy_status: ["quiet", "medium", "busy"],
+      confidence_level: ["low", "medium", "high"],
       submission_status: ["pending", "approved", "rejected"],
       sun_profile_type: ["morning", "midday", "afternoon", "mixed", "unknown"],
       sun_status: ["sunny", "part_shade", "shaded"],
+      time_of_day: ["morning", "midday", "afternoon"],
       wind_status: ["calm", "breezy", "windy"],
     },
   },
