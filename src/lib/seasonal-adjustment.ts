@@ -37,6 +37,12 @@ const SEASONAL_ADJUSTMENTS: Record<SunProfile, Record<Season, number>> = {
     summer: 0,
     fall: -5,
   },
+  all_day: {
+    winter: -5,
+    spring: 0,
+    summer: 0,
+    fall: -2,
+  },
   mixed: {
     winter: -5,
     spring: -2,

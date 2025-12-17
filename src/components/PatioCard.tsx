@@ -49,28 +49,35 @@ export function PatioCard({ patio, onClick, compact = false }: PatioCardProps) {
         </div>
       </div>
       
-      <div className="mt-2 flex items-center justify-between">
+      <div className="mt-2 space-y-1">
+        {/* Sun score reason */}
+        <p className="text-xs font-medium text-muted-foreground">
+          {patio.sun_score_reason || 'Sun varies'}
+        </p>
+        
+        {/* Best time & last report */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="font-medium">{patio.best_time_to_visit || 'check recent visits'}</span>
-          <span className="opacity-50">•</span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" />
-            {patio.lastReportTime
-              ? formatTimeAgo(patio.lastReportTime)
-              : "No recent reports"}
-          </span>
+          <span>{patio.best_time_to_visit || 'Try midday on a clear day.'}</span>
         </div>
         
-        {displayTags.length > 0 && (
-          <div className="flex gap-1">
-            {displayTags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
-                {tag.replace("_", " ")}
-              </Badge>
-            ))}
-          </div>
-        )}
+        <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
+          <Clock className="h-3 w-3" />
+          {patio.lastReportTime
+            ? formatTimeAgo(patio.lastReportTime)
+            : "No recent reports"}
+        </div>
+        
       </div>
+      
+      {displayTags.length > 0 && (
+        <div className="flex gap-1 mt-2">
+          {displayTags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
+              {tag.replace("_", " ")}
+            </Badge>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }

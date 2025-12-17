@@ -8,7 +8,7 @@ export type Favorite = Tables<"favorites">;
 export type SunStatus = "sunny" | "part_shade" | "shaded";
 export type WindStatus = "calm" | "breezy" | "windy";
 export type BusyStatus = "quiet" | "medium" | "busy";
-export type SunProfile = "morning" | "midday" | "afternoon" | "mixed" | "unknown";
+export type SunProfile = "morning" | "midday" | "afternoon" | "all_day" | "mixed" | "unknown";
 export type ConfidenceLevel = "high" | "medium" | "low";
 
 export interface PatioWithStatus extends Patio {

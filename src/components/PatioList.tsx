@@ -8,7 +8,7 @@ interface PatioListProps {
   onPatioClick?: (patio: PatioWithStatus) => void;
 }
 
-// Sort patios by status and confidence
+// Sort patios by sun_score (highest first), then by status and confidence
 function sortPatios(patios: PatioWithStatus[]): PatioWithStatus[] {
   const statusOrder: Record<SunStatus | "unknown", number> = {
     sunny: 0,
@@ -24,11 +24,15 @@ function sortPatios(patios: PatioWithStatus[]): PatioWithStatus[] {
   };
   
   return [...patios].sort((a, b) => {
-    // First by status
+    // Primary: sort by sun_score (highest first)
+    const scoreDiff = (b.sun_score ?? 50) - (a.sun_score ?? 50);
+    if (scoreDiff !== 0) return scoreDiff;
+    
+    // Secondary: by status
     const statusDiff = statusOrder[a.currentStatus] - statusOrder[b.currentStatus];
     if (statusDiff !== 0) return statusDiff;
     
-    // Then by confidence
+    // Tertiary: by confidence
     return confidenceOrder[a.confidence] - confidenceOrder[b.confidence];
   });
 }
