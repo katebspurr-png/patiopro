@@ -54,6 +54,15 @@ const Index = () => {
     return Array.from(uniqueNeighborhoods).sort();
   }, [patios]);
 
+  // Calculate tag counts
+  const tagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    ALLOWED_TAGS.forEach(tag => {
+      counts[tag] = patios.filter(p => p.tags?.includes(tag)).length;
+    });
+    return counts;
+  }, [patios]);
+
   const toggleTag = (tag: string) => {
     setSelectedTags(prev => 
       prev.includes(tag) 
@@ -189,6 +198,9 @@ const Index = () => {
                 onClick={() => toggleTag(tag)}
               >
                 {TAG_LABELS[tag] || tag}
+                <span className={`ml-1 text-[10px] ${selectedTags.includes(tag) ? "opacity-80" : "opacity-60"}`}>
+                  ({tagCounts[tag] || 0})
+                </span>
               </Badge>
             ))}
             {selectedTags.length > 0 && (
