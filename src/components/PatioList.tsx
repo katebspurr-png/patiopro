@@ -1,43 +1,24 @@
 import { PatioCard } from "./PatioCard";
 import type { PatioWithStatus, ConfidenceLevel, SunStatus } from "@/types/patio";
 import { Skeleton } from "@/components/ui/skeleton";
+import { computeAllLiveScores, sortByLiveScore, type PatioWithLiveScore } from "@/lib/live-sun-score";
+import type { TimeOfDaySelection } from "@/hooks/useTimeOfDay";
+import { useMemo } from "react";
 
 interface PatioListProps {
   patios: PatioWithStatus[];
   isLoading?: boolean;
-  onPatioClick?: (patio: PatioWithStatus) => void;
+  onPatioClick?: (patio: PatioWithLiveScore) => void;
+  timeOfDay?: TimeOfDaySelection;
 }
 
-// Sort patios by sun_score (highest first), then by status and confidence
-function sortPatios(patios: PatioWithStatus[]): PatioWithStatus[] {
-  const statusOrder: Record<SunStatus | "unknown", number> = {
-    sunny: 0,
-    part_shade: 1,
-    shaded: 2,
-    unknown: 3,
-  };
+export function PatioList({ patios, isLoading, onPatioClick, timeOfDay = "midday" }: PatioListProps) {
+  // Compute live scores and sort
+  const sortedPatios = useMemo(() => {
+    const withScores = computeAllLiveScores(patios, timeOfDay);
+    return sortByLiveScore(withScores);
+  }, [patios, timeOfDay]);
   
-  const confidenceOrder: Record<ConfidenceLevel, number> = {
-    high: 0,
-    medium: 1,
-    low: 2,
-  };
-  
-  return [...patios].sort((a, b) => {
-    // Primary: sort by sun_score (highest first)
-    const scoreDiff = (b.sun_score ?? 50) - (a.sun_score ?? 50);
-    if (scoreDiff !== 0) return scoreDiff;
-    
-    // Secondary: by status
-    const statusDiff = statusOrder[a.currentStatus] - statusOrder[b.currentStatus];
-    if (statusDiff !== 0) return statusDiff;
-    
-    // Tertiary: by confidence
-    return confidenceOrder[a.confidence] - confidenceOrder[b.confidence];
-  });
-}
-
-export function PatioList({ patios, isLoading, onPatioClick }: PatioListProps) {
   if (isLoading) {
     return (
       <div className="space-y-3 p-4">
@@ -56,8 +37,6 @@ export function PatioList({ patios, isLoading, onPatioClick }: PatioListProps) {
     );
   }
   
-  const sortedPatios = sortPatios(patios);
-  
   return (
     <div className="space-y-3 p-4">
       {sortedPatios.map((patio) => (
@@ -65,6 +44,7 @@ export function PatioList({ patios, isLoading, onPatioClick }: PatioListProps) {
           key={patio.id}
           patio={patio}
           onClick={() => onPatioClick?.(patio)}
+          scoredFor={timeOfDay}
         />
       ))}
     </div>

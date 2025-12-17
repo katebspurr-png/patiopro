@@ -16,10 +16,13 @@ import {
 import { PatioMap } from "@/components/PatioMap";
 import { PatioCard } from "@/components/PatioCard";
 import { Header } from "@/components/Header";
+import { TimeOfDayToggle } from "@/components/TimeOfDayToggle";
 import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
+import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import { ALLOWED_TAGS } from "@/lib/sun-profile";
+import { computeAllLiveScores, sortByLiveScore } from "@/lib/live-sun-score";
 
 const TAG_LABELS: Record<string, string> = {
   waterfront: "🌊 Waterfront",
@@ -44,6 +47,7 @@ const Index = () => {
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
+  const { selectedTime, setSelectedTime } = useTimeOfDay();
   
   // Extract unique neighborhoods
   const neighborhoods = useMemo(() => {
@@ -71,9 +75,14 @@ const Index = () => {
     );
   };
   
-  // Filter patios by search, sunny status, neighborhood, and tags
+  // Compute live scores based on selected time
+  const patiosWithLiveScores = useMemo(() => {
+    return computeAllLiveScores(patios, selectedTime);
+  }, [patios, selectedTime]);
+  
+  // Filter and sort patios
   const filteredPatios = useMemo(() => {
-    let filtered = patios;
+    let filtered = patiosWithLiveScores;
     
     // Search filter
     if (searchQuery.trim()) {
@@ -97,9 +106,10 @@ const Index = () => {
         selectedTags.every(tag => p.tags?.includes(tag))
       );
     }
-    // Sort by sun_score descending
-    return filtered.sort((a, b) => (b.sun_score ?? 50) - (a.sun_score ?? 50));
-  }, [patios, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
+    
+    // Sort by live score descending
+    return sortByLiveScore(filtered);
+  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -128,8 +138,16 @@ const Index = () => {
           />
         )}
         
+        {/* Time of Day Toggle - Top center */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+          <TimeOfDayToggle 
+            selectedTime={selectedTime} 
+            onTimeChange={setSelectedTime} 
+          />
+        </div>
+        
         {/* Sunny Only Toggle - Floating on map */}
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-16 left-4 z-10">
           <div className="bg-background/95 backdrop-blur border rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
             <Switch
               id="sunny-only"
@@ -145,7 +163,7 @@ const Index = () => {
         </div>
 
         {/* Search and Neighborhood Filters */}
-        <div className="absolute top-16 left-4 z-10 flex flex-col gap-2">
+        <div className="absolute top-[104px] left-4 z-10 flex flex-col gap-2">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -184,7 +202,7 @@ const Index = () => {
         </div>
 
         {/* Tag Filter Chips */}
-        <div className="absolute top-[168px] left-4 right-16 z-10">
+        <div className="absolute top-[208px] left-4 right-16 z-10">
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             {ALLOWED_TAGS.map((tag) => (
               <Badge
@@ -259,6 +277,7 @@ const Index = () => {
                     patio={patio}
                     onClick={() => navigate(`/patio/${patio.id}`)}
                     compact
+                    scoredFor={selectedTime}
                   />
                 ))
               )}
