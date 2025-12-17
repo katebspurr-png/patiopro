@@ -5,7 +5,7 @@ import { SunStatusBadge } from "./SunStatusBadge";
 import { formatTimeAgo } from "@/lib/sun-status";
 import { getSunScoreColor } from "@/lib/sun-profile";
 import { TIME_OF_DAY_LABELS, type PatioWithLiveScore } from "@/lib/live-sun-score";
-import type { TimeOfDaySelection } from "@/hooks/useTimeOfDay";
+import type { TimeOfDaySelection, ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
 import { cn } from "@/lib/utils";
 
 interface PatioCardProps {
@@ -13,9 +13,10 @@ interface PatioCardProps {
   onClick?: () => void;
   compact?: boolean;
   scoredFor?: TimeOfDaySelection;
+  resolvedTime?: ResolvedTimeOfDay;
 }
 
-export function PatioCard({ patio, onClick, compact = false, scoredFor }: PatioCardProps) {
+export function PatioCard({ patio, onClick, compact = false, scoredFor, resolvedTime }: PatioCardProps) {
   const displayTags = patio.tags?.slice(0, 2) || [];
   
   // Use live scores
@@ -78,7 +79,9 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor }: PatioC
           {/* Scored for label */}
           {scoredFor && (
             <span className="text-[10px] text-muted-foreground/60 italic">
-              Scored for {TIME_OF_DAY_LABELS[scoredFor]}
+              {scoredFor === "now" 
+                ? `Scored for now (${TIME_OF_DAY_LABELS[resolvedTime || "midday"]})`
+                : `Scored for ${TIME_OF_DAY_LABELS[scoredFor as ResolvedTimeOfDay]}`}
             </span>
           )}
         </div>

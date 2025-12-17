@@ -47,7 +47,7 @@ const Index = () => {
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
-  const { selectedTime, setSelectedTime } = useTimeOfDay();
+  const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
   
   // Extract unique neighborhoods
   const neighborhoods = useMemo(() => {
@@ -75,10 +75,10 @@ const Index = () => {
     );
   };
   
-  // Compute live scores based on selected time
+  // Compute live scores based on resolved time
   const patiosWithLiveScores = useMemo(() => {
-    return computeAllLiveScores(patios, selectedTime);
-  }, [patios, selectedTime]);
+    return computeAllLiveScores(patios, resolvedTime);
+  }, [patios, resolvedTime]);
   
   // Filter and sort patios
   const filteredPatios = useMemo(() => {
@@ -278,6 +278,7 @@ const Index = () => {
                     onClick={() => navigate(`/patio/${patio.id}`)}
                     compact
                     scoredFor={selectedTime}
+                    resolvedTime={resolvedTime}
                   />
                 ))
               )}
