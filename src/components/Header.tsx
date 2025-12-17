@@ -1,9 +1,12 @@
-import { Sun, Menu } from "lucide-react";
+import { Sun, Menu, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export function Header() {
+  const { isAdmin } = useUserRole();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center justify-between px-4">
@@ -35,12 +38,15 @@ export function Header() {
               >
                 Submit a Patio
               </Link>
-              <Link
-                to="/admin"
-                className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors"
-              >
-                Admin
-              </Link>
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors"
+                >
+                  <Shield className="h-5 w-5" />
+                  Admin
+                </Link>
+              )}
             </nav>
           </SheetContent>
         </Sheet>
