@@ -201,8 +201,8 @@ const Index = () => {
           </Select>
         </div>
 
-        {/* Tag Filter Chips */}
-        <div className="absolute top-[208px] left-4 right-16 z-10">
+        {/* Tag Filter Chips - Bottom positioned above drawer */}
+        <div className="absolute bottom-[188px] left-4 right-4 z-10">
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             {ALLOWED_TAGS.map((tag) => (
               <Badge
