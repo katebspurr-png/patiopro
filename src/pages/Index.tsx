@@ -3,25 +3,33 @@ import { useNavigate } from "react-router-dom";
 import { Sun, ChevronUp, ChevronDown } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PatioMap } from "@/components/PatioMap";
 import { PatioCard } from "@/components/PatioCard";
 import { Header } from "@/components/Header";
+import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
+import { useTopPatioIds } from "@/hooks/useBestRightNow";
 
 const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
+  const [showBestRightNow, setShowBestRightNow] = useState(false);
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
+  const topPatioIds = useTopPatioIds(3);
   
   const filteredPatios = sunnyOnly 
     ? patios.filter(p => p.currentStatus === "sunny")
     : patios;
 
   const sunnyCount = patios.filter(p => p.currentStatus === "sunny").length;
+
+  const handlePatioSelect = (patioId: string) => {
+    setShowBestRightNow(false);
+    navigate(`/patio/${patioId}`);
+  };
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
@@ -41,6 +49,7 @@ const Index = () => {
           <PatioMap 
             patios={filteredPatios} 
             onPatioClick={(id) => navigate(`/patio/${id}`)}
+            highlightedIds={topPatioIds}
           />
         )}
         
@@ -58,6 +67,11 @@ const Index = () => {
               <span className="text-sm font-medium">Sunny Only</span>
             </Label>
           </div>
+        </div>
+
+        {/* Best Right Now Button - Floating on map */}
+        <div className="absolute top-4 right-4 z-10">
+          <BestRightNowButton onClick={() => setShowBestRightNow(true)} />
         </div>
 
         {/* Bottom Drawer */}
@@ -104,6 +118,13 @@ const Index = () => {
             </div>
           </ScrollArea>
         </div>
+
+        {/* Best Right Now Panel */}
+        <BestRightNowPanel
+          isOpen={showBestRightNow}
+          onClose={() => setShowBestRightNow(false)}
+          onPatioSelect={handlePatioSelect}
+        />
       </div>
     </div>
   );

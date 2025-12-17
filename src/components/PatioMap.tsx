@@ -9,6 +9,7 @@ import type { PatioWithStatus } from '@/types/patio';
 interface PatioMapProps {
   patios: PatioWithStatus[];
   onPatioClick?: (patioId: string) => void;
+  highlightedIds?: string[];
 }
 
 const statusColors = {
@@ -41,7 +42,7 @@ function isValidMapboxToken(token: string): boolean {
   return trimmed.length >= 50 && trimmed.length <= MAX_TOKEN_LENGTH && MAPBOX_TOKEN_REGEX.test(trimmed);
 }
 
-export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
+export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -116,25 +117,29 @@ export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
     // Add markers for each patio
     patios.forEach(patio => {
       const color = statusColors[patio.currentStatus];
+      const isHighlighted = highlightedIds.includes(patio.id);
       
       const el = document.createElement('div');
       el.className = 'patio-marker';
       el.style.cssText = `
-        width: 32px;
-        height: 32px;
+        width: ${isHighlighted ? '40px' : '32px'};
+        height: ${isHighlighted ? '40px' : '32px'};
         background-color: ${color};
-        border: 3px solid white;
+        border: ${isHighlighted ? '4px' : '3px'} solid white;
         border-radius: 50%;
         cursor: pointer;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        box-shadow: ${isHighlighted 
+          ? '0 0 0 3px rgba(245, 158, 11, 0.5), 0 4px 12px rgba(0,0,0,0.4)' 
+          : '0 2px 8px rgba(0,0,0,0.3)'};
         display: flex;
         align-items: center;
         justify-content: center;
         transition: transform 0.2s ease;
+        z-index: ${isHighlighted ? '10' : '1'};
       `;
       
-      if (patio.currentStatus === 'sunny') {
-        el.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>`;
+      if (patio.currentStatus === 'sunny' || isHighlighted) {
+        el.innerHTML = `<svg width="${isHighlighted ? '20' : '16'}" height="${isHighlighted ? '20' : '16'}" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>`;
       }
 
       el.addEventListener('mouseenter', () => {
@@ -148,6 +153,7 @@ export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
         .setHTML(`
           <div style="padding: 8px; font-family: system-ui, sans-serif;">
             <strong style="font-size: 14px;">${escapeHtml(patio.name)}</strong>
+            ${isHighlighted ? '<span style="display: inline-block; margin-left: 6px; background: #f59e0b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">TOP PICK</span>' : ''}
             <p style="margin: 4px 0 0; font-size: 12px; color: #666;">${escapeHtml(patio.neighborhood || patio.address || '')}</p>
           </div>
         `);
@@ -163,7 +169,7 @@ export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
 
       markersRef.current.push(marker);
     });
-  }, [patios, onPatioClick, mapReady]);
+  }, [patios, onPatioClick, mapReady, highlightedIds]);
 
   if (!token) {
     return (
