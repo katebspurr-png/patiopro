@@ -94,10 +94,20 @@ export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMap
       );
 
       map.current.on('load', () => setMapReady(true));
+      
+      // Only clear token on authentication errors, not all errors
+      map.current.on('error', (e) => {
+        const errorMessage = e.error?.message || '';
+        if (errorMessage.includes('access token') || errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+          console.error('Mapbox token authentication failed:', e);
+          localStorage.removeItem(STORAGE_KEY);
+          setToken('');
+          setMapReady(false);
+        }
+      });
     } catch (error) {
       console.error('Failed to initialize map:', error);
-      localStorage.removeItem(STORAGE_KEY);
-      setToken('');
+      // Don't clear token on generic errors - could be network issues, etc.
       setMapReady(false);
     }
 
