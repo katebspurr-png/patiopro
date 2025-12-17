@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, ChevronUp, ChevronDown, MapPin } from "lucide-react";
+import { Sun, ChevronUp, ChevronDown, MapPin, Search, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -22,6 +23,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [drawerExpanded, setDrawerExpanded] = useState(false);
   const [showBestRightNow, setShowBestRightNow] = useState(false);
   
@@ -37,9 +39,20 @@ const Index = () => {
     return Array.from(uniqueNeighborhoods).sort();
   }, [patios]);
   
-  // Filter patios by sunny status and neighborhood
+  // Filter patios by search, sunny status, and neighborhood
   const filteredPatios = useMemo(() => {
     let filtered = patios;
+    
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(query) ||
+        p.neighborhood?.toLowerCase().includes(query) ||
+        p.tags?.some(tag => tag.toLowerCase().includes(query))
+      );
+    }
+    
     if (sunnyOnly) {
       filtered = filtered.filter(p => p.currentStatus === "sunny");
     }
@@ -48,7 +61,7 @@ const Index = () => {
     }
     // Sort by sun_score descending
     return filtered.sort((a, b) => (b.sun_score ?? 50) - (a.sun_score ?? 50));
-  }, [patios, sunnyOnly, selectedNeighborhood]);
+  }, [patios, sunnyOnly, selectedNeighborhood, searchQuery]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -93,10 +106,31 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Neighborhood Filter */}
-        <div className="absolute top-16 left-4 z-10">
+        {/* Search and Neighborhood Filters */}
+        <div className="absolute top-16 left-4 z-10 flex flex-col gap-2">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search patios..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-[200px] pl-9 pr-8 bg-background/95 backdrop-blur border shadow-lg"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded"
+              >
+                <X className="h-3 w-3 text-muted-foreground" />
+              </button>
+            )}
+          </div>
+          
+          {/* Neighborhood Filter */}
           <Select value={selectedNeighborhood} onValueChange={setSelectedNeighborhood}>
-            <SelectTrigger className="w-[180px] bg-background/95 backdrop-blur border shadow-lg">
+            <SelectTrigger className="w-[200px] bg-background/95 backdrop-blur border shadow-lg">
               <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
               <SelectValue placeholder="All Areas" />
             </SelectTrigger>
