@@ -3,6 +3,8 @@ import type { AppSettings } from "@/types/app-settings";
 import { calculateSeasonalScore } from "./seasonal-adjustment";
 
 type TimeOfDay = 'morning' | 'midday' | 'afternoon';
+type SunOrientation = 'east' | 'south' | 'west' | 'north' | 'unknown';
+type ShadeContext = 'open' | 'partial' | 'enclosed' | 'unknown';
 
 /**
  * Determine current time bucket for Halifax (Atlantic Time)
@@ -26,7 +28,7 @@ export function getCurrentTimeBucket(date: Date = new Date()): TimeOfDay {
 }
 
 /**
- * Get time-of-day alignment bonus
+ * Get time-of-day alignment bonus based on sun_profile
  */
 function getTimeAlignmentBonus(sunProfile: SunProfile | null, currentTimeBucket: TimeOfDay): number {
   if (!sunProfile) return 0;
@@ -34,6 +36,40 @@ function getTimeAlignmentBonus(sunProfile: SunProfile | null, currentTimeBucket:
   if (sunProfile === currentTimeBucket) return 10;
   if (sunProfile === 'mixed') return 5;
   return 0;
+}
+
+/**
+ * Get orientation nudge based on time of day
+ * East = morning sun, South = midday sun, West = afternoon sun
+ * North = indirect light (small penalty)
+ */
+function getOrientationNudge(orientation: SunOrientation | null | undefined, currentTimeBucket: TimeOfDay): number {
+  if (!orientation || orientation === 'unknown') return 0;
+  
+  // Orientation-to-time mapping with bonuses
+  const orientationTimeMap: Record<SunOrientation, Record<TimeOfDay, number>> = {
+    east: { morning: 8, midday: 2, afternoon: -2 },
+    south: { morning: 3, midday: 8, afternoon: 3 },
+    west: { morning: -2, midday: 2, afternoon: 8 },
+    north: { morning: -3, midday: -3, afternoon: -3 },
+    unknown: { morning: 0, midday: 0, afternoon: 0 },
+  };
+  
+  return orientationTimeMap[orientation][currentTimeBucket];
+}
+
+/**
+ * Get shade context nudge
+ * Open = reliable direct sun, Partial = some shade, Enclosed = blocked
+ */
+function getShadeContextNudge(shadeContext: ShadeContext | null | undefined): number {
+  switch (shadeContext) {
+    case 'open': return 5;      // Consistent direct sun
+    case 'partial': return 0;   // Neutral
+    case 'enclosed': return -5; // Blocked by buildings
+    case 'unknown':
+    default: return 0;
+  }
 }
 
 /**
@@ -105,6 +141,8 @@ export interface RightNowResult {
   whyNowText: string;
   bonuses: {
     timeAlignment: number;
+    orientation: number;
+    shadeContext: number;
     crowdFeedback: number;
     confidence: number;
   };
@@ -118,6 +156,7 @@ function generateWhyNowText(
   currentTimeBucket: TimeOfDay,
   crowdBonus: number,
   timeBonus: number,
+  orientationBonus: number,
   baseScore: number
 ): string {
   // Priority 1: Recent sunny crowd feedback
@@ -130,7 +169,17 @@ function generateWhyNowText(
     return "Trending sunny this afternoon";
   }
   
-  // Priority 2: Time-of-day match
+  // Priority 2: Strong orientation match for time of day
+  if (orientationBonus >= 8) {
+    const orientationLabels: Record<TimeOfDay, string> = {
+      morning: "Great morning exposure",
+      midday: "Strong midday sun",
+      afternoon: "Perfect afternoon light"
+    };
+    return orientationLabels[currentTimeBucket];
+  }
+  
+  // Priority 3: Time-of-day profile match
   if (timeBonus >= 10) {
     const timeLabels: Record<TimeOfDay, string> = {
       morning: "Starting to brighten up",
@@ -144,12 +193,17 @@ function generateWhyNowText(
     return "Some sun, some shade";
   }
   
-  // Priority 3: High base sun score
+  // Priority 4: High base sun score
   if (baseScore >= 90) {
     return "Catching the sun right now";
   }
   
-  // Priority 4: Sheltered tag
+  // Priority 5: Open shade context
+  if ((patio as any).shade_context === 'open') {
+    return "Open and sunny";
+  }
+  
+  // Priority 6: Sheltered tag
   if (patio.tags?.includes("sheltered")) {
     return "Comfortable with changing light";
   }
@@ -183,10 +237,19 @@ export function calculateRightNowScore(
     baseScore = patio.sun_score ?? 50;
   }
   
-  // Step 2: Time-of-day alignment bonus
+  // Step 2: Time-of-day alignment bonus (from sun_profile)
   const timeAlignment = getTimeAlignmentBonus(patio.sun_profile as SunProfile | null, currentTimeBucket);
   
-  // Step 3: Fresh crowd signal (if enabled)
+  // Step 3: Orientation nudge (from sun_orientation × time of day)
+  const orientation = getOrientationNudge(
+    (patio as any).sun_orientation as SunOrientation | null,
+    currentTimeBucket
+  );
+  
+  // Step 4: Shade context nudge
+  const shadeContext = getShadeContextNudge((patio as any).shade_context as ShadeContext | null);
+  
+  // Step 5: Fresh crowd signal (if enabled)
   let crowdFeedback = 0;
   if (settings.enable_crowd_sun_feedback) {
     crowdFeedback = getCrowdBonus(
@@ -197,14 +260,14 @@ export function calculateRightNowScore(
     );
   }
   
-  // Step 4: Confidence adjustment (if enabled)
+  // Step 6: Confidence adjustment (if enabled)
   let confidence = 0;
   if (settings.enable_confidence_level && patio.confidence_level) {
     confidence = getConfidenceAdjustment(patio.confidence_level as ConfidenceLevel);
   }
   
   // Calculate total and clamp
-  const rawScore = baseScore + timeAlignment + crowdFeedback + confidence;
+  const rawScore = baseScore + timeAlignment + orientation + shadeContext + crowdFeedback + confidence;
   const rightNowScore = Math.max(0, Math.min(100, rawScore));
   
   // Generate explanation
@@ -213,6 +276,7 @@ export function calculateRightNowScore(
     currentTimeBucket,
     crowdFeedback,
     timeAlignment,
+    orientation,
     baseScore
   );
   
@@ -223,6 +287,8 @@ export function calculateRightNowScore(
     whyNowText,
     bonuses: {
       timeAlignment,
+      orientation,
+      shadeContext,
       crowdFeedback,
       confidence,
     },
