@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, List, Map, Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Sun, ChevronUp, ChevronDown } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { PatioList } from "@/components/PatioList";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { PatioMap } from "@/components/PatioMap";
+import { PatioCard } from "@/components/PatioCard";
 import { Header } from "@/components/Header";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState<"list" | "map">("map");
   const [sunnyOnly, setSunnyOnly] = useState(false);
+  const [drawerExpanded, setDrawerExpanded] = useState(false);
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   
@@ -20,84 +21,90 @@ const Index = () => {
     ? patios.filter(p => p.currentStatus === "sunny")
     : patios;
 
+  const sunnyCount = patios.filter(p => p.currentStatus === "sunny").length;
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Header />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-b from-sunny/20 to-background px-4 py-8 text-center">
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
-          Find Sunny Patios in Halifax
-        </h1>
-        <p className="text-muted-foreground max-w-md mx-auto">
-          Real-time sun reports from the community. Find the perfect sunny spot right now.
-        </p>
-      </section>
-      
-      {/* Controls */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur border-b px-4 py-3">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+      {/* Map Container */}
+      <div className="flex-1 relative">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-full text-destructive">
+            Error loading patios. Please try again.
+          </div>
+        ) : (
+          <PatioMap 
+            patios={filteredPatios} 
+            onPatioClick={(id) => navigate(`/patio/${id}`)}
+          />
+        )}
+        
+        {/* Sunny Only Toggle - Floating on map */}
+        <div className="absolute top-4 left-4 z-10">
+          <div className="bg-background/95 backdrop-blur border rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
             <Switch
               id="sunny-only"
               checked={sunnyOnly}
               onCheckedChange={setSunnyOnly}
+              className="data-[state=checked]:bg-sunny"
             />
             <Label htmlFor="sunny-only" className="flex items-center gap-1.5 cursor-pointer">
               <Sun className="h-4 w-4 text-sunny" />
               <span className="text-sm font-medium">Sunny Only</span>
             </Label>
           </div>
-          
-          <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-            <Button
-              variant={viewMode === "map" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("map")}
-              className="h-8"
-            >
-              <Map className="h-4 w-4 mr-1" />
-              Map
-            </Button>
-            <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("list")}
-              className="h-8"
-            >
-              <List className="h-4 w-4 mr-1" />
-              List
-            </Button>
-          </div>
+        </div>
+
+        {/* Bottom Drawer */}
+        <div 
+          className={`absolute bottom-0 left-0 right-0 z-20 bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
+            drawerExpanded ? 'h-[70vh]' : 'h-[180px]'
+          }`}
+        >
+          {/* Drawer Handle */}
+          <button
+            onClick={() => setDrawerExpanded(!drawerExpanded)}
+            className="w-full flex flex-col items-center pt-2 pb-1 focus:outline-none"
+          >
+            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full mb-2" />
+            <div className="flex items-center gap-1 text-muted-foreground">
+              {drawerExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronUp className="h-4 w-4" />
+              )}
+              <span className="text-xs font-medium">
+                {filteredPatios.length} patios {sunnyOnly && `• ${sunnyCount} sunny`}
+              </span>
+            </div>
+          </button>
+
+          {/* Drawer Content */}
+          <ScrollArea className={`px-4 ${drawerExpanded ? 'h-[calc(70vh-60px)]' : 'h-[120px]'}`}>
+            <div className="space-y-2 pb-4">
+              {filteredPatios.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {sunnyOnly ? "No sunny patios right now" : "No patios found"}
+                </div>
+              ) : (
+                filteredPatios.map((patio) => (
+                  <PatioCard
+                    key={patio.id}
+                    patio={patio}
+                    onClick={() => navigate(`/patio/${patio.id}`)}
+                    compact
+                  />
+                ))
+              )}
+            </div>
+          </ScrollArea>
         </div>
       </div>
-      
-      {/* Content */}
-      <main className="flex-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-          </div>
-        ) : error ? (
-          <div className="text-center py-12 text-destructive">
-            Error loading patios. Please try again.
-          </div>
-        ) : viewMode === "map" ? (
-          <div className="h-[calc(100vh-220px)]">
-            <PatioMap 
-              patios={filteredPatios} 
-              onPatioClick={(id) => navigate(`/patio/${id}`)}
-            />
-          </div>
-        ) : (
-          <div className="max-w-4xl mx-auto p-4">
-            <PatioList 
-              patios={filteredPatios} 
-              onPatioClick={(id) => navigate(`/patio/${id}`)}
-            />
-          </div>
-        )}
-      </main>
     </div>
   );
 };
