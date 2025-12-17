@@ -33,10 +33,10 @@ export function Header() {
                 Find Patios
               </Link>
               <Link
-                to="/submit"
+                to="/report"
                 className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors"
               >
-                Submit a Patio
+                Submit a Report
               </Link>
               {isAdmin && (
                 <Link

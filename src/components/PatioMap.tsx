@@ -30,23 +30,46 @@ function escapeHtml(unsafe: string): string {
 
 const STORAGE_KEY = 'mapbox_token';
 
+// Mapbox public tokens start with 'pk.' followed by base64-like characters
+const MAPBOX_TOKEN_REGEX = /^pk\.[a-zA-Z0-9_-]{50,200}$/;
+const MAX_TOKEN_LENGTH = 250;
+
+function isValidMapboxToken(token: string): boolean {
+  const trimmed = token.trim();
+  return trimmed.length <= MAX_TOKEN_LENGTH && MAPBOX_TOKEN_REGEX.test(trimmed);
+}
+
 export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   
   const [token, setToken] = useState(() => {
-    return import.meta.env.VITE_MAPBOX_TOKEN || localStorage.getItem(STORAGE_KEY) || '';
+    const envToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    const storedToken = localStorage.getItem(STORAGE_KEY);
+    // Validate stored token before using
+    if (envToken && isValidMapboxToken(envToken)) return envToken;
+    if (storedToken && isValidMapboxToken(storedToken)) return storedToken;
+    return '';
   });
   const [inputToken, setInputToken] = useState('');
   const [mapReady, setMapReady] = useState(!!token);
+  const [tokenError, setTokenError] = useState('');
 
   const handleSaveToken = () => {
-    if (inputToken.trim()) {
-      localStorage.setItem(STORAGE_KEY, inputToken.trim());
-      setToken(inputToken.trim());
-      setMapReady(true);
+    const trimmed = inputToken.trim();
+    if (!trimmed) {
+      setTokenError('Please enter a token');
+      return;
     }
+    if (!isValidMapboxToken(trimmed)) {
+      setTokenError('Invalid Mapbox token format. Token should start with "pk." followed by alphanumeric characters.');
+      return;
+    }
+    setTokenError('');
+    localStorage.setItem(STORAGE_KEY, trimmed);
+    setToken(trimmed);
+    setMapReady(true);
   };
 
   useEffect(() => {
@@ -157,9 +180,16 @@ export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
               id="mapbox-token"
               placeholder="pk.eyJ1Ijo..."
               value={inputToken}
-              onChange={(e) => setInputToken(e.target.value)}
+              onChange={(e) => {
+                setInputToken(e.target.value);
+                setTokenError('');
+              }}
               onKeyDown={(e) => e.key === 'Enter' && handleSaveToken()}
+              maxLength={MAX_TOKEN_LENGTH}
             />
+            {tokenError && (
+              <p className="text-sm text-destructive">{tokenError}</p>
+            )}
             <Button onClick={handleSaveToken} className="w-full">
               Save Token
             </Button>
