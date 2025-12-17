@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, RefreshCw, Sun, CheckCircle } from "lucide-react";
+import { ArrowLeft, RefreshCw, Sun, CheckCircle, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,8 @@ export default function Admin() {
   const { isAdmin, isLoading: roleLoading } = useUserRole();
   const [recalculating, setRecalculating] = useState(false);
   const [lastResult, setLastResult] = useState<number | null>(null);
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillResult, setBackfillResult] = useState<number | null>(null);
 
   const handleRecalculateSunFields = async () => {
     setRecalculating(true);
@@ -37,6 +39,32 @@ export default function Admin() {
       });
     } finally {
       setRecalculating(false);
+    }
+  };
+
+  const handleBackfillSunScoreBase = async () => {
+    setBackfilling(true);
+    setBackfillResult(null);
+    
+    try {
+      const { data, error } = await supabase.rpc('backfill_sun_score_base');
+      
+      if (error) throw error;
+      
+      setBackfillResult(data as number);
+      toast({
+        title: "Success",
+        description: `Backfilled sun_score_base for ${data} patios.`,
+      });
+    } catch (error) {
+      console.error('Error backfilling sun_score_base:', error);
+      toast({
+        title: "Error",
+        description: "Failed to backfill. Check console for details.",
+        variant: "destructive",
+      });
+    } finally {
+      setBackfilling(false);
     }
   };
 
@@ -110,6 +138,49 @@ export default function Admin() {
                   <>
                     <RefreshCw className="h-4 w-4 mr-2" />
                     Recalculate All
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Backfill Sun Score Base */}
+        <Card className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-full bg-blue-500/10">
+              <Database className="h-6 w-6 text-blue-500" />
+            </div>
+            <div className="flex-1">
+              <h2 className="font-display font-semibold text-lg">
+                Backfill Sun Score Base
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                One-time migration to populate sun_score_base from existing sun_score values. Sets default of 50 for patios with no score.
+              </p>
+              
+              {backfillResult !== null && (
+                <div className="flex items-center gap-2 mt-3 text-sm text-green-600">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Backfilled {backfillResult} patios</span>
+                </div>
+              )}
+              
+              <Button
+                className="mt-4"
+                variant="secondary"
+                onClick={handleBackfillSunScoreBase}
+                disabled={backfilling}
+              >
+                {backfilling ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    Backfilling...
+                  </>
+                ) : (
+                  <>
+                    <Database className="h-4 w-4 mr-2" />
+                    Backfill Base Scores
                   </>
                 )}
               </Button>

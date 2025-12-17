@@ -97,6 +97,7 @@ export type Database = {
           sun_notes: string | null
           sun_profile: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score: number | null
+          sun_score_base: number | null
           sun_score_reason: string | null
           tags: string[] | null
           updated_at: string | null
@@ -119,6 +120,7 @@ export type Database = {
           sun_notes?: string | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score?: number | null
+          sun_score_base?: number | null
           sun_score_reason?: string | null
           tags?: string[] | null
           updated_at?: string | null
@@ -141,6 +143,7 @@ export type Database = {
           sun_notes?: string | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score?: number | null
+          sun_score_base?: number | null
           sun_score_reason?: string | null
           tags?: string[] | null
           updated_at?: string | null
@@ -245,6 +248,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      backfill_sun_score_base: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
