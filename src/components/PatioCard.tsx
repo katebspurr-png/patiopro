@@ -1,8 +1,9 @@
-import { MapPin, Clock } from "lucide-react";
+import { MapPin, Sun, Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SunStatusBadge } from "./SunStatusBadge";
 import { formatTimeAgo } from "@/lib/sun-status";
+import { getSunScoreColor } from "@/lib/sun-profile";
 import type { PatioWithStatus } from "@/types/patio";
 import { cn } from "@/lib/utils";
 
@@ -35,17 +36,25 @@ export function PatioCard({ patio, onClick, compact = false }: PatioCardProps) {
             </div>
           )}
         </div>
-        <SunStatusBadge
-          status={patio.currentStatus}
-          confidence={patio.confidence}
-          size={compact ? "sm" : "md"}
-        />
+        <div className="flex flex-col items-end gap-1">
+          <div className={cn("flex items-center gap-1 font-semibold", getSunScoreColor(patio.sun_score ?? 50))}>
+            <Sun className="h-4 w-4" />
+            <span className={compact ? "text-sm" : "text-base"}>{patio.sun_score ?? 50}</span>
+          </div>
+          <SunStatusBadge
+            status={patio.currentStatus}
+            confidence={patio.confidence}
+            size="sm"
+          />
+        </div>
       </div>
       
       <div className="mt-2 flex items-center justify-between">
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          <span>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="font-medium">{patio.best_time_to_visit || 'check recent visits'}</span>
+          <span className="opacity-50">•</span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
             {patio.lastReportTime
               ? formatTimeAgo(patio.lastReportTime)
               : "No recent reports"}
