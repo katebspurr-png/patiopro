@@ -10,7 +10,12 @@ import { useToast } from "@/hooks/use-toast";
 import { usePatios } from "@/hooks/usePatios";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
 import type { SunStatus, WindStatus, BusyStatus } from "@/types/patio";
+
+const MAX_NOTES_LENGTH = 500;
+
+const notesSchema = z.string().max(MAX_NOTES_LENGTH, `Notes must be ${MAX_NOTES_LENGTH} characters or less`).optional();
 
 export default function Report() {
   const navigate = useNavigate();
@@ -36,6 +41,18 @@ export default function Report() {
       });
       return;
     }
+
+    // Validate notes
+    const trimmedNotes = notes.trim();
+    const notesResult = notesSchema.safeParse(trimmedNotes || undefined);
+    if (!notesResult.success) {
+      toast({
+        title: "Invalid notes",
+        description: notesResult.error.errors[0]?.message || "Notes are invalid.",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setSubmitting(true);
     
@@ -44,7 +61,7 @@ export default function Report() {
       status,
       wind,
       busy,
-      notes: notes.trim() || null,
+      notes: trimmedNotes || null,
       is_anonymous: true,
     });
     
@@ -191,9 +208,13 @@ export default function Report() {
             id="notes"
             placeholder="Any additional details..."
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) => setNotes(e.target.value.slice(0, MAX_NOTES_LENGTH))}
             rows={3}
+            maxLength={MAX_NOTES_LENGTH}
           />
+          <p className="text-xs text-muted-foreground text-right">
+            {notes.length}/{MAX_NOTES_LENGTH}
+          </p>
         </div>
         
         {/* Submit */}
