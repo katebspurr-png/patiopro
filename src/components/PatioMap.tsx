@@ -30,13 +30,15 @@ function escapeHtml(unsafe: string): string {
 
 const STORAGE_KEY = 'mapbox_token';
 
-// Mapbox public tokens start with 'pk.' followed by base64-like characters
-const MAPBOX_TOKEN_REGEX = /^pk\.[a-zA-Z0-9_-]{50,200}$/;
-const MAX_TOKEN_LENGTH = 250;
+// Mapbox public tokens start with 'pk.' followed by base64-like JWT segments
+// Format: pk.{base64}.{base64} where base64 can include alphanumeric, _, -, and .
+const MAPBOX_TOKEN_REGEX = /^pk\.[a-zA-Z0-9_\-\.]{50,300}$/;
+const MAX_TOKEN_LENGTH = 350;
 
 function isValidMapboxToken(token: string): boolean {
   const trimmed = token.trim();
-  return trimmed.length <= MAX_TOKEN_LENGTH && MAPBOX_TOKEN_REGEX.test(trimmed);
+  // Basic format check: starts with pk. and reasonable length
+  return trimmed.length >= 50 && trimmed.length <= MAX_TOKEN_LENGTH && MAPBOX_TOKEN_REGEX.test(trimmed);
 }
 
 export function PatioMap({ patios, onPatioClick }: PatioMapProps) {
