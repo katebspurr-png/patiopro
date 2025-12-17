@@ -82,6 +82,7 @@ export type Database = {
       patios: {
         Row: {
           address: string | null
+          best_time_to_visit: string | null
           created_at: string | null
           hours: string | null
           id: string
@@ -95,12 +96,15 @@ export type Database = {
           source: string | null
           sun_notes: string | null
           sun_profile: Database["public"]["Enums"]["sun_profile_type"] | null
+          sun_score: number | null
+          sun_score_reason: string | null
           tags: string[] | null
           updated_at: string | null
           website: string | null
         }
         Insert: {
           address?: string | null
+          best_time_to_visit?: string | null
           created_at?: string | null
           hours?: string | null
           id?: string
@@ -114,12 +118,15 @@ export type Database = {
           source?: string | null
           sun_notes?: string | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
+          sun_score?: number | null
+          sun_score_reason?: string | null
           tags?: string[] | null
           updated_at?: string | null
           website?: string | null
         }
         Update: {
           address?: string | null
+          best_time_to_visit?: string | null
           created_at?: string | null
           hours?: string | null
           id?: string
@@ -133,6 +140,8 @@ export type Database = {
           source?: string | null
           sun_notes?: string | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
+          sun_score?: number | null
+          sun_score_reason?: string | null
           tags?: string[] | null
           updated_at?: string | null
           website?: string | null
@@ -243,6 +252,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      recalculate_all_sun_fields: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"

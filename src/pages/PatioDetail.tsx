@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
 import { usePatio, useSunReports } from "@/hooks/usePatios";
 import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
+import { getSunScoreColor } from "@/lib/sun-profile";
+import { cn } from "@/lib/utils";
 import type { SunProfile } from "@/types/patio";
 
 export default function PatioDetail() {
@@ -59,25 +61,43 @@ export default function PatioDetail() {
       
       <div className="p-4 max-w-lg mx-auto space-y-6">
         {/* Status Card */}
-        <Card className="p-6 text-center">
-          {statusResult && (
-            <>
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className={cn("flex items-center gap-2 text-2xl font-bold", getSunScoreColor(patio.sun_score ?? 50))}>
+                <Sun className="h-6 w-6" />
+                <span>{patio.sun_score ?? 50}</span>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <span className="block font-medium">Sun Score</span>
+                <span className="text-xs">{patio.sun_score_reason || 'sun unknown'}</span>
+              </div>
+            </div>
+            {statusResult && (
               <SunStatusBadge
                 status={statusResult.status}
                 confidence={statusResult.confidence}
-                size="lg"
+                size="md"
               />
-              {statusResult.confidence === "low" && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Based on patio profile — add a report to improve accuracy.
-                </p>
-              )}
-              {statusResult.lastReportTime && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  Last report: {formatTimeAgo(statusResult.lastReportTime)}
-                </p>
-              )}
-            </>
+            )}
+          </div>
+          
+          <div className="flex items-center justify-between pt-3 border-t">
+            <div>
+              <span className="text-sm font-medium">Best time</span>
+              <p className="text-lg font-semibold">{patio.best_time_to_visit || 'check recent visits'}</p>
+            </div>
+            {statusResult?.lastReportTime && (
+              <p className="text-sm text-muted-foreground">
+                Last report: {formatTimeAgo(statusResult.lastReportTime)}
+              </p>
+            )}
+          </div>
+          
+          {statusResult?.confidence === "low" && (
+            <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
+              Based on patio profile — add a report to improve accuracy.
+            </p>
           )}
         </Card>
         
