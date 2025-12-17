@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Plus, Edit2 } from "lucide-react";
+import { Loader2, Plus, Edit2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ALLOWED_TAGS } from "@/lib/sun-profile";
 
-const SUN_PROFILES = ["morning", "midday", "afternoon", "mixed", "unknown"] as const;
+const SUN_PROFILES = ["morning", "midday", "afternoon", "all_day", "mixed", "unknown"] as const;
 const SUN_ORIENTATIONS = ["east", "south", "west", "north", "unknown"] as const;
 const SHADE_CONTEXTS = ["open", "partial", "enclosed", "unknown"] as const;
 const PRICE_RANGES = ["low", "medium", "high", "unknown"] as const;
@@ -80,6 +80,7 @@ interface PatioFormProps {
 export function PatioForm({ patio, onSuccess }: PatioFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRecalculating, setIsRecalculating] = useState(false);
   const isEditing = !!patio;
 
   const form = useForm<PatioFormValues>({
@@ -276,6 +277,7 @@ export function PatioForm({ patio, onSuccess }: PatioFormProps) {
                     <SelectItem value="morning">Morning (best 9am–11:30am)</SelectItem>
                     <SelectItem value="midday">Midday (best 12pm–3pm)</SelectItem>
                     <SelectItem value="afternoon">Afternoon (best 2pm–sunset)</SelectItem>
+                    <SelectItem value="all_day">All Day (sunny throughout)</SelectItem>
                     <SelectItem value="mixed">Mixed (varies throughout day)</SelectItem>
                     <SelectItem value="unknown">Unknown</SelectItem>
                   </SelectContent>
@@ -511,24 +513,66 @@ export function PatioForm({ patio, onSuccess }: PatioFormProps) {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Saving...
-            </>
-          ) : isEditing ? (
-            <>
-              <Edit2 className="h-4 w-4 mr-2" />
-              Update Patio
-            </>
-          ) : (
-            <>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Patio
-            </>
+        <div className="flex gap-2">
+          <Button type="submit" className="flex-1" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : isEditing ? (
+              <>
+                <Edit2 className="h-4 w-4 mr-2" />
+                Update Patio
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4 mr-2" />
+                Create Patio
+              </>
+            )}
+          </Button>
+          
+          {isEditing && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isRecalculating}
+              onClick={async () => {
+                setIsRecalculating(true);
+                try {
+                  const { data, error } = await supabase.rpc('recalculate_sun_outputs', {
+                    p_patio_id: patio.id,
+                    p_time_of_day: 'midday'
+                  });
+                  
+                  if (error) throw error;
+                  
+                  toast({
+                    title: "Sun Score Recalculated",
+                    description: "The sun outputs have been updated.",
+                  });
+                  onSuccess?.();
+                } catch (error) {
+                  console.error('Error recalculating:', error);
+                  toast({
+                    title: "Error",
+                    description: "Failed to recalculate sun score.",
+                    variant: "destructive",
+                  });
+                } finally {
+                  setIsRecalculating(false);
+                }
+              }}
+            >
+              {isRecalculating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+            </Button>
           )}
-        </Button>
+        </div>
       </form>
     </Form>
   );

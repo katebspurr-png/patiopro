@@ -384,6 +384,15 @@ export type Database = {
         Returns: boolean
       }
       recalculate_all_sun_fields: { Args: never; Returns: number }
+      recalculate_sun_outputs: {
+        Args: { p_patio_id?: string; p_time_of_day?: string }
+        Returns: {
+          best_time_to_visit: string
+          patio_id: string
+          sun_score: number
+          sun_score_reason: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
@@ -392,7 +401,13 @@ export type Database = {
       shade_context_type: "open" | "partial" | "enclosed" | "unknown"
       submission_status: "pending" | "approved" | "rejected"
       sun_orientation_type: "east" | "south" | "west" | "north" | "unknown"
-      sun_profile_type: "morning" | "midday" | "afternoon" | "mixed" | "unknown"
+      sun_profile_type:
+        | "morning"
+        | "midday"
+        | "afternoon"
+        | "mixed"
+        | "unknown"
+        | "all_day"
       sun_status: "sunny" | "part_shade" | "shaded"
       time_of_day: "morning" | "midday" | "afternoon"
       wind_status: "calm" | "breezy" | "windy"
@@ -529,7 +544,14 @@ export const Constants = {
       shade_context_type: ["open", "partial", "enclosed", "unknown"],
       submission_status: ["pending", "approved", "rejected"],
       sun_orientation_type: ["east", "south", "west", "north", "unknown"],
-      sun_profile_type: ["morning", "midday", "afternoon", "mixed", "unknown"],
+      sun_profile_type: [
+        "morning",
+        "midday",
+        "afternoon",
+        "mixed",
+        "unknown",
+        "all_day",
+      ],
       sun_status: ["sunny", "part_shade", "shaded"],
       time_of_day: ["morning", "midday", "afternoon"],
       wind_status: ["calm", "breezy", "windy"],

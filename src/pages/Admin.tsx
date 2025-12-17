@@ -270,11 +270,15 @@ export default function Admin() {
             <Card className="p-4 bg-muted/50">
               <h3 className="font-semibold text-sm mb-2">Sun Profile Mapping</h3>
               <div className="text-xs text-muted-foreground space-y-1">
-                <p><strong>morning:</strong> Score 80, "9am–11:30am"</p>
-                <p><strong>midday:</strong> Score 90, "12pm–3pm"</p>
-                <p><strong>afternoon:</strong> Score 95, "2pm–sunset"</p>
-                <p><strong>mixed:</strong> Score 70, "12pm–4pm"</p>
-                <p><strong>unknown:</strong> Score 50, "check recent visits"</p>
+                <p><strong>all_day:</strong> Base 85, "All-day sun"</p>
+                <p><strong>afternoon:</strong> Base 75, "Afternoon bias"</p>
+                <p><strong>morning:</strong> Base 70, "Morning bias"</p>
+                <p><strong>midday:</strong> Base 80, "Afternoon bias"</p>
+                <p><strong>mixed:</strong> Base 60, "Mixed sun & shade"</p>
+                <p><strong>unknown:</strong> Base 55, "Sun varies"</p>
+                <p className="mt-2 pt-2 border-t">
+                  <strong>Shade:</strong> open +10, partial 0, enclosed -12
+                </p>
               </div>
             </Card>
           </TabsContent>

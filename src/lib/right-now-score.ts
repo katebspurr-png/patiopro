@@ -34,6 +34,7 @@ function getTimeAlignmentBonus(sunProfile: SunProfile | null, currentTimeBucket:
   if (!sunProfile) return 0;
   
   if (sunProfile === currentTimeBucket) return 10;
+  if (sunProfile === 'all_day') return 8; // All-day gets consistent bonus
   if (sunProfile === 'mixed') return 5;
   return 0;
 }

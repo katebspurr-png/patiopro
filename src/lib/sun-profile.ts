@@ -29,39 +29,46 @@ export function getSunDerivedFields(sunProfile: SunProfile | null | undefined): 
   switch (sunProfile) {
     case 'morning':
       return {
-        sun_score: 80,
-        sun_score_base: 80,
-        sun_score_reason: 'morning bias',
-        best_time_to_visit: '9am–11:30am',
+        sun_score: 70,
+        sun_score_base: 70,
+        sun_score_reason: 'Morning bias',
+        best_time_to_visit: 'Best in the morning, especially on bright days.',
       };
     case 'midday':
       return {
-        sun_score: 90,
-        sun_score_base: 90,
-        sun_score_reason: 'strong midday sun',
-        best_time_to_visit: '12pm–3pm',
+        sun_score: 80,
+        sun_score_base: 80,
+        sun_score_reason: 'Afternoon bias',
+        best_time_to_visit: 'Best from early afternoon onward on sunny days.',
       };
     case 'afternoon':
       return {
-        sun_score: 95,
-        sun_score_base: 95,
-        sun_score_reason: 'afternoon bias',
-        best_time_to_visit: '2pm–sunset',
+        sun_score: 75,
+        sun_score_base: 75,
+        sun_score_reason: 'Afternoon bias',
+        best_time_to_visit: 'Best from early afternoon onward on sunny days.',
+      };
+    case 'all_day':
+      return {
+        sun_score: 85,
+        sun_score_base: 85,
+        sun_score_reason: 'All-day sun',
+        best_time_to_visit: 'Usually sunny all day — anytime works on a clear day.',
       };
     case 'mixed':
       return {
-        sun_score: 70,
-        sun_score_base: 70,
-        sun_score_reason: 'mixed exposure',
-        best_time_to_visit: '12pm–4pm',
+        sun_score: 60,
+        sun_score_base: 60,
+        sun_score_reason: 'Mixed sun & shade',
+        best_time_to_visit: 'Try midday or early afternoon for your best odds.',
       };
     case 'unknown':
     default:
       return {
-        sun_score: 50,
-        sun_score_base: 50,
-        sun_score_reason: 'sun unknown',
-        best_time_to_visit: 'check recent visits',
+        sun_score: 55,
+        sun_score_base: 55,
+        sun_score_reason: 'Sun varies',
+        best_time_to_visit: 'Try midday on a clear day and adjust based on shade.',
       };
   }
 }
