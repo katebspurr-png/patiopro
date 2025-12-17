@@ -5,11 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
+import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
+import { SunFeedbackWidget } from "@/components/SunFeedbackWidget";
 import { usePatio, useSunReports } from "@/hooks/usePatios";
+import { useAppSettings } from "@/hooks/useAppSettings";
 import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
 import { getSunScoreColor } from "@/lib/sun-profile";
+import { calculateSeasonalScore } from "@/lib/seasonal-adjustment";
 import { cn } from "@/lib/utils";
 import type { SunProfile } from "@/types/patio";
+import type { ConfidenceLevel } from "@/types/app-settings";
 
 export default function PatioDetail() {
   const { id } = useParams<{ id: string }>();
@@ -17,11 +22,20 @@ export default function PatioDetail() {
   
   const { data: patio, isLoading: patioLoading } = usePatio(id!);
   const { data: reports, isLoading: reportsLoading } = useSunReports(id);
+  const { data: settings } = useAppSettings();
   
   const isLoading = patioLoading || reportsLoading;
   
   const statusResult = patio && reports
     ? calculateSunStatus(reports, patio.sun_profile as SunProfile | null)
+    : null;
+  
+  // Calculate seasonal score if enabled
+  const seasonalResult = patio && settings?.enable_seasonal_adjustment
+    ? calculateSeasonalScore(
+        (patio as any).sun_score_base ?? patio.sun_score,
+        patio.sun_profile as SunProfile | null
+      )
     : null;
   
   if (isLoading) {
@@ -47,6 +61,21 @@ export default function PatioDetail() {
   
   const recentReports = reports?.slice(0, 10) || [];
   
+  // Determine which score to display
+  const displayScore = settings?.enable_seasonal_adjustment && seasonalResult
+    ? seasonalResult.sunScoreTuned
+    : (patio.sun_score ?? 50);
+  
+  // Get confidence level from patio data (if feature enabled)
+  const confidenceLevel = settings?.enable_confidence_level
+    ? ((patio as any).confidence_level as ConfidenceLevel | null)
+    : null;
+  
+  // Get crowd feedback data
+  const sunnyVotes = (patio as any).sunny_votes ?? 0;
+  const notSunnyVotes = (patio as any).not_sunny_votes ?? 0;
+  const lastSunCheckAt = (patio as any).last_sun_check_at ?? null;
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -64,13 +93,19 @@ export default function PatioDetail() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className={cn("flex items-center gap-2 text-2xl font-bold", getSunScoreColor(patio.sun_score ?? 50))}>
+              <div className={cn("flex items-center gap-2 text-2xl font-bold", getSunScoreColor(displayScore))}>
                 <Sun className="h-6 w-6" />
-                <span>{patio.sun_score ?? 50}</span>
+                <span>{displayScore}</span>
               </div>
               <div className="text-sm text-muted-foreground">
-                <span className="block font-medium">Sun Score</span>
-                <span className="text-xs">{patio.sun_score_reason || 'sun unknown'}</span>
+                <span className="block font-medium">
+                  {settings?.enable_seasonal_adjustment ? 'Sun Score (seasonal)' : 'Sun Score'}
+                </span>
+                {settings?.enable_seasonal_adjustment && seasonalResult?.seasonalAdjustmentNotes ? (
+                  <span className="text-xs">{seasonalResult.seasonalAdjustmentNotes}</span>
+                ) : (
+                  <span className="text-xs">{patio.sun_score_reason || 'sun unknown'}</span>
+                )}
               </div>
             </div>
             {statusResult && (
@@ -81,6 +116,13 @@ export default function PatioDetail() {
               />
             )}
           </div>
+          
+          {/* Confidence Level Badge (gated) */}
+          {settings?.enable_confidence_level && confidenceLevel && (
+            <div className="mb-4">
+              <ConfidenceLevelBadge level={confidenceLevel} />
+            </div>
+          )}
           
           <div className="flex items-center justify-between pt-3 border-t">
             <div>
@@ -100,6 +142,16 @@ export default function PatioDetail() {
             </p>
           )}
         </Card>
+        
+        {/* Crowd Sun Feedback Widget (gated) */}
+        {settings?.enable_crowd_sun_feedback && (
+          <SunFeedbackWidget
+            patioId={patio.id}
+            sunnyVotes={sunnyVotes}
+            notSunnyVotes={notSunnyVotes}
+            lastSunCheckAt={lastSunCheckAt}
+          />
+        )}
         
         {/* Info */}
         <div className="space-y-3">

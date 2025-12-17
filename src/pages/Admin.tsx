@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { FeatureFlagToggles } from "@/components/FeatureFlagToggles";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -103,6 +104,9 @@ export default function Admin() {
       </div>
 
       <div className="p-4 max-w-lg mx-auto space-y-6">
+        {/* Feature Flags */}
+        <FeatureFlagToggles />
+
         {/* Sun Fields Recalculation */}
         <Card className="p-6">
           <div className="flex items-start gap-4">
