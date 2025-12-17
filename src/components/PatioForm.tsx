@@ -29,6 +29,7 @@ import { ALLOWED_TAGS } from "@/lib/sun-profile";
 const SUN_PROFILES = ["morning", "midday", "afternoon", "mixed", "unknown"] as const;
 const SUN_ORIENTATIONS = ["east", "south", "west", "north", "unknown"] as const;
 const SHADE_CONTEXTS = ["open", "partial", "enclosed", "unknown"] as const;
+const PRICE_RANGES = ["low", "medium", "high", "unknown"] as const;
 
 const patioFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -39,6 +40,7 @@ const patioFormSchema = z.object({
   sun_profile: z.enum(SUN_PROFILES),
   sun_orientation: z.enum(SUN_ORIENTATIONS),
   shade_context: z.enum(SHADE_CONTEXTS),
+  price_range: z.enum(PRICE_RANGES),
   obstruction_context: z.string().max(200).optional(),
   sun_confidence_notes: z.string().max(500).optional(),
   sun_notes: z.string().max(500).optional(),
@@ -62,6 +64,7 @@ interface PatioFormProps {
     sun_profile?: string | null;
     sun_orientation?: string | null;
     shade_context?: string | null;
+    price_range?: string | null;
     obstruction_context?: string | null;
     sun_confidence_notes?: string | null;
     sun_notes?: string | null;
@@ -90,6 +93,7 @@ export function PatioForm({ patio, onSuccess }: PatioFormProps) {
       sun_profile: (patio?.sun_profile as typeof SUN_PROFILES[number]) || "unknown",
       sun_orientation: (patio?.sun_orientation as typeof SUN_ORIENTATIONS[number]) || "unknown",
       shade_context: (patio?.shade_context as typeof SHADE_CONTEXTS[number]) || "unknown",
+      price_range: (patio?.price_range as typeof PRICE_RANGES[number]) || "unknown",
       obstruction_context: patio?.obstruction_context || "",
       sun_confidence_notes: patio?.sun_confidence_notes || "",
       sun_notes: patio?.sun_notes || "",
@@ -119,6 +123,7 @@ export function PatioForm({ patio, onSuccess }: PatioFormProps) {
         sun_profile: values.sun_profile,
         sun_orientation: values.sun_orientation,
         shade_context: values.shade_context,
+        price_range: values.price_range,
         obstruction_context: values.obstruction_context || "",
         sun_confidence_notes: values.sun_confidence_notes || "",
         sun_notes: values.sun_notes || null,
@@ -403,6 +408,33 @@ export function PatioForm({ patio, onSuccess }: PatioFormProps) {
           <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
             Details
           </h3>
+          
+          <FormField
+            control={form.control}
+            name="price_range"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Price Range</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select price range" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="low">$ (Budget-friendly)</SelectItem>
+                    <SelectItem value="medium">$$ (Moderate)</SelectItem>
+                    <SelectItem value="high">$$$ (Upscale)</SelectItem>
+                    <SelectItem value="unknown">Unknown</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  General price level for food and drinks
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
           <FormField
             control={form.control}
