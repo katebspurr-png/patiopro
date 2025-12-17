@@ -4,17 +4,24 @@ import { Badge } from "@/components/ui/badge";
 import { SunStatusBadge } from "./SunStatusBadge";
 import { formatTimeAgo } from "@/lib/sun-status";
 import { getSunScoreColor } from "@/lib/sun-profile";
-import type { PatioWithStatus } from "@/types/patio";
+import { TIME_OF_DAY_LABELS, type PatioWithLiveScore } from "@/lib/live-sun-score";
+import type { TimeOfDaySelection } from "@/hooks/useTimeOfDay";
 import { cn } from "@/lib/utils";
 
 interface PatioCardProps {
-  patio: PatioWithStatus;
+  patio: PatioWithLiveScore;
   onClick?: () => void;
   compact?: boolean;
+  scoredFor?: TimeOfDaySelection;
 }
 
-export function PatioCard({ patio, onClick, compact = false }: PatioCardProps) {
+export function PatioCard({ patio, onClick, compact = false, scoredFor }: PatioCardProps) {
   const displayTags = patio.tags?.slice(0, 2) || [];
+  
+  // Use live scores
+  const displayScore = patio.sun_score_live;
+  const displayReason = patio.sun_score_reason_live;
+  const displayBestTime = patio.best_time_to_visit_live || patio.best_time_to_visit || 'Try midday on a clear day.';
   
   return (
     <Card
@@ -37,9 +44,9 @@ export function PatioCard({ patio, onClick, compact = false }: PatioCardProps) {
           )}
         </div>
         <div className="flex flex-col items-end gap-1">
-          <div className={cn("flex items-center gap-1 font-semibold", getSunScoreColor(patio.sun_score ?? 50))}>
+          <div className={cn("flex items-center gap-1 font-semibold", getSunScoreColor(displayScore))}>
             <Sun className="h-4 w-4" />
-            <span className={compact ? "text-sm" : "text-base"}>{patio.sun_score ?? 50}</span>
+            <span className={compact ? "text-sm" : "text-base"}>{displayScore}</span>
           </div>
           <SunStatusBadge
             status={patio.currentStatus}
@@ -52,21 +59,29 @@ export function PatioCard({ patio, onClick, compact = false }: PatioCardProps) {
       <div className="mt-2 space-y-1">
         {/* Sun score reason */}
         <p className="text-xs font-medium text-muted-foreground">
-          {patio.sun_score_reason || 'Sun varies'}
+          {displayReason}
         </p>
         
-        {/* Best time & last report */}
+        {/* Best time & scored for label */}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{patio.best_time_to_visit || 'Try midday on a clear day.'}</span>
+          <span>{displayBestTime}</span>
         </div>
         
-        <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
-          <Clock className="h-3 w-3" />
-          {patio.lastReportTime
-            ? formatTimeAgo(patio.lastReportTime)
-            : "No recent reports"}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
+            <Clock className="h-3 w-3" />
+            {patio.lastReportTime
+              ? formatTimeAgo(patio.lastReportTime)
+              : "No recent reports"}
+          </div>
+          
+          {/* Scored for label */}
+          {scoredFor && (
+            <span className="text-[10px] text-muted-foreground/60 italic">
+              Scored for {TIME_OF_DAY_LABELS[scoredFor]}
+            </span>
+          )}
         </div>
-        
       </div>
       
       {displayTags.length > 0 && (
