@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, ChevronUp, ChevronDown } from "lucide-react";
+import { Sun, ChevronUp, ChevronDown, MapPin } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PatioMap } from "@/components/PatioMap";
 import { PatioCard } from "@/components/PatioCard";
 import { Header } from "@/components/Header";
@@ -14,17 +21,34 @@ import { useTopPatioIds } from "@/hooks/useBestRightNow";
 const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
+  const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [drawerExpanded, setDrawerExpanded] = useState(false);
   const [showBestRightNow, setShowBestRightNow] = useState(false);
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
   
-  const filteredPatios = sunnyOnly 
-    ? patios.filter(p => p.currentStatus === "sunny")
-    : patios;
-
-  const sunnyCount = patios.filter(p => p.currentStatus === "sunny").length;
+  // Extract unique neighborhoods
+  const neighborhoods = useMemo(() => {
+    const uniqueNeighborhoods = new Set<string>();
+    patios.forEach(p => {
+      if (p.neighborhood) uniqueNeighborhoods.add(p.neighborhood);
+    });
+    return Array.from(uniqueNeighborhoods).sort();
+  }, [patios]);
+  
+  // Filter patios by sunny status and neighborhood
+  const filteredPatios = useMemo(() => {
+    let filtered = patios;
+    if (sunnyOnly) {
+      filtered = filtered.filter(p => p.currentStatus === "sunny");
+    }
+    if (selectedNeighborhood !== "all") {
+      filtered = filtered.filter(p => p.neighborhood === selectedNeighborhood);
+    }
+    // Sort by sun_score descending
+    return filtered.sort((a, b) => (b.sun_score ?? 50) - (a.sun_score ?? 50));
+  }, [patios, sunnyOnly, selectedNeighborhood]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -69,6 +93,24 @@ const Index = () => {
           </div>
         </div>
 
+        {/* Neighborhood Filter */}
+        <div className="absolute top-16 left-4 z-10">
+          <Select value={selectedNeighborhood} onValueChange={setSelectedNeighborhood}>
+            <SelectTrigger className="w-[180px] bg-background/95 backdrop-blur border shadow-lg">
+              <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+              <SelectValue placeholder="All Areas" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border shadow-lg z-50">
+              <SelectItem value="all">All Areas</SelectItem>
+              {neighborhoods.map((neighborhood) => (
+                <SelectItem key={neighborhood} value={neighborhood}>
+                  {neighborhood}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Best Right Now Button - Floating on map */}
         <div className="absolute top-4 right-4 z-10">
           <BestRightNowButton onClick={() => setShowBestRightNow(true)} />
@@ -93,7 +135,9 @@ const Index = () => {
                 <ChevronUp className="h-4 w-4" />
               )}
               <span className="text-xs font-medium">
-                {filteredPatios.length} patios {sunnyOnly && `• ${sunnyCount} sunny`}
+                {filteredPatios.length} patios
+                {selectedNeighborhood !== "all" && ` in ${selectedNeighborhood}`}
+                {sunnyOnly && ` • sunny only`}
               </span>
             </div>
           </button>
