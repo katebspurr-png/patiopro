@@ -124,10 +124,18 @@ export type Database = {
           name: string
           neighborhood: string | null
           not_sunny_votes: number
+          obstruction_context: string | null
           phone: string | null
           seasonal_adjustment_notes: string | null
+          shade_context:
+            | Database["public"]["Enums"]["shade_context_type"]
+            | null
           source: string | null
+          sun_confidence_notes: string | null
           sun_notes: string | null
+          sun_orientation:
+            | Database["public"]["Enums"]["sun_orientation_type"]
+            | null
           sun_profile: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score: number | null
           sun_score_base: number | null
@@ -155,10 +163,18 @@ export type Database = {
           name: string
           neighborhood?: string | null
           not_sunny_votes?: number
+          obstruction_context?: string | null
           phone?: string | null
           seasonal_adjustment_notes?: string | null
+          shade_context?:
+            | Database["public"]["Enums"]["shade_context_type"]
+            | null
           source?: string | null
+          sun_confidence_notes?: string | null
           sun_notes?: string | null
+          sun_orientation?:
+            | Database["public"]["Enums"]["sun_orientation_type"]
+            | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score?: number | null
           sun_score_base?: number | null
@@ -186,10 +202,18 @@ export type Database = {
           name?: string
           neighborhood?: string | null
           not_sunny_votes?: number
+          obstruction_context?: string | null
           phone?: string | null
           seasonal_adjustment_notes?: string | null
+          shade_context?:
+            | Database["public"]["Enums"]["shade_context_type"]
+            | null
           source?: string | null
+          sun_confidence_notes?: string | null
           sun_notes?: string | null
+          sun_orientation?:
+            | Database["public"]["Enums"]["sun_orientation_type"]
+            | null
           sun_profile?: Database["public"]["Enums"]["sun_profile_type"] | null
           sun_score?: number | null
           sun_score_base?: number | null
@@ -365,7 +389,9 @@ export type Database = {
       app_role: "admin" | "user"
       busy_status: "quiet" | "medium" | "busy"
       confidence_level: "low" | "medium" | "high"
+      shade_context_type: "open" | "partial" | "enclosed" | "unknown"
       submission_status: "pending" | "approved" | "rejected"
+      sun_orientation_type: "east" | "south" | "west" | "north" | "unknown"
       sun_profile_type: "morning" | "midday" | "afternoon" | "mixed" | "unknown"
       sun_status: "sunny" | "part_shade" | "shaded"
       time_of_day: "morning" | "midday" | "afternoon"
@@ -500,7 +526,9 @@ export const Constants = {
       app_role: ["admin", "user"],
       busy_status: ["quiet", "medium", "busy"],
       confidence_level: ["low", "medium", "high"],
+      shade_context_type: ["open", "partial", "enclosed", "unknown"],
       submission_status: ["pending", "approved", "rejected"],
+      sun_orientation_type: ["east", "south", "west", "north", "unknown"],
       sun_profile_type: ["morning", "midday", "afternoon", "mixed", "unknown"],
       sun_status: ["sunny", "part_shade", "shaded"],
       time_of_day: ["morning", "midday", "afternoon"],
