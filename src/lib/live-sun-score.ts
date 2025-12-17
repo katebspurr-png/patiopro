@@ -1,5 +1,5 @@
 import type { PatioWithStatus, SunProfile } from "@/types/patio";
-import type { TimeOfDaySelection } from "@/hooks/useTimeOfDay";
+import type { ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
 import { getSunDerivedFields } from "./sun-profile";
 
 export interface LiveSunOutput {
@@ -22,11 +22,11 @@ export interface PatioWithLiveScore extends PatioWithStatus {
  */
 function getOrientationNudge(
   orientation: string | null | undefined,
-  timeOfDay: TimeOfDaySelection
+  timeOfDay: ResolvedTimeOfDay
 ): number {
   if (!orientation || orientation === "unknown") return 0;
 
-  const nudges: Record<string, Record<TimeOfDaySelection, number>> = {
+  const nudges: Record<string, Record<ResolvedTimeOfDay, number>> = {
     east: { morning: 10, midday: 5, afternoon: -5, evening: -10 },
     south: { morning: 5, midday: 10, afternoon: 5, evening: 0 },
     west: { morning: -5, midday: 5, afternoon: 10, evening: 10 },
@@ -41,11 +41,11 @@ function getOrientationNudge(
  */
 function getTimeAlignmentBonus(
   sunProfile: SunProfile | null | undefined,
-  timeOfDay: TimeOfDaySelection
+  timeOfDay: ResolvedTimeOfDay
 ): number {
   if (!sunProfile || sunProfile === "unknown") return 0;
 
-  const bonuses: Record<SunProfile, Record<TimeOfDaySelection, number>> = {
+  const bonuses: Record<SunProfile, Record<ResolvedTimeOfDay, number>> = {
     morning: { morning: 10, midday: 0, afternoon: -5, evening: -10 },
     midday: { morning: 0, midday: 10, afternoon: 5, evening: 0 },
     afternoon: { morning: -5, midday: 5, afternoon: 10, evening: 5 },
@@ -62,13 +62,13 @@ function getTimeAlignmentBonus(
  */
 function generateReasonText(
   sunProfile: SunProfile | null | undefined,
-  timeOfDay: TimeOfDaySelection,
+  timeOfDay: ResolvedTimeOfDay,
   orientation: string | null | undefined
 ): string {
   const baseReason = getSunDerivedFields(sunProfile).sun_score_reason;
   
   // Add time-specific context
-  const timeContext: Record<TimeOfDaySelection, string> = {
+  const timeContext: Record<ResolvedTimeOfDay, string> = {
     morning: "morning light",
     midday: "peak sun",
     afternoon: "afternoon sun",
@@ -103,7 +103,7 @@ function generateReasonText(
  */
 export function computeLiveSunScore(
   patio: PatioWithStatus,
-  timeOfDay: TimeOfDaySelection
+  timeOfDay: ResolvedTimeOfDay
 ): LiveSunOutput {
   const sunProfile = patio.sun_profile as SunProfile | null;
   const baseFields = getSunDerivedFields(sunProfile);
@@ -141,7 +141,7 @@ export function computeLiveSunScore(
  */
 export function computeAllLiveScores(
   patios: PatioWithStatus[],
-  timeOfDay: TimeOfDaySelection
+  timeOfDay: ResolvedTimeOfDay
 ): PatioWithLiveScore[] {
   return patios.map((patio) => {
     const liveOutput = computeLiveSunScore(patio, timeOfDay);
@@ -162,7 +162,7 @@ export function sortByLiveScore(patios: PatioWithLiveScore[]): PatioWithLiveScor
 /**
  * Time of day display labels
  */
-export const TIME_OF_DAY_LABELS: Record<TimeOfDaySelection, string> = {
+export const TIME_OF_DAY_LABELS: Record<ResolvedTimeOfDay, string> = {
   morning: "Morning",
   midday: "Midday", 
   afternoon: "Afternoon",

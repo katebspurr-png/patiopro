@@ -2,14 +2,14 @@ import { PatioCard } from "./PatioCard";
 import type { PatioWithStatus, ConfidenceLevel, SunStatus } from "@/types/patio";
 import { Skeleton } from "@/components/ui/skeleton";
 import { computeAllLiveScores, sortByLiveScore, type PatioWithLiveScore } from "@/lib/live-sun-score";
-import type { TimeOfDaySelection } from "@/hooks/useTimeOfDay";
+import type { ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useMemo } from "react";
 
 interface PatioListProps {
   patios: PatioWithStatus[];
   isLoading?: boolean;
   onPatioClick?: (patio: PatioWithLiveScore) => void;
-  timeOfDay?: TimeOfDaySelection;
+  timeOfDay?: ResolvedTimeOfDay;
 }
 
 export function PatioList({ patios, isLoading, onPatioClick, timeOfDay = "midday" }: PatioListProps) {
