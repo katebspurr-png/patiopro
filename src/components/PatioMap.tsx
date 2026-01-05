@@ -31,15 +31,16 @@ function escapeHtml(unsafe: string): string {
 
 const STORAGE_KEY = 'mapbox_token';
 
-// Mapbox public tokens start with 'pk.' followed by base64-like JWT segments
-// Format: pk.{base64}.{base64} where base64 can include alphanumeric, _, -, and .
-const MAPBOX_TOKEN_REGEX = /^pk\.[a-zA-Z0-9_\-\.]{50,300}$/;
-const MAX_TOKEN_LENGTH = 350;
+// Mapbox public tokens typically start with 'pk.' and may include multiple dot-separated segments.
+// Avoid overly strict validation (Mapbox token formats can change). We only enforce:
+// - starts with "pk."
+// - sane length bounds
+const MIN_TOKEN_LENGTH = 50;
+const MAX_TOKEN_LENGTH = 1000;
 
 function isValidMapboxToken(token: string): boolean {
   const trimmed = token.trim();
-  // Basic format check: starts with pk. and reasonable length
-  return trimmed.length >= 50 && trimmed.length <= MAX_TOKEN_LENGTH && MAPBOX_TOKEN_REGEX.test(trimmed);
+  return trimmed.startsWith('pk.') && trimmed.length >= MIN_TOKEN_LENGTH && trimmed.length <= MAX_TOKEN_LENGTH;
 }
 
 export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMapProps) {
@@ -95,10 +96,18 @@ export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMap
 
       map.current.on('load', () => setMapReady(true));
       
-      // Only clear token on authentication errors, not all errors
+      // Only clear token on clear "invalid token" authentication failures.
+      // Some Mapbox/network/style errors mention "access token" even when the token is fine.
       map.current.on('error', (e) => {
-        const errorMessage = e.error?.message || '';
-        if (errorMessage.includes('access token') || errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+        const errorMessage = String(e.error?.message || '');
+        const status = (e.error as any)?.status;
+
+        const looksLikeInvalidToken =
+          status === 401 ||
+          /invalid access token/i.test(errorMessage) ||
+          /access token is not valid/i.test(errorMessage);
+
+        if (looksLikeInvalidToken) {
           console.error('Mapbox token authentication failed:', e);
           localStorage.removeItem(STORAGE_KEY);
           setToken('');
