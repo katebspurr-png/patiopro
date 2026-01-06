@@ -158,7 +158,20 @@ export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMap
       `;
       
       if (patio.currentStatus === 'sunny' || isHighlighted) {
-        el.innerHTML = `<svg width="${isHighlighted ? '20' : '16'}" height="${isHighlighted ? '20' : '16'}" viewBox="0 0 24 24" fill="white" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>`;
+        // Use DOM API instead of innerHTML to prevent XSS
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', isHighlighted ? '20' : '16');
+        svg.setAttribute('height', isHighlighted ? '20' : '16');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'white');
+        svg.setAttribute('stroke', 'white');
+        svg.setAttribute('stroke-width', '2');
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '12');
+        circle.setAttribute('cy', '12');
+        circle.setAttribute('r', '4');
+        svg.appendChild(circle);
+        el.appendChild(svg);
       }
 
       el.addEventListener('mouseenter', () => {
