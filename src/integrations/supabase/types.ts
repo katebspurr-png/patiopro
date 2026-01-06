@@ -393,6 +393,10 @@ export type Database = {
           sun_score_reason: string
         }[]
       }
+      recalculate_sun_outputs_internal: {
+        Args: { p_patio_id: string; p_time_of_day?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "user"
