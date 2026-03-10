@@ -26,21 +26,21 @@ const TIME_OPTIONS: { value: TimeOfDaySelection; icon: typeof Sun }[] = [
 
 export function TimeOfDayToggle({ selectedTime, onTimeChange }: TimeOfDayToggleProps) {
   const currentTimeBucket = getCurrentTimeOfDay();
-  
+
   return (
-    <div className="bg-background/95 backdrop-blur border rounded-lg shadow-lg p-1 flex gap-0.5">
+    <div className="bg-background/95 backdrop-blur-xl border border-border/40 rounded-xl shadow-lg p-1 flex gap-0.5">
       {TIME_OPTIONS.map(({ value, icon: Icon }) => {
         const isSelected = selectedTime === value;
         const isNow = value === "now";
-        
+
         return (
           <button
             key={value}
             onClick={() => onTimeChange(value)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200",
               isSelected
-                ? "bg-primary text-primary-foreground shadow-sm"
+                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted"
             )}
           >

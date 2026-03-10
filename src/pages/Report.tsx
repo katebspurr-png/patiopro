@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Sun, CloudSun, Cloud, Wind, Users, Check } from "lucide-react";
+import { ArrowLeft, Sun, CloudSun, Cloud, Wind, Users, Check, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -22,16 +22,18 @@ export default function Report() {
   const [searchParams] = useSearchParams();
   const preselectedPatioId = searchParams.get("patio");
   const { toast } = useToast();
-  
+
   const { data: patios, isLoading: patiosLoading } = usePatios();
-  
+
   const [patioId, setPatioId] = useState(preselectedPatioId || "");
   const [status, setStatus] = useState<SunStatus | null>(null);
   const [wind, setWind] = useState<WindStatus | null>(null);
   const [busy, setBusy] = useState<BusyStatus | null>(null);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  
+
+  const currentStep = !patioId ? 1 : !status ? 2 : 3;
+
   const handleSubmit = async () => {
     if (!patioId || !status) {
       toast({
@@ -42,7 +44,6 @@ export default function Report() {
       return;
     }
 
-    // Validate notes
     const trimmedNotes = notes.trim();
     const notesResult = notesSchema.safeParse(trimmedNotes || undefined);
     if (!notesResult.success) {
@@ -53,9 +54,9 @@ export default function Report() {
       });
       return;
     }
-    
+
     setSubmitting(true);
-    
+
     const { error } = await supabase.from("sun_reports").insert({
       patio_id: patioId,
       status,
@@ -64,9 +65,9 @@ export default function Report() {
       notes: trimmedNotes || null,
       is_anonymous: true,
     });
-    
+
     setSubmitting(false);
-    
+
     if (error) {
       toast({
         title: "Error",
@@ -75,44 +76,62 @@ export default function Report() {
       });
       return;
     }
-    
+
     toast({
       title: "Thanks!",
       description: "Your sun report has been submitted.",
     });
-    
+
     navigate(preselectedPatioId ? `/patio/${preselectedPatioId}` : "/");
   };
-  
+
   const statusOptions = [
-    { value: "sunny" as const, label: "Sunny", icon: Sun, className: "bg-sunny text-sunny-foreground" },
-    { value: "part_shade" as const, label: "Part Shade", icon: CloudSun, className: "bg-mixed text-mixed-foreground" },
-    { value: "shaded" as const, label: "Shaded", icon: Cloud, className: "bg-shaded text-shaded-foreground" },
+    { value: "sunny" as const, label: "Sunny", description: "Full sun on patio", icon: Sun, gradient: "from-amber-400 to-orange-500", bgSelected: "bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 border-amber-300 dark:border-amber-700" },
+    { value: "part_shade" as const, label: "Part Shade", description: "Mixed sun and shade", icon: CloudSun, gradient: "from-violet-400 to-purple-500", bgSelected: "bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-950/40 dark:to-purple-950/40 border-violet-300 dark:border-violet-700" },
+    { value: "shaded" as const, label: "Shaded", description: "Mostly or fully shaded", icon: Cloud, gradient: "from-slate-400 to-slate-500", bgSelected: "bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/40 dark:to-gray-950/40 border-slate-300 dark:border-slate-600" },
   ];
-  
+
+  const selectedPatio = patios?.find((p) => p.id === patioId);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background page-enter">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background border-b">
-        <div className="flex items-center gap-2 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/40">
+        <div className="flex items-center gap-3 p-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full h-9 w-9">
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-display font-semibold text-lg">Add Sun Report</h1>
+          <div className="flex-1">
+            <h1 className="font-display font-semibold text-lg">Add Sun Report</h1>
+            <p className="text-xs text-muted-foreground">Quick 10-second update</p>
+          </div>
+        </div>
+
+        {/* Step indicator */}
+        <div className="px-4 pb-3 flex gap-1.5">
+          {[1, 2, 3].map((step) => (
+            <div
+              key={step}
+              className={cn(
+                "h-1 flex-1 rounded-full transition-all duration-500",
+                step < currentStep
+                  ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                  : step === currentStep
+                  ? "bg-amber-400/60"
+                  : "bg-muted"
+              )}
+            />
+          ))}
         </div>
       </div>
-      
+
       <div className="p-4 max-w-lg mx-auto space-y-6">
-        <p className="text-sm text-muted-foreground">
-          Add a quick update (10 seconds).
-        </p>
-        
         {/* Patio Selection */}
         {!preselectedPatioId && (
           <div className="space-y-2">
-            <Label>Select patio</Label>
+            <Label className="text-sm font-semibold">Which patio are you at?</Label>
             <Select value={patioId} onValueChange={setPatioId}>
-              <SelectTrigger>
+              <SelectTrigger className="rounded-xl h-12">
                 <SelectValue placeholder="Choose a patio..." />
               </SelectTrigger>
               <SelectContent>
@@ -125,18 +144,26 @@ export default function Report() {
             </Select>
           </div>
         )}
-        
-        {preselectedPatioId && patios && (
-          <Card className="p-3 bg-muted/50">
-            <p className="text-sm font-medium">
-              {patios.find((p) => p.id === preselectedPatioId)?.name || "Selected patio"}
-            </p>
+
+        {preselectedPatioId && selectedPatio && (
+          <Card className="p-4 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20 border-amber-200/50 dark:border-amber-800/30">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-sm">
+                <Sun className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold">{selectedPatio.name}</p>
+                {selectedPatio.neighborhood && (
+                  <p className="text-xs text-muted-foreground">{selectedPatio.neighborhood}</p>
+                )}
+              </div>
+            </div>
           </Card>
         )}
-        
+
         {/* Sun Status */}
         <div className="space-y-3">
-          <Label>How's the sun right now?</Label>
+          <Label className="text-sm font-semibold">How's the sun right now?</Label>
           <div className="grid grid-cols-3 gap-3">
             {statusOptions.map((option) => {
               const Icon = option.icon;
@@ -146,26 +173,39 @@ export default function Report() {
                   key={option.value}
                   onClick={() => setStatus(option.value)}
                   className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all",
+                    "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-200",
                     isSelected
-                      ? `${option.className} border-transparent`
-                      : "border-border hover:border-primary/30"
+                      ? `${option.bgSelected} shadow-md`
+                      : "border-border hover:border-primary/30 hover:shadow-sm"
                   )}
                 >
-                  <Icon className="h-8 w-8" />
-                  <span className="text-sm font-medium">{option.label}</span>
-                  {isSelected && <Check className="h-4 w-4" />}
+                  <div className={cn(
+                    "flex items-center justify-center h-12 w-12 rounded-full transition-all",
+                    isSelected
+                      ? `bg-gradient-to-br ${option.gradient} text-white shadow-sm`
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <span className="text-sm font-semibold">{option.label}</span>
+                  <span className="text-[10px] text-muted-foreground leading-tight text-center">{option.description}</span>
+                  {isSelected && (
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 text-white">
+                      <Check className="h-3 w-3" />
+                    </div>
+                  )}
                 </button>
               );
             })}
           </div>
         </div>
-        
+
         {/* Optional: Wind */}
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <Wind className="h-4 w-4" />
-            Wind (optional)
+          <Label className="flex items-center gap-2 text-sm font-semibold">
+            <Wind className="h-4 w-4 text-muted-foreground" />
+            Wind
+            <span className="text-xs font-normal text-muted-foreground">(optional)</span>
           </Label>
           <div className="flex gap-2">
             {(["calm", "breezy", "windy"] as const).map((option) => (
@@ -173,6 +213,7 @@ export default function Report() {
                 key={option}
                 variant={wind === option ? "secondary" : "outline"}
                 size="sm"
+                className={cn("rounded-xl flex-1 transition-all", wind === option && "shadow-sm")}
                 onClick={() => setWind(wind === option ? null : option)}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -180,12 +221,13 @@ export default function Report() {
             ))}
           </div>
         </div>
-        
+
         {/* Optional: Busy */}
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            How busy? (optional)
+          <Label className="flex items-center gap-2 text-sm font-semibold">
+            <Users className="h-4 w-4 text-muted-foreground" />
+            How busy?
+            <span className="text-xs font-normal text-muted-foreground">(optional)</span>
           </Label>
           <div className="flex gap-2">
             {(["quiet", "medium", "busy"] as const).map((option) => (
@@ -193,6 +235,7 @@ export default function Report() {
                 key={option}
                 variant={busy === option ? "secondary" : "outline"}
                 size="sm"
+                className={cn("rounded-xl flex-1 transition-all", busy === option && "shadow-sm")}
                 onClick={() => setBusy(busy === option ? null : option)}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -200,10 +243,13 @@ export default function Report() {
             ))}
           </div>
         </div>
-        
+
         {/* Notes */}
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes (optional)</Label>
+          <Label htmlFor="notes" className="text-sm font-semibold">
+            Notes
+            <span className="text-xs font-normal text-muted-foreground ml-1">(optional)</span>
+          </Label>
           <Textarea
             id="notes"
             placeholder="Any additional details..."
@@ -211,20 +257,31 @@ export default function Report() {
             onChange={(e) => setNotes(e.target.value.slice(0, MAX_NOTES_LENGTH))}
             rows={3}
             maxLength={MAX_NOTES_LENGTH}
+            className="rounded-xl resize-none"
           />
           <p className="text-xs text-muted-foreground text-right">
             {notes.length}/{MAX_NOTES_LENGTH}
           </p>
         </div>
-        
+
         {/* Submit */}
         <Button
-          className="w-full"
+          className="w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-200/30 dark:shadow-amber-900/20"
           size="lg"
           onClick={handleSubmit}
           disabled={!patioId || !status || submitting}
         >
-          {submitting ? "Submitting..." : "Submit Report"}
+          {submitting ? (
+            <>
+              <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Submitting...
+            </>
+          ) : (
+            <>
+              <Send className="h-4 w-4 mr-2" />
+              Submit Report
+            </>
+          )}
         </Button>
       </div>
     </div>
