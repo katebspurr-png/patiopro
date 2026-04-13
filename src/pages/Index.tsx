@@ -213,6 +213,16 @@ const Index = () => {
                 {/* Favorites + Tag chips in one row */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   <button
+                    onClick={() => setSunnyOnly(!sunnyOnly)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      sunnyOnly
+                        ? "bg-[#C87533] text-white"
+                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                    }`}
+                  >
+                    Sunny Only
+                  </button>
+                  <button
                     onClick={() => setFavoritesOnly(!favoritesOnly)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       favoritesOnly
