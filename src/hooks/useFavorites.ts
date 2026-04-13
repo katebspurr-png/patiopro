@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import {
+  isLocalFavorite,
+  addLocalFavorite,
+  removeLocalFavorite,
+} from "@/lib/local-favorites";
 
 function useCurrentUserId() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -21,32 +26,48 @@ export function useIsFavorite(patioId: string | undefined) {
   const { data: isFavorite = false, isLoading } = useQuery({
     queryKey: ["favorite", patioId, userId],
     queryFn: async () => {
-      if (!userId || !patioId) return false;
-      const { data } = await supabase
-        .from("favorites")
-        .select("id")
-        .eq("patio_id", patioId)
-        .eq("user_id", userId)
-        .maybeSingle();
-      return !!data;
+      if (!patioId) return false;
+      // Check localStorage first
+      if (isLocalFavorite(patioId)) return true;
+      // Check Supabase if logged in
+      if (userId) {
+        const { data } = await supabase
+          .from("favorites")
+          .select("id")
+          .eq("patio_id", patioId)
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (data) return true;
+      }
+      return false;
     },
-    enabled: !!userId && !!patioId,
+    enabled: !!patioId,
   });
 
   const toggleMutation = useMutation({
     mutationFn: async () => {
-      if (!userId || !patioId) throw new Error("Not authenticated");
+      if (!patioId) throw new Error("No patio ID");
 
       if (isFavorite) {
-        await supabase
-          .from("favorites")
-          .delete()
-          .eq("patio_id", patioId)
-          .eq("user_id", userId);
+        // Remove from localStorage
+        removeLocalFavorite(patioId);
+        // Remove from Supabase if logged in
+        if (userId) {
+          await supabase
+            .from("favorites")
+            .delete()
+            .eq("patio_id", patioId)
+            .eq("user_id", userId);
+        }
       } else {
-        await supabase
-          .from("favorites")
-          .insert({ patio_id: patioId, user_id: userId });
+        // Add to localStorage
+        addLocalFavorite(patioId);
+        // Add to Supabase if logged in
+        if (userId) {
+          await supabase
+            .from("favorites")
+            .upsert({ patio_id: patioId, user_id: userId }, { onConflict: "user_id,patio_id" });
+        }
       }
     },
     onMutate: async () => {
@@ -60,6 +81,7 @@ export function useIsFavorite(patioId: string | undefined) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["favorite", patioId, userId] });
+      queryClient.invalidateQueries({ queryKey: ["favoriteIds"] });
     },
   });
 

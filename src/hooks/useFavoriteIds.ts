@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { getLocalFavorites } from "@/lib/local-favorites";
 
 export function useFavoriteIds() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -16,14 +17,16 @@ export function useFavoriteIds() {
   const { data: favoriteIds = [], isLoading } = useQuery({
     queryKey: ["favoriteIds", userId],
     queryFn: async () => {
-      if (!userId) return [];
+      const localIds = getLocalFavorites();
+      if (!userId) return localIds;
+      // Fetch from Supabase and merge
       const { data } = await supabase
         .from("favorites")
         .select("patio_id")
         .eq("user_id", userId);
-      return (data ?? []).map((r) => r.patio_id);
+      const remoteIds = (data ?? []).map((r) => r.patio_id);
+      return [...new Set([...localIds, ...remoteIds])];
     },
-    enabled: !!userId,
   });
 
   return { favoriteIds, isLoggedIn: !!userId, isLoading };
