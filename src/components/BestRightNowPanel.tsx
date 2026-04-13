@@ -61,7 +61,7 @@ function RightNowResultCard({
     <Card className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h4 className="font-display font-semibold truncate">{patio.name}</h4>
+          <h4 className="font-sans font-semibold truncate">{patio.name}</h4>
           <p className="text-sm text-muted-foreground truncate">
             {patio.neighborhood || patio.address || "Downtown Halifax"}
           </p>
@@ -73,7 +73,7 @@ function RightNowResultCard({
       </div>
       
       <div className="mt-3 space-y-1">
-        <p className="text-sm font-medium text-primary">{whyNowText}</p>
+        <p className="text-sm font-medium text-[#C87533]">{whyNowText}</p>
         <p className="text-xs text-muted-foreground">{patio.best_time_to_visit || "Check recent visits"}</p>
       </div>
       
@@ -106,7 +106,7 @@ function NearYouResultCard({
     <Card className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h4 className="font-display font-semibold truncate">{patio.name}</h4>
+          <h4 className="font-sans font-semibold truncate">{patio.name}</h4>
           <p className="text-sm text-muted-foreground truncate">
             {patio.neighborhood || patio.address || "Downtown Halifax"}
           </p>
@@ -194,7 +194,7 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
           <div>
             {isNearYouMode ? (
               <>
-                <h2 className="font-display font-semibold text-lg">Great patios near you</h2>
+                <h2 className="font-sans font-semibold text-lg">Great patios near you</h2>
                 <p className="text-sm text-muted-foreground">
                   {rightNow.shouldFallback && !manualMode && rightNow.fallbackReason
                     ? rightNow.fallbackReason
@@ -203,7 +203,7 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
               </>
             ) : (
               <>
-                <h2 className="font-display font-semibold text-lg">Best patios right now</h2>
+                <h2 className="font-sans font-semibold text-lg">Best patios right now</h2>
                 <p className="text-sm text-muted-foreground">
                   {getTimeSubtext(rightNow.currentTimeBucket)}
                 </p>

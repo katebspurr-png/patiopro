@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap');
 
-/* PatioPro Halifax - Sunny, warm design system */
+/* PatioPro Halifax - Clean editorial design system */
 
 @layer base {
   :root {
-    --background: 45 33% 97%;
+    --background: 48 20% 97%;
     --foreground: 30 10% 15%;
 
     --card: 0 0% 100%;
@@ -17,24 +17,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 30 10% 15%;
 
-    --primary: 38 92% 50%;
-    --primary-foreground: 30 10% 10%;
+    --primary: 30 64% 49%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 199 89% 48%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 45 20% 90%;
-    --muted-foreground: 30 10% 45%;
+    --muted: 45 20% 92%;
+    --muted-foreground: 30 5% 45%;
 
-    --accent: 24 95% 53%;
+    --accent: 30 64% 49%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
-    --ring: 38 92% 50%;
+    --border: 30 10% 88%;
+    --input: 30 10% 88%;
+    --ring: 30 64% 49%;
 
     --radius: 0.75rem;
 
@@ -57,7 +57,11 @@
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 38 92% 50%;
+    --sidebar-ring: 30 64% 49%;
+
+    /* Brand color direct reference */
+    --brand: #C87533;
+    --brand-hover: #A86020;
   }
 
   .dark {
@@ -70,8 +74,8 @@
     --popover: 30 15% 15%;
     --popover-foreground: 45 20% 95%;
 
-    --primary: 38 92% 50%;
-    --primary-foreground: 30 10% 10%;
+    --primary: 30 64% 49%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 199 70% 45%;
     --secondary-foreground: 0 0% 100%;
@@ -79,7 +83,7 @@
     --muted: 30 15% 20%;
     --muted-foreground: 45 15% 65%;
 
-    --accent: 24 95% 53%;
+    --accent: 30 64% 49%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
@@ -87,7 +91,7 @@
 
     --border: 30 15% 25%;
     --input: 30 15% 25%;
-    --ring: 38 92% 50%;
+    --ring: 30 64% 49%;
 
     --sunny: 45 100% 51%;
     --sunny-foreground: 30 10% 10%;
@@ -102,12 +106,12 @@
 
     --sidebar-background: 30 15% 10%;
     --sidebar-foreground: 45 20% 95%;
-    --sidebar-primary: 38 92% 50%;
-    --sidebar-primary-foreground: 30 10% 10%;
+    --sidebar-primary: 30 64% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 30 15% 20%;
     --sidebar-accent-foreground: 45 20% 95%;
     --sidebar-border: 30 15% 25%;
-    --sidebar-ring: 38 92% 50%;
+    --sidebar-ring: 30 64% 49%;
   }
 }
 
@@ -118,20 +122,6 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
-  }
-}
-
-@layer utilities {
-  .font-display {
-    font-family: 'Fraunces', serif;
-  }
-  
-  .font-sans {
-    font-family: 'DM Sans', sans-serif;
   }
 }
 

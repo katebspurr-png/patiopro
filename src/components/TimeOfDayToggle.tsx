@@ -40,8 +40,8 @@ export function TimeOfDayToggle({ selectedTime, onTimeChange }: TimeOfDayToggleP
             className={cn(
               "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
               isSelected
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "bg-[#C87533] text-white shadow-sm"
+                : "text-gray-400 hover:text-gray-800 hover:bg-muted"
             )}
           >
             <Icon className="h-3.5 w-3.5" />

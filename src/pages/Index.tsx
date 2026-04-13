@@ -132,7 +132,7 @@ const Index = () => {
         {/* Weather Pill — top left */}
         {weather && (
           <div className="absolute top-3 left-3 z-[1000] rounded-full bg-white/90 backdrop-blur border shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[#C87533] shrink-0" />
             <span className="font-medium">{weather.temperature}°C</span>
             <span className="text-muted-foreground">·</span>
             <span>{getWeatherLabel(weather.weatherCode).label}</span>
@@ -148,7 +148,7 @@ const Index = () => {
           className="absolute bottom-[200px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
           title="Best Right Now"
         >
-          <Star className="h-4 w-4 text-amber-500" />
+          <Star className="h-4 w-4 text-[#C87533]" />
         </button>
 
         {/* Bottom Drawer */}
@@ -183,10 +183,10 @@ const Index = () => {
                     id="sunny-only"
                     checked={sunnyOnly}
                     onCheckedChange={setSunnyOnly}
-                    className="data-[state=checked]:bg-amber-500"
+                    className="data-[state=checked]:bg-[#C87533]"
                   />
                   <Label htmlFor="sunny-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
-                    <Sun className="h-4 w-4 text-amber-500" />
+                    <Sun className="h-4 w-4 text-[#C87533]" />
                     Sunny Only
                   </Label>
                 </div>
@@ -215,7 +215,7 @@ const Index = () => {
                       variant={selectedTags.includes(tag) ? "default" : "outline"}
                       className={`cursor-pointer whitespace-nowrap text-xs px-2 py-1 transition-all ${
                         selectedTags.includes(tag)
-                          ? "bg-primary text-primary-foreground shadow-md"
+                          ? "bg-[#C87533] text-white shadow-md"
                           : "bg-muted hover:bg-muted/80"
                       }`}
                       onClick={() => toggleTag(tag)}
@@ -266,8 +266,8 @@ const Index = () => {
                   onClick={() => setSelectedNeighborhood("all")}
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     selectedNeighborhood === "all"
-                      ? "bg-amber-500 text-white"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      ? "bg-[#C87533] text-white"
+                      : "bg-muted text-gray-400 hover:bg-muted/80"
                   }`}
                 >
                   All
@@ -278,8 +278,8 @@ const Index = () => {
                     onClick={() => setSelectedNeighborhood(n)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedNeighborhood === n
-                        ? "bg-amber-500 text-white"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        ? "bg-[#C87533] text-white"
+                        : "bg-muted text-gray-400 hover:bg-muted/80"
                     }`}
                   >
                     {n}
@@ -296,7 +296,7 @@ const Index = () => {
                     className="w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
                   >
                     <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
-                    <span className="bg-amber-100 text-amber-700 font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
+                    <span className="bg-[#C87533]/15 text-[#C87533] font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">

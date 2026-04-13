@@ -21,10 +21,6 @@ export const ALLOWED_TAGS = [
 
 export type AllowedTag = typeof ALLOWED_TAGS[number];
 
-/**
- * Single source of truth mapping from sun_profile to derived fields.
- * This mirrors the database trigger logic.
- */
 export function getSunDerivedFields(sunProfile: SunProfile | null | undefined): SunDerivedFields {
   switch (sunProfile) {
     case 'morning':
@@ -73,9 +69,6 @@ export function getSunDerivedFields(sunProfile: SunProfile | null | undefined): 
   }
 }
 
-/**
- * Normalize tags: filter to allowlist only
- */
 export function normalizeTags(tags: string[] | null | undefined): string[] {
   if (!tags) return [];
   return tags
@@ -83,12 +76,6 @@ export function normalizeTags(tags: string[] | null | undefined): string[] {
     .filter((tag): tag is AllowedTag => ALLOWED_TAGS.includes(tag as AllowedTag));
 }
 
-/**
- * Get sun score color class based on score value
- */
 export function getSunScoreColor(score: number): string {
-  if (score >= 90) return 'text-amber-500';
-  if (score >= 75) return 'text-yellow-500';
-  if (score >= 60) return 'text-orange-400';
-  return 'text-muted-foreground';
+  return 'text-[#C87533]';
 }
