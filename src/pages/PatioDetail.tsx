@@ -267,44 +267,44 @@ export default function PatioDetail() {
       <div className="px-5 py-4 border-b border-[#E5E0D8] space-y-3">
         {patio.address && (
           <div className="flex items-start gap-3">
-            <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
-              <MapPin className="h-3.5 w-3.5 text-gray-400" />
+            <div className="shrink-0 flex items-center justify-center" style={{ width: 32, height: 32, backgroundColor: '#EDE8E0', borderRadius: 8 }}>
+              <MapPin className="h-4 w-4" style={{ color: '#9A9490' }} />
             </div>
             <div>
-              <p className="text-[14px] text-gray-800">{patio.address}</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1A' }}>{patio.address}</p>
               {patio.neighborhood && (
-                <p className="text-[13px] text-gray-400">{patio.neighborhood}</p>
+                <p style={{ fontSize: 12, color: '#9A9490' }}>{patio.neighborhood}</p>
               )}
             </div>
           </div>
         )}
         {patio.hours && (
           <div className="flex items-center gap-3">
-            <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
-              <Clock className="h-3.5 w-3.5 text-gray-400" />
+            <div className="shrink-0 flex items-center justify-center" style={{ width: 32, height: 32, backgroundColor: '#EDE8E0', borderRadius: 8 }}>
+              <Clock className="h-4 w-4" style={{ color: '#9A9490' }} />
             </div>
-            <p className="text-[14px] text-gray-800">{patio.hours}</p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1A' }}>{patio.hours}</p>
           </div>
         )}
         {patio.sun_notes && (
           <div className="flex items-start gap-3">
-            <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
-              <Sun className="h-3.5 w-3.5 text-gray-400" />
+            <div className="shrink-0 flex items-center justify-center" style={{ width: 32, height: 32, backgroundColor: '#EDE8E0', borderRadius: 8 }}>
+              <Sun className="h-4 w-4" style={{ color: '#9A9490' }} />
             </div>
             <div>
-              <p className="text-[14px] text-gray-800">{patio.sun_notes}</p>
-              <p className="text-[13px] text-gray-400">Sun profile</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1A' }}>{patio.sun_notes}</p>
+              <p style={{ fontSize: 12, color: '#9A9490' }}>Sun profile</p>
             </div>
           </div>
         )}
         {/* Wind exposure row */}
         <div className="flex items-center gap-3">
-          <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
-            <Wind className="h-3.5 w-3.5 text-gray-400" />
+          <div className="shrink-0 flex items-center justify-center" style={{ width: 32, height: 32, backgroundColor: '#EDE8E0', borderRadius: 8 }}>
+            <Wind className="h-4 w-4" style={{ color: '#9A9490' }} />
           </div>
           <div>
-            <p className="text-[14px] text-gray-800">{windExposureLabel}</p>
-            <p className="text-[13px] text-gray-400">Wind exposure</p>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1A' }}>{windExposureLabel}</p>
+            <p style={{ fontSize: 12, color: '#9A9490' }}>Wind exposure</p>
           </div>
         </div>
       </div>
@@ -314,7 +314,7 @@ export default function PatioDetail() {
         <div className="px-5 py-4 border-b border-[#E5E0D8]">
           <div className="flex flex-wrap gap-1.5">
             {patio.tags.map((tag) => (
-              <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-md border border-gray-200">
+              <span key={tag} className="text-xs px-3 py-1.5 rounded-md font-medium" style={{ backgroundColor: '#1C1C1A', color: '#FFFFFF' }}>
                 {tag.replace("_", " ")}
               </span>
             ))}
@@ -326,19 +326,22 @@ export default function PatioDetail() {
       <div className="px-5 py-4 border-b border-[#E5E0D8]">
         <p className="text-[11px] uppercase tracking-wider font-bold mb-3" style={{ color: '#1C1C1A' }}>Recent reports</p>
         {recentReports.length === 0 ? (
-          <p className="text-[14px] text-gray-400">No reports yet. Be the first!</p>
+          <div className="flex flex-col items-center py-6">
+            <Sun className="h-8 w-8 mb-2" style={{ color: '#C87533' }} />
+            <p style={{ fontSize: 14, color: '#9A9490' }}>No reports yet. Be the first!</p>
+          </div>
         ) : (
-          <div className="divide-y">
+          <div className="space-y-2">
             {recentReports.map((report) => (
-              <div key={report.id} className="py-3 first:pt-0 last:pb-0">
+              <div key={report.id} className="rounded-lg" style={{ backgroundColor: '#EDE8E0', padding: 12 }}>
                 <div className="flex items-center justify-between">
                   <SunStatusBadge status={report.status} size="sm" />
-                  <span className="text-[13px] text-gray-400">
+                  <span style={{ fontSize: 12, color: '#9A9490' }}>
                     {formatTimeAgo(report.reported_at || report.created_at || "")}
                   </span>
                 </div>
                 {report.notes && (
-                  <p className="text-[14px] text-gray-400 mt-1.5">{report.notes}</p>
+                  <p style={{ fontSize: 13, color: '#1C1C1A', marginTop: 6 }}>{report.notes}</p>
                 )}
               </div>
             ))}
@@ -350,7 +353,8 @@ export default function PatioDetail() {
       <div className="px-5 py-5">
         <button
           onClick={() => navigate(`/report?patio=${patio.id}`)}
-          className="w-full bg-[#C87533] hover:bg-[#A86020] text-white font-medium py-3 rounded-xl transition-colors text-sm"
+          className="w-full rounded-xl transition-colors text-sm"
+          style={{ backgroundColor: '#1C1C1A', color: '#FFFFFF', fontWeight: 600, height: 52 }}
         >
           Add a sun report
         </button>
