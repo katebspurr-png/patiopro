@@ -26,15 +26,15 @@ function createMarkerIcon(patio: PatioWithStatus, isHighlighted: boolean): L.Div
   if (score >= 70) {
     bg = '#C87533';
     textColor = '#fff';
-    borderColor = '#fff';
+    borderColor = '#E8B86D';
   } else if (score >= 40) {
     bg = '#E8B86D';
-    textColor = '#fff';
-    borderColor = '#E8B86D';
+    textColor = '#1C1C1A';
+    borderColor = '#F5DEB3';
   } else {
-    bg = '#E5E7EB';
-    textColor = '#6B7280';
-    borderColor = '#D1D5DB';
+    bg = '#3A3A38';
+    textColor = '#A09890';
+    borderColor = '#555550';
   }
 
   const size = isHighlighted ? 38 : 30;
