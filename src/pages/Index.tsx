@@ -113,9 +113,29 @@ const Index = () => {
       );
     }
     
+    // Advanced filters
+    if (advancedFilters.minSunScore > 0) {
+      filtered = filtered.filter(p => p.sun_score_live >= advancedFilters.minSunScore);
+    }
+    if (advancedFilters.shadeTypes.length > 0) {
+      filtered = filtered.filter(p => 
+        advancedFilters.shadeTypes.includes((p as any).shade_context || "unknown")
+      );
+    }
+    if (advancedFilters.sunProfiles.length > 0) {
+      filtered = filtered.filter(p => 
+        advancedFilters.sunProfiles.includes(p.sun_profile || "unknown")
+      );
+    }
+    if (advancedFilters.priceRanges.length > 0) {
+      filtered = filtered.filter(p => 
+        advancedFilters.priceRanges.includes((p as any).price_range || "unknown")
+      );
+    }
+    
     // Sort by live score descending
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
+  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags, advancedFilters]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
