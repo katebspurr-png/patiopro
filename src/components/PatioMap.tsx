@@ -138,7 +138,10 @@ export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMap
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
-    patios.forEach(patio => {
+    patios.forEach((patio, idx) => {
+      if (idx === 0) {
+        console.log('patio fields:', Object.keys(patio), 'sun_score_live:', (patio as any).sun_score_live, 'sun_score:', (patio as any).sun_score, 'currentStatus:', patio.currentStatus);
+      }
       const isHighlighted = highlightedIds.includes(patio.id);
       const icon = createMarkerIcon(patio, isHighlighted);
 
