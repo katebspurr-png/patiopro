@@ -38,6 +38,7 @@ const Index = () => {
   const [sunnyOnly, setSunnyOnly] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [happyHourOnly, setHappyHourOnly] = useState(false);
+  const [shelteredOnly, setShelteredOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -118,9 +119,12 @@ const Index = () => {
         happyHourMap.byPatioId[p.id] || happyHourMap.byName[p.name.toLowerCase()]
       );
     }
+    if (shelteredOnly) {
+      filtered = filtered.filter(p => (p as any).wind_exposure === 'sheltered');
+    }
     
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, happyHourOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags, happyHourMap]);
+  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, happyHourOnly, shelteredOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags, happyHourMap]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
