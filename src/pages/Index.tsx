@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, ChevronUp, ChevronDown, MapPin, Search, X, Wind } from "lucide-react";
+import { Sun, MapPin, Search, X, Wind } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import {
