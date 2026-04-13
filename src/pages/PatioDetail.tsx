@@ -140,18 +140,25 @@ export default function PatioDetail() {
           <span className="text-[40px] font-medium leading-none text-amber-600">{displayScore}</span>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Sun score</p>
-            <p className="text-sm text-foreground mt-0.5">
-              {settings?.enable_seasonal_adjustment && seasonalResult?.seasonalAdjustmentNotes
-                ? seasonalResult.seasonalAdjustmentNotes
-                : (patio.sun_score_reason || "Based on patio profile")}
-            </p>
-          </div>
-          {statusResult && (
-            <div className="ml-auto">
-              <SunStatusBadge status={statusResult.status} confidence={statusResult.confidence} size="md" />
+            <div className="flex items-center gap-2 mt-0.5">
+              <p className="text-sm text-foreground">
+                {settings?.enable_seasonal_adjustment && seasonalResult?.seasonalAdjustmentNotes
+                  ? seasonalResult.seasonalAdjustmentNotes
+                  : (patio.sun_score_reason || "Based on patio profile")}
+              </p>
+              {statusResult && (
+                <SunStatusBadge status={statusResult.status} confidence={statusResult.confidence} size="md" />
+              )}
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Low confidence note */}
+        {statusResult?.confidence === "low" && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Based on patio profile — add a report to improve accuracy.
+          </p>
+        )}
 
         {/* Confidence Level */}
         {settings?.enable_confidence_level && confidenceLevel && (
@@ -173,11 +180,6 @@ export default function PatioDetail() {
             Last report: {formatTimeAgo(statusResult.lastReportTime)}
           </p>
         )}
-        {statusResult?.confidence === "low" && (
-          <p className="text-xs text-muted-foreground mt-2">
-            Based on patio profile — add a report to improve accuracy.
-          </p>
-        )}
       </div>
 
       {/* Crowd Sun Feedback */}
@@ -193,8 +195,7 @@ export default function PatioDetail() {
       )}
 
       {/* Sun Forecast */}
-      <div className="px-5 py-4 border-b">
-        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-3">Sun forecast today</p>
+      <div className="border-b">
         <HourlyForecast />
       </div>
 
