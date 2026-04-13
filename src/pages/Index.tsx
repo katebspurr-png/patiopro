@@ -191,6 +191,22 @@ const Index = () => {
                   </Label>
                 </div>
 
+                {/* Favorites Only Toggle */}
+                {isLoggedIn && (
+                  <div className="flex items-center gap-2 px-1">
+                    <Switch
+                      id="favorites-only"
+                      checked={favoritesOnly}
+                      onCheckedChange={setFavoritesOnly}
+                      className="data-[state=checked]:bg-red-500"
+                    />
+                    <Label htmlFor="favorites-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
+                      <Heart className="h-4 w-4 text-red-500" />
+                      Favorites
+                    </Label>
+                  </div>
+                )}
+
                 {/* Tag Chips */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   {ALLOWED_TAGS.map((tag) => (
