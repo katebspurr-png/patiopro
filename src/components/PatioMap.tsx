@@ -85,7 +85,12 @@ export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMap
       subdomains: 'abcd',
     }).addTo(m);
 
-    L.control.zoom({ position: 'topright' }).addTo(m);
+    const zoomControl = L.control.zoom({ position: 'topright' }).addTo(m);
+    // Offset zoom control below weather pill
+    const zoomContainer = zoomControl.getContainer();
+    if (zoomContainer) {
+      zoomContainer.style.marginTop = '8px';
+    }
 
     // Add locate-me control
     const LocateControl = L.Control.extend({
