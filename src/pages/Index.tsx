@@ -260,8 +260,10 @@ const Index = () => {
                           <div className="text-xs text-muted-foreground truncate">
                             {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                           </div>
-                          {happyHourMap[patio.id] && (
-                            <div className="text-[11px] text-gray-400 truncate">{happyHourMap[patio.id]}</div>
+                          {(happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]) && (
+                            <div className="text-[11px] text-gray-400 truncate">
+                              {happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]}
+                            </div>
                           )}
                         </div>
                         <span className="text-xs text-muted-foreground shrink-0 max-w-[100px] truncate text-right">
