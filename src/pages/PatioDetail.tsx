@@ -1,5 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets } from "lucide-react";
+import { ChevronLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets, Heart } from "lucide-react";
+import { useIsFavorite } from "@/hooks/useFavorites";
+import { toast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
 import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
