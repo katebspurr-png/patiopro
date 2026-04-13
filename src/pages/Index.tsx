@@ -45,7 +45,7 @@ const Index = () => {
   const topPatioIds = useTopPatioIds(3);
   const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
   const { weather } = useWeather();
-  const { favoriteIds, isLoggedIn } = useFavoriteIds();
+  const { favoriteIds } = useFavoriteIds();
   
   const neighborhoods = useMemo(() => {
     const uniqueNeighborhoods = new Set<string>();
@@ -192,7 +192,7 @@ const Index = () => {
                 </div>
 
                 {/* Favorites Only Toggle */}
-                {isLoggedIn && (
+                {(
                   <div className="flex items-center gap-2 px-1">
                     <Switch
                       id="favorites-only"
