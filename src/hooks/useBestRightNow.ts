@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { usePatiosWithStatus } from "./usePatios";
 import { useAppSettings } from "./useAppSettings";
+import { useWeather } from "./useWeather";
 import { getBestRightNow, getCurrentTimeBucket, type RightNowResult } from "@/lib/right-now-score";
 
 export interface BestRightNowState {
@@ -19,6 +20,7 @@ const MINIMUM_RESULTS = 3;
 export function useBestRightNow(limit: number = 5): BestRightNowState {
   const { data: patios, isLoading: patiosLoading, error: patiosError } = usePatiosWithStatus();
   const { data: settings, isLoading: settingsLoading, error: settingsError } = useAppSettings();
+  const { weather } = useWeather();
   
   const now = useMemo(() => new Date(), []);
   const currentTimeBucket = getCurrentTimeBucket(now);
@@ -28,8 +30,8 @@ export function useBestRightNow(limit: number = 5): BestRightNowState {
       return { results: [], allRanked: [], shouldFallback: false, fallbackReason: null };
     }
     
-    const topResults = getBestRightNow(patios, settings, now, limit);
-    const allResults = getBestRightNow(patios, settings, now, patios.length);
+    const topResults = getBestRightNow(patios, settings, now, limit, weather);
+    const allResults = getBestRightNow(patios, settings, now, patios.length, weather);
     
     // Check fallback conditions
     let shouldFallback = false;
@@ -58,7 +60,7 @@ export function useBestRightNow(limit: number = 5): BestRightNowState {
     }
     
     return { results: topResults, allRanked: allResults, shouldFallback, fallbackReason };
-  }, [patios, settings, now, limit]);
+  }, [patios, settings, weather, now, limit]);
   
   return {
     results,
