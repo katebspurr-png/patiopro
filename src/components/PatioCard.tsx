@@ -1,4 +1,4 @@
-import { MapPin, Sun, Clock, Cloud } from "lucide-react";
+import { MapPin, Sun, Clock, Cloud, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SunStatusBadge } from "./SunStatusBadge";
@@ -7,6 +7,7 @@ import { getSunScoreColor } from "@/lib/sun-profile";
 import { TIME_OF_DAY_LABELS, type PatioWithLiveScore } from "@/lib/live-sun-score";
 import type { TimeOfDaySelection, ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
 import { useWeather, getWeatherLabel } from "@/hooks/useWeather";
+import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { cn } from "@/lib/utils";
 
 interface PatioCardProps {
@@ -20,6 +21,8 @@ interface PatioCardProps {
 export function PatioCard({ patio, onClick, compact = false, scoredFor, resolvedTime }: PatioCardProps) {
   const displayTags = patio.tags?.slice(0, 2) || [];
   const { weather } = useWeather();
+  const { favoriteIds } = useFavoriteIds();
+  const isFav = favoriteIds.includes(patio.id);
   
   // Use live scores
   const displayScore = patio.sun_score_live;
@@ -36,8 +39,9 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className={cn("font-display font-semibold truncate", compact ? "text-sm" : "text-base")}>
-            {patio.name}
+          <h3 className={cn("font-display font-semibold truncate flex items-center gap-1.5", compact ? "text-sm" : "text-base")}>
+            {isFav && <Heart className="h-3.5 w-3.5 shrink-0 fill-red-500 text-red-500" />}
+            <span className="truncate">{patio.name}</span>
           </h3>
           {patio.neighborhood && (
             <div className="flex items-center gap-1 text-muted-foreground mt-0.5">
