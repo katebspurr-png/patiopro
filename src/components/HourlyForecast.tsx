@@ -29,7 +29,7 @@ function PeriodCard({ period, isNow }: { period: TimePeriodForecast; isNow: bool
     <div
       className={cn(
         "flex-1 rounded-lg border p-3 text-center transition-all",
-        isNow ? "border-[#C87533]/40 bg-[#C87533]/5 shadow-sm" : "bg-muted/30"
+        isNow ? "border-[#C87533]/40 bg-[#FDF0E3] shadow-sm" : "bg-muted/30"
       )}
     >
       {isNow && (

@@ -147,6 +147,12 @@ export default function PatioDetail() {
           </div>
         </div>
 
+        {/* Best time pill */}
+        <div className="bg-[#C87533]/8 rounded-lg px-3 py-2 mt-4">
+            </div>
+          </div>
+        </div>
+
         {/* Low confidence note — single source of confidence display */}
         {statusResult?.confidence === "low" && (
           <p className="text-[13px] text-gray-400 mt-2">

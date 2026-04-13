@@ -296,7 +296,7 @@ const Index = () => {
                     className="w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
                   >
                     <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
-                    <span className="bg-[#C87533]/15 text-[#C87533] font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
+                    <span className="bg-[#C87533] text-white font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
