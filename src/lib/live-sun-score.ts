@@ -109,7 +109,7 @@ export function computeLiveSunScore(
   patio: PatioWithStatus,
   timeOfDay: ResolvedTimeOfDay,
   weather?: WeatherData | null
-): LiveSunOutput {
+): LiveSunOutput & { wind_adjusted: boolean; wind_penalty: number } {
   const sunProfile = patio.sun_profile as SunProfile | null;
   const baseFields = getSunDerivedFields(sunProfile);
   
@@ -122,9 +122,25 @@ export function computeLiveSunScore(
   
   // Apply weather adjustment
   const weatherAdj = getWeatherAdjustment(weather ?? null);
+
+  // Wind exposure adjustment
+  const windExposure = (patio as any).wind_exposure as string | null | undefined;
+  const windSpeed = weather?.windSpeed ?? 0;
+  let windPenalty = 0;
+
+  if (windExposure === "exposed") {
+    if (windSpeed > 30) windPenalty = -20;
+    else if (windSpeed > 20) windPenalty = -10;
+  } else if (windExposure === "partial") {
+    if (windSpeed > 30) windPenalty = -5;
+  } else if (windExposure === "sheltered") {
+    if (windSpeed > 20) windPenalty = 5; // comfort bonus
+  }
+
+  const windAdjusted = windPenalty !== 0;
   
   // Calculate live score, clamped 0-100
-  const rawScore = baseScore + orientationNudge + timeAlignmentBonus + weatherAdj.total;
+  const rawScore = baseScore + orientationNudge + timeAlignmentBonus + weatherAdj.total + windPenalty;
   const sun_score_live = Math.max(0, Math.min(100, rawScore));
   
   // Generate reason text with weather context
@@ -137,6 +153,14 @@ export function computeLiveSunScore(
   if (weatherAdj.label) {
     sun_score_reason_live += ` • ${weatherAdj.label}`;
   }
+
+  if (windAdjusted) {
+    if (windPenalty > 0) {
+      sun_score_reason_live += ` • Wind-sheltered`;
+    } else {
+      sun_score_reason_live += ` • Windy & exposed`;
+    }
+  }
   
   // Best time can stay static or be computed
   const best_time_to_visit_live = baseFields.best_time_to_visit;
@@ -145,6 +169,8 @@ export function computeLiveSunScore(
     sun_score_live,
     sun_score_reason_live,
     best_time_to_visit_live,
+    wind_adjusted: windAdjusted,
+    wind_penalty: windPenalty,
   };
 }
 
