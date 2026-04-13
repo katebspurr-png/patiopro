@@ -15,7 +15,6 @@ interface SunFeedbackWidgetProps {
   lastSunCheckAt: string | null;
 }
 
-// Simple device fingerprint for anti-spam (not bulletproof, but sufficient for MVP)
 function getDeviceFingerprint(): string {
   const nav = window.navigator;
   const screen = window.screen;
@@ -27,7 +26,6 @@ function getDeviceFingerprint(): string {
     new Date().getTimezoneOffset(),
   ].join('|');
   
-  // Simple hash
   let hash = 0;
   for (let i = 0; i < fingerprint.length; i++) {
     const char = fingerprint.charCodeAt(i);
@@ -55,7 +53,6 @@ export function SunFeedbackWidget({
     mutationFn: async () => {
       const deviceFingerprint = getDeviceFingerprint();
       
-      // Check anti-spam
       const { data: canSubmit, error: checkError } = await supabase
         .rpc('can_submit_sun_check', {
           p_patio_id: patioId,
@@ -68,7 +65,6 @@ export function SunFeedbackWidget({
         throw new Error('You can only submit one report per patio every 2 hours.');
       }
       
-      // Get user if logged in
       const { data: { user } } = await supabase.auth.getUser();
       
       const { error } = await supabase
@@ -89,12 +85,10 @@ export function SunFeedbackWidget({
         title: "Thanks for your feedback!",
         description: "Your sun report has been recorded.",
       });
-      // Reset state
       setStep('initial');
       setWasSunny(null);
       setTimeOfDay(null);
       setNotes('');
-      // Invalidate patio query to refresh rollup counts
       queryClient.invalidateQueries({ queryKey: ['patio', patioId] });
     },
     onError: (error) => {
@@ -125,22 +119,22 @@ export function SunFeedbackWidget({
   
   return (
     <Card className="p-4">
-      <h3 className="font-display font-semibold mb-3">Was it sunny when you visited?</h3>
+      <h3 className="font-sans font-semibold mb-3">Was it sunny when you visited?</h3>
       
       {step === 'initial' && (
         <div className="space-y-3">
           <div className="flex gap-2">
             <Button
               variant="outline"
-              className="flex-1 h-12"
+              className="flex-1 h-12 border border-gray-200 text-gray-700 rounded-xl bg-white"
               onClick={() => handleSunnyChoice(true)}
             >
-              <Sun className="h-5 w-5 mr-2 text-amber-500" />
+              <Sun className="h-5 w-5 mr-2 text-[#C87533]" />
               Yes ☀️
             </Button>
             <Button
               variant="outline"
-              className="flex-1 h-12"
+              className="flex-1 h-12 border border-gray-200 text-gray-700 rounded-xl bg-white"
               onClick={() => handleSunnyChoice(false)}
             >
               <Cloud className="h-5 w-5 mr-2 text-gray-400" />
@@ -149,7 +143,7 @@ export function SunFeedbackWidget({
           </div>
           
           {totalVotes > 0 && (
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-[13px] text-gray-400 text-center">
               Recent reports: {sunnyVotes} sunny / {notSunnyVotes} not sunny
               {lastSunCheckAt && (
                 <> · Last report: {new Date(lastSunCheckAt).toLocaleDateString()}</>
@@ -161,35 +155,22 @@ export function SunFeedbackWidget({
       
       {step === 'time' && (
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <p className="text-[14px] text-gray-400 flex items-center gap-2">
             <Clock className="h-4 w-4" />
             When did you visit?
           </p>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={() => handleTimeChoice('morning')}
-            >
-              Morning
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={() => handleTimeChoice('midday')}
-            >
-              Midday
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={() => handleTimeChoice('afternoon')}
-            >
-              Afternoon
-            </Button>
+            {(['morning', 'midday', 'afternoon'] as const).map((time) => (
+              <Button
+                key={time}
+                variant="outline"
+                size="sm"
+                className="flex-1 border border-gray-200 text-gray-700 rounded-xl bg-white"
+                onClick={() => handleTimeChoice(time)}
+              >
+                {time.charAt(0).toUpperCase() + time.slice(1)}
+              </Button>
+            ))}
           </div>
           <Button variant="ghost" size="sm" onClick={() => setStep('initial')}>
             ← Back
@@ -211,7 +192,7 @@ export function SunFeedbackWidget({
               ← Back
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 bg-[#C87533] hover:bg-[#A86020] text-white rounded-xl"
               onClick={handleSubmit}
               disabled={submitMutation.isPending}
             >
