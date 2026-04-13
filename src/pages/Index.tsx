@@ -213,6 +213,16 @@ const Index = () => {
                 {/* Favorites + Tag chips in one row */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                   <button
+                    onClick={() => setSunnyOnly(!sunnyOnly)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      sunnyOnly
+                        ? "bg-[#C87533] text-white"
+                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                    }`}
+                  >
+                    Sunny Only
+                  </button>
+                  <button
                     onClick={() => setFavoritesOnly(!favoritesOnly)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       favoritesOnly
@@ -295,53 +305,6 @@ const Index = () => {
           ) : (
             /* Collapsed state */
             <div className="px-4 space-y-2">
-              {/* Search + Sunny Only row */}
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
-                  <Input
-                    placeholder="Search patios…"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-8 pl-8 text-xs rounded-lg border-gray-200 bg-muted/50"
-                  />
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex items-center gap-1.5">
-                    <Switch
-                      id="favorites-collapsed"
-                      checked={favoritesOnly}
-                      onCheckedChange={setFavoritesOnly}
-                      className="data-[state=checked]:bg-red-500 scale-90"
-                    />
-                    <Label htmlFor="favorites-collapsed" className="flex items-center gap-1 cursor-pointer text-xs whitespace-nowrap">
-                      <Heart className="h-3.5 w-3.5 text-red-500" />
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Switch
-                      id="happy-hour-collapsed"
-                      checked={happyHourOnly}
-                      onCheckedChange={setHappyHourOnly}
-                      className="data-[state=checked]:bg-[#C87533] scale-90"
-                    />
-                    <Label htmlFor="happy-hour-collapsed" className="flex items-center gap-1 cursor-pointer text-xs whitespace-nowrap">
-                      <Clock className="h-3.5 w-3.5 text-[#C87533]" />
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Switch
-                      id="sunny-only-collapsed"
-                      checked={sunnyOnly}
-                      onCheckedChange={setSunnyOnly}
-                      className="data-[state=checked]:bg-[#C87533] scale-90"
-                    />
-                    <Label htmlFor="sunny-only-collapsed" className="flex items-center gap-1 cursor-pointer text-xs whitespace-nowrap">
-                      <Sun className="h-3.5 w-3.5 text-[#C87533]" />
-                    </Label>
-                  </div>
-                </div>
-              </div>
 
               {/* Neighborhood chips */}
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
