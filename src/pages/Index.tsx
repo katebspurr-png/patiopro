@@ -51,13 +51,14 @@ const Index = () => {
   const { data: happyHours } = useHappyHours();
 
   const happyHourMap = useMemo(() => {
-    const map: Record<string, string> = {};
+    const byPatioId: Record<string, string> = {};
+    const byName: Record<string, string> = {};
     happyHours?.forEach(hh => {
-      if (hh.patio_id && hh.time_range) {
-        map[hh.patio_id] = `Happy hour ${hh.time_range}`;
-      }
+      const label = hh.time_range ? `Happy hour ${hh.time_range}` : "Happy hour";
+      if (hh.patio_id) byPatioId[hh.patio_id] = label;
+      byName[hh.venue_name.toLowerCase()] = label;
     });
-    return map;
+    return { byPatioId, byName };
   }, [happyHours]);
   
   const neighborhoods = useMemo(() => {
