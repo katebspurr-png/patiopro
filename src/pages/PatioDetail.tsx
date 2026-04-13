@@ -76,16 +76,16 @@ export default function PatioDetail() {
   const notSunnyVotes = (patio as any).not_sunny_votes ?? 0;
   const lastSunCheckAt = (patio as any).last_sun_check_at ?? null;
 
-  const iconBtnClass = "h-9 w-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-muted transition-colors bg-white";
+  const iconBtnClass = "h-9 w-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors";
   
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-[#E5E0D8]">
+      <div className="sticky top-0 z-50 backdrop-blur border-b border-[#E5E0D8]" style={{ backgroundColor: '#1C1C1A' }}>
         <div className="flex items-center justify-between px-4 py-3">
           <button onClick={() => navigate(-1)} className="flex items-center gap-0.5 text-[#C87533] text-sm font-medium">
             <ChevronLeft className="h-5 w-5" />
-            Back
+            <span style={{ color: '#FFFFFF' }}>Back</span>
           </button>
           <div className="flex items-center gap-2">
             <button
@@ -94,7 +94,7 @@ export default function PatioDetail() {
               disabled={isToggling}
               title={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
-              <Heart className={cn("h-4 w-4 transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-gray-400")} />
+              <Heart className={cn("h-4 w-4 transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-white")} />
             </button>
             {patio.address && (
               <button
@@ -102,22 +102,22 @@ export default function PatioDetail() {
                 onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(patio.address!)}`, "_blank")}
                 title="Directions"
               >
-                <Navigation className="h-4 w-4 text-gray-400" />
+                <Navigation className="h-4 w-4 text-white" />
               </button>
             )}
             {patio.phone && (
               <button className={iconBtnClass} onClick={() => window.open(`tel:${patio.phone}`, "_self")} title="Call">
-                <Phone className="h-4 w-4 text-gray-400" />
+                <Phone className="h-4 w-4 text-white" />
               </button>
             )}
             {patio.website && (
               <button className={iconBtnClass} onClick={() => window.open(patio.website!, "_blank")} title="Website">
-                <Globe className="h-4 w-4 text-gray-400" />
+                <Globe className="h-4 w-4 text-white" />
               </button>
             )}
             {patio.instagram && (
               <button className={iconBtnClass} onClick={() => window.open(`https://instagram.com/${patio.instagram}`, "_blank")} title="Instagram">
-                <Instagram className="h-4 w-4 text-gray-400" />
+                <Instagram className="h-4 w-4 text-white" />
               </button>
             )}
           </div>
@@ -126,14 +126,14 @@ export default function PatioDetail() {
       
       {/* Hero Section */}
       <div className="px-5 pt-5 pb-4 border-b border-[#E5E0D8]">
-        <h1 className="text-[24px] font-semibold font-sans leading-tight">{patio.name}</h1>
+        <h1 className="font-sans leading-tight" style={{ fontSize: '28px', fontWeight: 700, color: '#1C1C1A' }}>{patio.name}</h1>
         <p className="text-[13px] text-gray-400 mt-1">
           {patio.neighborhood}{patio.neighborhood && patio.address ? " · " : ""}{patio.address}
         </p>
 
         {/* Score row */}
         <div className="flex items-center gap-4 mt-4">
-          <span className="text-[48px] font-semibold leading-none text-[#C87533]">{displayScore}</span>
+          <span className="leading-none" style={{ fontSize: '52px', fontWeight: 700, color: '#C87533' }}>{displayScore}</span>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Sun score</p>
             <div className="flex items-center gap-2 mt-0.5">
