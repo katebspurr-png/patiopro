@@ -156,10 +156,11 @@ const Index = () => {
           </div>
         )}
 
-        {/* Best Right Now — bottom right */}
+        {/* Best Right Now — fixed above drawer */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="absolute bottom-[280px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="fixed right-4 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+          style={{ bottom: 'calc(65vh + 12px)' }}
           title="Best Right Now"
         >
           <Star className="h-4 w-4 text-[#C87533]" />
@@ -168,7 +169,7 @@ const Index = () => {
         {/* Bottom Drawer */}
         <div 
           className={`absolute bottom-0 left-0 right-0 z-[1001] bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
-            drawerExpanded ? 'h-[70vh]' : 'h-[260px]'
+            drawerExpanded ? 'h-[65vh]' : 'h-[260px]'
           }`}
         >
           {/* Drag Handle */}
@@ -184,7 +185,7 @@ const Index = () => {
 
           {drawerExpanded ? (
             /* Expanded state */
-            <ScrollArea className="px-4 h-[calc(70vh-40px)]">
+            <ScrollArea className="px-4 h-[calc(65vh-40px)]">
               <div className="space-y-3 pb-4">
                 {/* Time of Day pill row */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
