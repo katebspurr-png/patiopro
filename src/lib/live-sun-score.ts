@@ -14,6 +14,8 @@ export interface PatioWithLiveScore extends PatioWithStatus {
   sun_score_live: number;
   sun_score_reason_live: string;
   best_time_to_visit_live: string;
+  wind_adjusted: boolean;
+  wind_penalty: number;
 }
 
 /**
