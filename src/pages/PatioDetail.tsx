@@ -77,6 +77,7 @@ export default function PatioDetail() {
   
   const sunnyVotes = (patio as any).sunny_votes ?? 0;
   const notSunnyVotes = (patio as any).not_sunny_votes ?? 0;
+  const lastSunCheckAt = (patio as any).last_sun_check_at ?? null;
   const windExposure = (patio as any).wind_exposure as string | null;
   const windExposureLabel = windExposure === 'exposed' ? 'Exposed' : windExposure === 'sheltered' ? 'Sheltered' : 'Partial shelter';
   
