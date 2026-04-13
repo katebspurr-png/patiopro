@@ -14,6 +14,8 @@ import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
 import { calculateSeasonalScore } from "@/lib/seasonal-adjustment";
 import { cn } from "@/lib/utils";
 import { useWeather, getWeatherLabel, getWindLabel, getUVLabel } from "@/hooks/useWeather";
+import { computeLiveSunScore } from "@/lib/live-sun-score";
+import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import type { SunProfile } from "@/types/patio";
 import type { ConfidenceLevel } from "@/types/app-settings";
 
@@ -25,6 +27,7 @@ export default function PatioDetail() {
   const { data: reports, isLoading: reportsLoading } = useSunReports(id);
   const { data: settings } = useAppSettings();
   const { weather } = useWeather(patio?.lat, patio?.lng);
+  const { resolvedTime } = useTimeOfDay();
   const { isFavorite, isLoggedIn, toggle: toggleFavorite, isToggling } = useIsFavorite(id);
   const { data: happyHour } = useHappyHourByPatioId(id);
   
