@@ -126,6 +126,7 @@ export type Database = {
           not_sunny_votes: number
           obstruction_context: string | null
           phone: string | null
+          price_range: Database["public"]["Enums"]["price_range_type"]
           seasonal_adjustment_notes: string | null
           shade_context:
             | Database["public"]["Enums"]["shade_context_type"]
@@ -165,6 +166,7 @@ export type Database = {
           not_sunny_votes?: number
           obstruction_context?: string | null
           phone?: string | null
+          price_range?: Database["public"]["Enums"]["price_range_type"]
           seasonal_adjustment_notes?: string | null
           shade_context?:
             | Database["public"]["Enums"]["shade_context_type"]
@@ -204,6 +206,7 @@ export type Database = {
           not_sunny_votes?: number
           obstruction_context?: string | null
           phone?: string | null
+          price_range?: Database["public"]["Enums"]["price_range_type"]
           seasonal_adjustment_notes?: string | null
           shade_context?:
             | Database["public"]["Enums"]["shade_context_type"]
@@ -402,6 +405,7 @@ export type Database = {
       app_role: "admin" | "user"
       busy_status: "quiet" | "medium" | "busy"
       confidence_level: "low" | "medium" | "high"
+      price_range_type: "low" | "medium" | "high" | "unknown"
       shade_context_type: "open" | "partial" | "enclosed" | "unknown"
       submission_status: "pending" | "approved" | "rejected"
       sun_orientation_type: "east" | "south" | "west" | "north" | "unknown"
@@ -545,6 +549,7 @@ export const Constants = {
       app_role: ["admin", "user"],
       busy_status: ["quiet", "medium", "busy"],
       confidence_level: ["low", "medium", "high"],
+      price_range_type: ["low", "medium", "high", "unknown"],
       shade_context_type: ["open", "partial", "enclosed", "unknown"],
       submission_status: ["pending", "approved", "rejected"],
       sun_orientation_type: ["east", "south", "west", "north", "unknown"],
