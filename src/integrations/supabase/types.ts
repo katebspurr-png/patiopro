@@ -208,6 +208,8 @@ export type Database = {
           tags: string[] | null
           updated_at: string | null
           website: string | null
+          wind_exposure: string
+          wind_shelter_score: number
         }
         Insert: {
           address?: string | null
@@ -248,6 +250,8 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           website?: string | null
+          wind_exposure?: string
+          wind_shelter_score?: number
         }
         Update: {
           address?: string | null
@@ -288,6 +292,8 @@ export type Database = {
           tags?: string[] | null
           updated_at?: string | null
           website?: string | null
+          wind_exposure?: string
+          wind_shelter_score?: number
         }
         Relationships: []
       }

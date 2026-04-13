@@ -10,6 +10,7 @@ export type WindStatus = "calm" | "breezy" | "windy";
 export type BusyStatus = "quiet" | "medium" | "busy";
 export type SunProfile = "morning" | "midday" | "afternoon" | "all_day" | "mixed" | "unknown";
 export type ConfidenceLevel = "high" | "medium" | "low";
+export type WindExposure = "exposed" | "partial" | "sheltered";
 
 export interface PatioWithStatus extends Patio {
   currentStatus: SunStatus | "unknown";
