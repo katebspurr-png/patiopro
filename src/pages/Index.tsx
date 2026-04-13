@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Wind, Star } from "lucide-react";
+import { Sun, Wind, Star, Heart } from "lucide-react";
+import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
