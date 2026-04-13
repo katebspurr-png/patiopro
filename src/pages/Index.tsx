@@ -37,6 +37,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [happyHourOnly, setHappyHourOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -112,9 +113,14 @@ const Index = () => {
     if (favoritesOnly && favoriteIds.length > 0) {
       filtered = filtered.filter(p => favoriteIds.includes(p.id));
     }
+    if (happyHourOnly) {
+      filtered = filtered.filter(p => 
+        happyHourMap.byPatioId[p.id] || happyHourMap.byName[p.name.toLowerCase()]
+      );
+    }
     
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags]);
+  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, happyHourOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags, happyHourMap]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -215,6 +221,16 @@ const Index = () => {
                     }`}
                   >
                     Favorites
+                  </button>
+                  <button
+                    onClick={() => setHappyHourOnly(!happyHourOnly)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      happyHourOnly
+                        ? "bg-[#C87533] text-white"
+                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                    }`}
+                  >
+                    Happy Hour
                   </button>
                   {ALLOWED_TAGS.map((tag) => (
                     <button
