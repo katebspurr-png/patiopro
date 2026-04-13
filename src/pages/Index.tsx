@@ -175,57 +175,42 @@ const Index = () => {
           />
         )}
         
-        {/* Time of Day Toggle - Top center */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-          <TimeOfDayToggle 
-            selectedTime={selectedTime} 
-            onTimeChange={setSelectedTime} 
-          />
-        </div>
-        
-        {/* Sunny Only Toggle + Filters - Floating on map */}
-        <div className="absolute top-16 left-4 z-10 flex items-center gap-2">
-          <div className="bg-background/95 backdrop-blur border rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
-            <Switch
-              id="sunny-only"
-              checked={sunnyOnly}
-              onCheckedChange={setSunnyOnly}
-              className="data-[state=checked]:bg-sunny"
-            />
-            <Label htmlFor="sunny-only" className="flex items-center gap-1.5 cursor-pointer">
-              <Sun className="h-4 w-4 text-sunny" />
-              <span className="text-sm font-medium">Sunny Only</span>
-            </Label>
-          </div>
-          <FilterPanel filters={advancedFilters} onChange={setAdvancedFilters} />
-        </div>
-
-        {/* Search and Neighborhood Filters */}
-        <div className="absolute top-[104px] left-4 z-10 flex flex-col gap-2">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search patios..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-[200px] pl-9 pr-8 bg-background/95 backdrop-blur border shadow-lg"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded"
-              >
-                <X className="h-3 w-3 text-muted-foreground" />
+        {/* Unified Filter Bar - Top center */}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 rounded-full bg-background/95 backdrop-blur border shadow-md px-3 py-1.5 flex items-center gap-2">
+          {/* Expandable Search */}
+          <div className="flex items-center">
+            {searchExpanded ? (
+              <div className="relative flex items-center">
+                <Search className="absolute left-2 h-3.5 w-3.5 text-muted-foreground" />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onBlur={() => { if (!searchQuery) setSearchExpanded(false); }}
+                  className="w-[130px] pl-7 pr-6 py-0.5 text-xs bg-transparent border-b border-muted-foreground/30 focus:outline-none focus:border-primary"
+                />
+                <button
+                  onClick={() => { setSearchQuery(""); setSearchExpanded(false); }}
+                  className="absolute right-0.5 p-0.5 hover:bg-muted rounded"
+                >
+                  <X className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </div>
+            ) : (
+              <button onClick={() => setSearchExpanded(true)} className="p-1 hover:bg-muted rounded-full">
+                <Search className="h-4 w-4 text-muted-foreground" />
               </button>
             )}
           </div>
-          
-          {/* Neighborhood Filter */}
+
+          <span className="h-4 w-px bg-border shrink-0" />
+
+          {/* Neighborhood */}
           <Select value={selectedNeighborhood} onValueChange={setSelectedNeighborhood}>
-            <SelectTrigger className="w-[200px] bg-background/95 backdrop-blur border shadow-lg">
-              <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+            <SelectTrigger className="h-auto border-0 shadow-none bg-transparent px-1 py-0 text-xs gap-1 w-auto min-w-0 focus:ring-0">
+              <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
               <SelectValue placeholder="All Areas" />
             </SelectTrigger>
             <SelectContent className="bg-background border shadow-lg z-50">
@@ -237,6 +222,21 @@ const Index = () => {
               ))}
             </SelectContent>
           </Select>
+
+          <span className="h-4 w-px bg-border shrink-0" />
+
+          {/* Sunny Only */}
+          <button
+            onClick={() => setSunnyOnly(!sunnyOnly)}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
+              sunnyOnly ? "bg-amber-100 text-amber-700" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Sun className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Sunny</span>
+          </button>
+
+          <FilterPanel filters={advancedFilters} onChange={setAdvancedFilters} />
         </div>
 
         {/* Tag Filter Chips - Bottom positioned above drawer */}
