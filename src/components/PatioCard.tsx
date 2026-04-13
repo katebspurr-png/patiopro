@@ -1,4 +1,4 @@
-import { MapPin, Sun, Clock } from "lucide-react";
+import { MapPin, Sun, Clock, Cloud } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SunStatusBadge } from "./SunStatusBadge";
@@ -6,6 +6,7 @@ import { formatTimeAgo } from "@/lib/sun-status";
 import { getSunScoreColor } from "@/lib/sun-profile";
 import { TIME_OF_DAY_LABELS, type PatioWithLiveScore } from "@/lib/live-sun-score";
 import type { TimeOfDaySelection, ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
+import { useWeather, getWeatherLabel } from "@/hooks/useWeather";
 import { cn } from "@/lib/utils";
 
 interface PatioCardProps {
@@ -18,6 +19,7 @@ interface PatioCardProps {
 
 export function PatioCard({ patio, onClick, compact = false, scoredFor, resolvedTime }: PatioCardProps) {
   const displayTags = patio.tags?.slice(0, 2) || [];
+  const { weather } = useWeather();
   
   // Use live scores
   const displayScore = patio.sun_score_live;
@@ -87,15 +89,29 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
         </div>
       </div>
       
-      {displayTags.length > 0 && (
-        <div className="flex gap-1 mt-2">
-          {displayTags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
-              {tag.replace("_", " ")}
-            </Badge>
-          ))}
-        </div>
-      )}
+      <div className="flex items-center justify-between mt-2">
+        {displayTags.length > 0 && (
+          <div className="flex gap-1">
+            {displayTags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-xs px-1.5 py-0">
+                {tag.replace("_", " ")}
+              </Badge>
+            ))}
+          </div>
+        )}
+        {weather && (
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground ml-auto">
+            <span>{getWeatherLabel(weather.weatherCode).emoji}</span>
+            <span>{weather.temperature}°C</span>
+            {weather.cloudCover > 0 && (
+              <>
+                <Cloud className="h-2.5 w-2.5" />
+                <span>{weather.cloudCover}%</span>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
