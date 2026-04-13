@@ -151,13 +151,13 @@ const Index = () => {
 
         {/* Weather Pill — top left */}
         {weather && (
-          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-white/90 backdrop-blur border shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-foreground">
+          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-[#1C1C1A] backdrop-blur border border-white/10 shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-white">
             <span className="h-1.5 w-1.5 rounded-full bg-[#C87533] shrink-0" />
             <span className="font-medium">{weather.temperature}°C</span>
-            <span className="text-muted-foreground">·</span>
+            <span className="text-white/50">·</span>
             <span>{getWeatherLabel(weather.weatherCode).label}</span>
-            <span className="text-muted-foreground">·</span>
-            <Wind className="h-3 w-3 text-muted-foreground" />
+            <span className="text-white/50">·</span>
+            <Wind className="h-3 w-3 text-white/60" />
             <span>{weather.windSpeed} km/h</span>
           </div>
         )}
@@ -174,7 +174,7 @@ const Index = () => {
 
         {/* Bottom Drawer */}
         <div 
-          className={`absolute bottom-0 left-0 right-0 z-[1001] bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
+          className={`absolute bottom-0 left-0 right-0 z-[1001] bg-[#FAFAF8] rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t-[1.5px] border-[#E5E0D8] transition-all duration-300 ease-out ${
             drawerExpanded ? 'h-[65vh]' : 'h-[260px]'
           }`}
         >
@@ -273,7 +273,7 @@ const Index = () => {
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium truncate">{patio.name}</div>
+                          <div className="text-sm font-semibold truncate">{patio.name}</div>
                           <div className="text-xs text-muted-foreground truncate">
                             {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                           </div>
@@ -350,7 +350,7 @@ const Index = () => {
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     selectedNeighborhood === "all"
                       ? "bg-[#C87533] text-white"
-                      : "bg-muted text-gray-400 hover:bg-muted/80"
+                      : "border border-[#D0C8BC] text-[#4A4540] hover:bg-muted/80"
                   }`}
                 >
                   All
@@ -362,7 +362,7 @@ const Index = () => {
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedNeighborhood === n
                         ? "bg-[#C87533] text-white"
-                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                        : "border border-[#D0C8BC] text-[#4A4540] hover:bg-muted/80"
                     }`}
                   >
                     {n}
@@ -383,7 +383,7 @@ const Index = () => {
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate">{patio.name}</div>
+                      <div className="text-sm font-semibold truncate">{patio.name}</div>
                       <div className="text-xs text-muted-foreground truncate">
                         {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                       </div>
