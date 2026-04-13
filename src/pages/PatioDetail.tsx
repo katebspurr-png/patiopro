@@ -24,6 +24,7 @@ export default function PatioDetail() {
   const { data: reports, isLoading: reportsLoading } = useSunReports(id);
   const { data: settings } = useAppSettings();
   const { weather } = useWeather(patio?.lat, patio?.lng);
+  const { isFavorite, isLoggedIn, toggle: toggleFavorite, isToggling } = useIsFavorite(id);
   
   const isLoading = patioLoading || reportsLoading;
   
