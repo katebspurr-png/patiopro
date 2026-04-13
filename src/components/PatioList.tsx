@@ -3,6 +3,7 @@ import type { PatioWithStatus, ConfidenceLevel, SunStatus } from "@/types/patio"
 import { Skeleton } from "@/components/ui/skeleton";
 import { computeAllLiveScores, sortByLiveScore, type PatioWithLiveScore } from "@/lib/live-sun-score";
 import type { ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
+import { useWeather } from "@/hooks/useWeather";
 import { useMemo } from "react";
 
 interface PatioListProps {
@@ -13,11 +14,12 @@ interface PatioListProps {
 }
 
 export function PatioList({ patios, isLoading, onPatioClick, timeOfDay = "midday" }: PatioListProps) {
+  const { weather } = useWeather();
   // Compute live scores and sort
   const sortedPatios = useMemo(() => {
-    const withScores = computeAllLiveScores(patios, timeOfDay);
+    const withScores = computeAllLiveScores(patios, timeOfDay, weather);
     return sortByLiveScore(withScores);
-  }, [patios, timeOfDay]);
+  }, [patios, timeOfDay, weather]);
   
   if (isLoading) {
     return (
