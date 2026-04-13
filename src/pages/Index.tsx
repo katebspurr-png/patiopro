@@ -147,7 +147,7 @@ const Index = () => {
       <div className="flex-1 relative">
         {/* Floating Weather Pill */}
         {weather && (
-          <div className="absolute top-3 left-3 z-10 rounded-full bg-white/90 backdrop-blur px-3 py-1.5 shadow-md flex items-center gap-2 text-xs text-foreground">
+          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-white/90 backdrop-blur px-3 py-1.5 shadow-md flex items-center gap-2 text-xs text-foreground">
             <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
             <span className="font-medium">{weather.temperature}°C</span>
             <span className="text-muted-foreground">·</span>
@@ -174,7 +174,7 @@ const Index = () => {
         )}
         
         {/* Unified Filter Bar - Top center */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 rounded-full bg-background/95 backdrop-blur border shadow-md px-3 py-1.5 flex items-center gap-2">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] rounded-full bg-background/95 backdrop-blur border shadow-md px-3 py-1.5 flex items-center gap-2">
           {/* Expandable Search */}
           <div className="flex items-center">
             {searchExpanded ? (
@@ -238,7 +238,7 @@ const Index = () => {
         </div>
 
         {/* Time of Day Toggle */}
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-10">
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-[1000]">
           <TimeOfDayToggle 
             selectedTime={selectedTime} 
             onTimeChange={setSelectedTime} 
@@ -246,7 +246,7 @@ const Index = () => {
         </div>
 
         {/* Tag Filter Chips - Bottom positioned above drawer */}
-        <div className="absolute bottom-[188px] left-4 right-4 z-10">
+        <div className="absolute bottom-[188px] left-4 right-4 z-[1000]">
           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
             {ALLOWED_TAGS.map((tag) => (
               <Badge
@@ -277,13 +277,13 @@ const Index = () => {
         </div>
 
         {/* Best Right Now Button - Floating on map */}
-        <div className="absolute top-4 right-4 z-10">
+        <div className="absolute top-4 right-4 z-[1000]">
           <BestRightNowButton onClick={() => setShowBestRightNow(true)} />
         </div>
 
         {/* Bottom Drawer */}
         <div 
-          className={`absolute bottom-0 left-0 right-0 z-20 bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
+          className={`absolute bottom-0 left-0 right-0 z-[1001] bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
             drawerExpanded ? 'h-[70vh]' : 'h-[180px]'
           }`}
         >
