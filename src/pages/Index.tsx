@@ -22,6 +22,7 @@ import { WeatherBanner } from "@/components/WeatherBanner";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
+import { useWeather } from "@/hooks/useWeather";
 import { ALLOWED_TAGS } from "@/lib/sun-profile";
 import { computeAllLiveScores, sortByLiveScore } from "@/lib/live-sun-score";
 
@@ -49,6 +50,7 @@ const Index = () => {
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
   const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
+  const { weather } = useWeather();
   
   // Extract unique neighborhoods
   const neighborhoods = useMemo(() => {
@@ -78,8 +80,8 @@ const Index = () => {
   
   // Compute live scores based on resolved time
   const patiosWithLiveScores = useMemo(() => {
-    return computeAllLiveScores(patios, resolvedTime);
-  }, [patios, resolvedTime]);
+    return computeAllLiveScores(patios, resolvedTime, weather);
+  }, [patios, resolvedTime, weather]);
   
   // Filter and sort patios
   const filteredPatios = useMemo(() => {
