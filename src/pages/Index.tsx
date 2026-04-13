@@ -185,7 +185,7 @@ const Index = () => {
 
           {drawerExpanded ? (
             /* Expanded state */
-            <ScrollArea className="px-4 h-[calc(70vh-40px)]">
+            <ScrollArea className="px-4 h-[calc(65vh-40px)]">
               <div className="space-y-3 pb-4">
                 {/* Time of Day pill row */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
