@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ChevronLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets, Heart } from "lucide-react";
 import { useIsFavorite } from "@/hooks/useFavorites";
-import { toast } from "@/hooks/use-toast";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
 import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
@@ -88,13 +88,7 @@ export default function PatioDetail() {
           <div className="flex items-center gap-2">
             <button
               className={iconBtnClass}
-              onClick={() => {
-                if (!isLoggedIn) {
-                  toast({ title: "Sign in to save favorites", description: "Create an account to save your favorite patios." });
-                  return;
-                }
-                toggleFavorite();
-              }}
+              onClick={() => toggleFavorite()}
               disabled={isToggling}
               title={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
