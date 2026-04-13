@@ -1,4 +1,4 @@
-import { Sun, Menu, Shield } from "lucide-react";
+import { Sun, Menu, Shield, Beer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Link } from "react-router-dom";
@@ -31,6 +31,13 @@ export function Header() {
               >
                 <Sun className="h-5 w-5" />
                 Find Patios
+              </Link>
+              <Link
+                to="/happy-hours"
+                className="flex items-center gap-2 text-lg font-medium hover:text-primary transition-colors"
+              >
+                <Beer className="h-5 w-5" />
+                Happy Hours
               </Link>
               <Link
                 to="/report"
