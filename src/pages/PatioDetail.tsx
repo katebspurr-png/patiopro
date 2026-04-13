@@ -149,26 +149,6 @@ export default function PatioDetail() {
 
         {/* Best time pill */}
         <div className="bg-[#C87533]/8 rounded-lg px-3 py-2 mt-4">
-            </div>
-          </div>
-        </div>
-
-        {/* Low confidence note — single source of confidence display */}
-        {statusResult?.confidence === "low" && (
-          <p className="text-[13px] text-gray-400 mt-2">
-            Based on patio profile — add a report to improve accuracy.
-          </p>
-        )}
-
-        {/* Confidence Level badge (feature flag) */}
-        {settings?.enable_confidence_level && confidenceLevel && (
-          <div className="mt-3">
-            <ConfidenceLevelBadge level={confidenceLevel} />
-          </div>
-        )}
-
-        {/* Best time pill */}
-        <div className="bg-[#C87533]/8 rounded-lg px-3 py-2 mt-4">
           <p className="text-[11px] uppercase tracking-wider text-[#C87533] font-medium">Best time</p>
           <p className="text-[15px] font-medium text-[#C87533] mt-0.5">
             {patio.best_time_to_visit || "Check recent visits"}
