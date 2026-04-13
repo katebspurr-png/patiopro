@@ -1,10 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sun, ChevronUp, ChevronDown, MapPin, Search, X, Wind } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -238,6 +235,14 @@ const Index = () => {
           </button>
 
           <FilterPanel filters={advancedFilters} onChange={setAdvancedFilters} />
+        </div>
+
+        {/* Time of Day Toggle */}
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-10">
+          <TimeOfDayToggle 
+            selectedTime={selectedTime} 
+            onTimeChange={setSelectedTime} 
+          />
         </div>
 
         {/* Tag Filter Chips - Bottom positioned above drawer */}
