@@ -146,7 +146,7 @@ const Index = () => {
         {/* Best Right Now — bottom right */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="absolute bottom-[200px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="absolute bottom-[280px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
           title="Best Right Now"
         >
           <Star className="h-4 w-4 text-[#C87533]" />
@@ -181,19 +181,6 @@ const Index = () => {
                   />
                 </div>
 
-                {/* Sunny Only Toggle */}
-                <div className="flex items-center gap-2 px-1">
-                  <Switch
-                    id="sunny-only"
-                    checked={sunnyOnly}
-                    onCheckedChange={setSunnyOnly}
-                    className="data-[state=checked]:bg-[#C87533]"
-                  />
-                  <Label htmlFor="sunny-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
-                    <Sun className="h-4 w-4 text-[#C87533]" />
-                    Sunny Only
-                  </Label>
-                </div>
 
                 {/* Favorites Only Toggle */}
                 {(
