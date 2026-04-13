@@ -77,7 +77,7 @@ export function HourlyForecast() {
 
   return (
     <div className="px-4 py-3">
-      <h3 className="text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">
+      <h3 className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: '#1C1C1A' }}>
         Sun forecast today
       </h3>
       <div className="flex gap-2">
