@@ -34,6 +34,7 @@ const TAG_LABELS: Record<string, string> = {
 const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -44,6 +45,7 @@ const Index = () => {
   const topPatioIds = useTopPatioIds(3);
   const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
   const { weather } = useWeather();
+  const { favoriteIds, isLoggedIn } = useFavoriteIds();
   
   const neighborhoods = useMemo(() => {
     const uniqueNeighborhoods = new Set<string>();
