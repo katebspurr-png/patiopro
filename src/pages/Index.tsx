@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Wind, Star, Heart, SlidersHorizontal } from "lucide-react";
+import { Sun, Wind, Star, Heart, SlidersHorizontal, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -145,7 +146,7 @@ const Index = () => {
         {/* Best Right Now — bottom right */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="absolute bottom-[200px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="absolute bottom-[280px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
           title="Best Right Now"
         >
           <Star className="h-4 w-4 text-[#C87533]" />
@@ -154,7 +155,7 @@ const Index = () => {
         {/* Bottom Drawer */}
         <div 
           className={`absolute bottom-0 left-0 right-0 z-[1001] bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
-            drawerExpanded ? 'h-[70vh]' : 'h-[180px]'
+            drawerExpanded ? 'h-[70vh]' : 'h-[260px]'
           }`}
         >
           {/* Drag Handle */}
@@ -180,19 +181,6 @@ const Index = () => {
                   />
                 </div>
 
-                {/* Sunny Only Toggle */}
-                <div className="flex items-center gap-2 px-1">
-                  <Switch
-                    id="sunny-only"
-                    checked={sunnyOnly}
-                    onCheckedChange={setSunnyOnly}
-                    className="data-[state=checked]:bg-[#C87533]"
-                  />
-                  <Label htmlFor="sunny-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
-                    <Sun className="h-4 w-4 text-[#C87533]" />
-                    Sunny Only
-                  </Label>
-                </div>
 
                 {/* Favorites Only Toggle */}
                 {(
@@ -263,6 +251,31 @@ const Index = () => {
           ) : (
             /* Collapsed state */
             <div className="px-4 space-y-2">
+              {/* Search + Sunny Only row */}
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+                  <Input
+                    placeholder="Search patios…"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-8 pl-8 text-xs rounded-lg border-gray-200 bg-muted/50"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Switch
+                    id="sunny-only-collapsed"
+                    checked={sunnyOnly}
+                    onCheckedChange={setSunnyOnly}
+                    className="data-[state=checked]:bg-[#C87533] scale-90"
+                  />
+                  <Label htmlFor="sunny-only-collapsed" className="flex items-center gap-1 cursor-pointer text-xs whitespace-nowrap">
+                    <Sun className="h-3.5 w-3.5 text-[#C87533]" />
+                    Sunny
+                  </Label>
+                </div>
+              </div>
+
               {/* Neighborhood chips */}
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                 <button
