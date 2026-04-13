@@ -48,6 +48,7 @@ const Index = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
   const [showBestRightNow, setShowBestRightNow] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(DEFAULT_FILTERS);
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
