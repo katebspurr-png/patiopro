@@ -79,7 +79,7 @@ export default function PatioDetail() {
   const iconBtnClass = "h-9 w-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors";
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: '#F5F0E8' }}>
       {/* Header */}
       <div className="sticky top-0 z-50 backdrop-blur border-b border-[#E5E0D8]" style={{ backgroundColor: '#1C1C1A' }}>
         <div className="flex items-center justify-between px-4 py-3">
@@ -184,7 +184,7 @@ export default function PatioDetail() {
       {/* Current Weather */}
       {weather && (
         <div className="px-5 py-4 border-b border-[#E5E0D8]">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-3">Current weather</p>
+          <p className="text-[11px] uppercase tracking-wider font-bold mb-3" style={{ color: '#1C1C1A' }}>Current weather</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xl">{getWeatherLabel(weather.weatherCode).emoji}</span>
@@ -225,7 +225,7 @@ export default function PatioDetail() {
       {/* Happy Hour */}
       {happyHour && (
         <div className="px-5 py-4 border-b border-[#E5E0D8]">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-2">Happy hour</p>
+          <p className="text-[11px] uppercase tracking-wider font-bold mb-2" style={{ color: '#1C1C1A' }}>Happy hour</p>
           <div className="bg-[#FDF0E3] rounded-lg px-4 py-3 space-y-1.5">
             {happyHour.days && (
               <p className="text-[14px] font-medium text-gray-800">{happyHour.days}</p>
@@ -293,7 +293,7 @@ export default function PatioDetail() {
 
       {/* Recent Reports */}
       <div className="px-5 py-4 border-b border-[#E5E0D8]">
-        <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-3">Recent reports</p>
+        <p className="text-[11px] uppercase tracking-wider font-bold mb-3" style={{ color: '#1C1C1A' }}>Recent reports</p>
         {recentReports.length === 0 ? (
           <p className="text-[14px] text-gray-400">No reports yet. Be the first!</p>
         ) : (
