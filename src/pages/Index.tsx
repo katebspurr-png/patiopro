@@ -38,6 +38,7 @@ const Index = () => {
   const [sunnyOnly, setSunnyOnly] = useState(false);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [happyHourOnly, setHappyHourOnly] = useState(false);
+  const [shelteredOnly, setShelteredOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -118,9 +119,12 @@ const Index = () => {
         happyHourMap.byPatioId[p.id] || happyHourMap.byName[p.name.toLowerCase()]
       );
     }
+    if (shelteredOnly) {
+      filtered = filtered.filter(p => (p as any).wind_exposure === 'sheltered');
+    }
     
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, happyHourOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags, happyHourMap]);
+  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, happyHourOnly, shelteredOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags, happyHourMap]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -240,6 +244,16 @@ const Index = () => {
                   >
                     Happy Hour
                   </button>
+                  <button
+                    onClick={() => setShelteredOnly(!shelteredOnly)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      shelteredOnly
+                        ? "bg-[#C87533] text-white"
+                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                    }`}
+                  >
+                    Sheltered
+                  </button>
                   {ALLOWED_TAGS.map((tag) => (
                     <button
                       key={tag}
@@ -281,7 +295,12 @@ const Index = () => {
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{patio.name}</div>
+                          <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {patio.name}
+                            {(patio as any).wind_exposure === 'sheltered' && weather && weather.windSpeed > 20 && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
+                            )}
+                          </div>
                           <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                           </div>
@@ -344,7 +363,12 @@ const Index = () => {
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{patio.name}</div>
+                      <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {patio.name}
+                        {(patio as any).wind_exposure === 'sheltered' && weather && weather.windSpeed > 20 && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
+                        )}
+                      </div>
                       <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                       </div>

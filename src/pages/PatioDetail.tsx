@@ -14,6 +14,8 @@ import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
 import { calculateSeasonalScore } from "@/lib/seasonal-adjustment";
 import { cn } from "@/lib/utils";
 import { useWeather, getWeatherLabel, getWindLabel, getUVLabel } from "@/hooks/useWeather";
+import { computeLiveSunScore } from "@/lib/live-sun-score";
+import { useTimeOfDay } from "@/hooks/useTimeOfDay";
 import type { SunProfile } from "@/types/patio";
 import type { ConfidenceLevel } from "@/types/app-settings";
 
@@ -25,6 +27,7 @@ export default function PatioDetail() {
   const { data: reports, isLoading: reportsLoading } = useSunReports(id);
   const { data: settings } = useAppSettings();
   const { weather } = useWeather(patio?.lat, patio?.lng);
+  const { resolvedTime } = useTimeOfDay();
   const { isFavorite, isLoggedIn, toggle: toggleFavorite, isToggling } = useIsFavorite(id);
   const { data: happyHour } = useHappyHourByPatioId(id);
   
@@ -75,6 +78,12 @@ export default function PatioDetail() {
   const sunnyVotes = (patio as any).sunny_votes ?? 0;
   const notSunnyVotes = (patio as any).not_sunny_votes ?? 0;
   const lastSunCheckAt = (patio as any).last_sun_check_at ?? null;
+  const windExposure = (patio as any).wind_exposure as string | null;
+  const windExposureLabel = windExposure === 'exposed' ? 'Exposed' : windExposure === 'sheltered' ? 'Sheltered' : 'Partial shelter';
+  
+  const liveResult = patio && statusResult
+    ? computeLiveSunScore({ ...patio, ...statusResult } as any, resolvedTime, weather)
+    : null;
 
   const iconBtnClass = "h-9 w-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors";
   
@@ -133,7 +142,12 @@ export default function PatioDetail() {
 
         {/* Score row */}
         <div className="flex items-center gap-4 mt-4">
-          <span className="leading-none" style={{ fontSize: '52px', fontWeight: 700, color: '#C87533' }}>{displayScore}</span>
+          <div className="relative">
+            <span className="leading-none" style={{ fontSize: '52px', fontWeight: 700, color: '#C87533' }}>{displayScore}</span>
+            {liveResult?.wind_adjusted && (
+              <Wind className="h-4 w-4 absolute -top-1 -right-5" style={{ color: '#C87533' }} />
+            )}
+          </div>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Sun score</p>
             <div className="flex items-center gap-2 mt-0.5">
@@ -146,6 +160,13 @@ export default function PatioDetail() {
                 <SunStatusBadge status={statusResult.status} size="md" />
               )}
             </div>
+            {liveResult?.wind_adjusted && liveResult.wind_penalty !== 0 && (
+              <p className="text-[11px] text-gray-400 mt-1">
+                {liveResult.wind_penalty > 0
+                  ? `Wind shelter bonus (+${liveResult.wind_penalty})`
+                  : `Wind penalty applied (${liveResult.wind_penalty})`}
+              </p>
+            )}
           </div>
         </div>
 
@@ -276,6 +297,16 @@ export default function PatioDetail() {
             </div>
           </div>
         )}
+        {/* Wind exposure row */}
+        <div className="flex items-center gap-3">
+          <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
+            <Wind className="h-3.5 w-3.5 text-gray-400" />
+          </div>
+          <div>
+            <p className="text-[14px] text-gray-800">{windExposureLabel}</p>
+            <p className="text-[13px] text-gray-400">Wind exposure</p>
+          </div>
+        </div>
       </div>
 
       {/* Tags */}
