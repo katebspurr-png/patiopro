@@ -185,9 +185,6 @@ const Index = () => {
             className="w-full flex items-center justify-center gap-2 focus:outline-none pt-3 pb-2"
           >
             <div className="w-10 h-1.5 rounded-full" style={{ backgroundColor: '#4A4A48' }} />
-            {!drawerExpanded && (
-              <SlidersHorizontal className="h-3.5 w-3.5" style={{ color: '#4A4A48' }} />
-            )}
           </button>
 
           {drawerExpanded ? (
@@ -284,7 +281,7 @@ const Index = () => {
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="truncate" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{patio.name}</div>
+                          <div style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{patio.name}</div>
                           <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                           </div>
@@ -347,7 +344,7 @@ const Index = () => {
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="truncate" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{patio.name}</div>
+                      <div style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{patio.name}</div>
                       <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                       </div>
