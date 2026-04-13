@@ -222,6 +222,16 @@ const Index = () => {
                   >
                     Favorites
                   </button>
+                  <button
+                    onClick={() => setHappyHourOnly(!happyHourOnly)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      happyHourOnly
+                        ? "bg-[#C87533] text-white"
+                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                    }`}
+                  >
+                    Happy Hour
+                  </button>
                   {ALLOWED_TAGS.map((tag) => (
                     <button
                       key={tag}
