@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, ChevronUp, ChevronDown, MapPin, Search, X } from "lucide-react";
+import { Sun, ChevronUp, ChevronDown, MapPin, Search, X, Wind } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
