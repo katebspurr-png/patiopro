@@ -8,6 +8,7 @@ import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
 import { SunFeedbackWidget } from "@/components/SunFeedbackWidget";
 import { HourlyForecast } from "@/components/HourlyForecast";
 import { usePatio, useSunReports } from "@/hooks/usePatios";
+import { useHappyHourByPatioId } from "@/hooks/useHappyHours";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
 import { calculateSeasonalScore } from "@/lib/seasonal-adjustment";
