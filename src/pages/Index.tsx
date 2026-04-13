@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sun, Wind, Star, Heart, SlidersHorizontal, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFavoriteIds } from "@/hooks/useFavoriteIds";
+import { useHappyHours } from "@/hooks/useHappyHours";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -47,6 +48,17 @@ const Index = () => {
   const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
   const { weather } = useWeather();
   const { favoriteIds } = useFavoriteIds();
+  const { data: happyHours } = useHappyHours();
+
+  const happyHourMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    happyHours?.forEach(hh => {
+      if (hh.patio_id && hh.time_range) {
+        map[hh.patio_id] = `Happy hour ${hh.time_range}`;
+      }
+    });
+    return map;
+  }, [happyHours]);
   
   const neighborhoods = useMemo(() => {
     const uniqueNeighborhoods = new Set<string>();
