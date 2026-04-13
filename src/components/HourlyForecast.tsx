@@ -29,11 +29,11 @@ function PeriodCard({ period, isNow }: { period: TimePeriodForecast; isNow: bool
     <div
       className={cn(
         "flex-1 rounded-lg border p-3 text-center transition-all",
-        isNow ? "border-[#C87533]/40 bg-[#FDF0E3] shadow-sm" : "bg-muted/30"
+        isNow ? "border-[#F0D5B0] bg-[#FDF0E3] shadow-sm" : "bg-[#FAFAF8]"
       )}
     >
       {isNow && (
-        <span className="text-[10px] font-semibold text-[#C87533] uppercase tracking-wide">Now</span>
+        <div className="text-[10px] uppercase tracking-wider text-[#C87533] font-medium mb-1">NOW</div>
       )}
       <p className="text-xs font-semibold mt-0.5">{period.label}</p>
       <span className="text-2xl leading-none block my-1.5">{emoji}</span>
