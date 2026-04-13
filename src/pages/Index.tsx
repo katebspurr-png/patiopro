@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Wind, Star } from "lucide-react";
+import { Sun, Wind, Star, Heart } from "lucide-react";
+import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -33,6 +34,7 @@ const TAG_LABELS: Record<string, string> = {
 const Index = () => {
   const navigate = useNavigate();
   const [sunnyOnly, setSunnyOnly] = useState(false);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [selectedNeighborhood, setSelectedNeighborhood] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -43,6 +45,7 @@ const Index = () => {
   const topPatioIds = useTopPatioIds(3);
   const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
   const { weather } = useWeather();
+  const { favoriteIds, isLoggedIn } = useFavoriteIds();
   
   const neighborhoods = useMemo(() => {
     const uniqueNeighborhoods = new Set<string>();
@@ -92,9 +95,12 @@ const Index = () => {
         selectedTags.every(tag => p.tags?.includes(tag))
       );
     }
+    if (favoritesOnly && favoriteIds.length > 0) {
+      filtered = filtered.filter(p => favoriteIds.includes(p.id));
+    }
     
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
+  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -184,6 +190,22 @@ const Index = () => {
                     Sunny Only
                   </Label>
                 </div>
+
+                {/* Favorites Only Toggle */}
+                {isLoggedIn && (
+                  <div className="flex items-center gap-2 px-1">
+                    <Switch
+                      id="favorites-only"
+                      checked={favoritesOnly}
+                      onCheckedChange={setFavoritesOnly}
+                      className="data-[state=checked]:bg-red-500"
+                    />
+                    <Label htmlFor="favorites-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
+                      <Heart className="h-4 w-4 text-red-500" />
+                      Favorites
+                    </Label>
+                  </div>
+                )}
 
                 {/* Tag Chips */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
