@@ -20,6 +20,7 @@ import { TimeOfDayToggle } from "@/components/TimeOfDayToggle";
 import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { WeatherBanner } from "@/components/WeatherBanner";
 import { HourlyForecast } from "@/components/HourlyForecast";
+import { FilterPanel, type AdvancedFilters, DEFAULT_FILTERS } from "@/components/FilterPanel";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
