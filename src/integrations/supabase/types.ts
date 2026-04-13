@@ -70,6 +70,68 @@ export type Database = {
           },
         ]
       }
+      happy_hours: {
+        Row: {
+          address: string | null
+          created_at: string
+          days: string | null
+          details: string | null
+          id: string
+          instagram: string | null
+          is_active: boolean
+          needs_verification: boolean
+          neighborhood: string | null
+          patio_id: string | null
+          phone: string | null
+          time_range: string | null
+          updated_at: string
+          venue_name: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          days?: string | null
+          details?: string | null
+          id?: string
+          instagram?: string | null
+          is_active?: boolean
+          needs_verification?: boolean
+          neighborhood?: string | null
+          patio_id?: string | null
+          phone?: string | null
+          time_range?: string | null
+          updated_at?: string
+          venue_name: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          days?: string | null
+          details?: string | null
+          id?: string
+          instagram?: string | null
+          is_active?: boolean
+          needs_verification?: boolean
+          neighborhood?: string | null
+          patio_id?: string | null
+          phone?: string | null
+          time_range?: string | null
+          updated_at?: string
+          venue_name?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "happy_hours_patio_id_fkey"
+            columns: ["patio_id"]
+            isOneToOne: false
+            referencedRelation: "patios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patio_submissions: {
         Row: {
           address: string | null
