@@ -287,47 +287,95 @@ const Index = () => {
             drawerExpanded ? 'h-[70vh]' : 'h-[180px]'
           }`}
         >
-          {/* Drawer Handle */}
+          {/* Drag Handle */}
           <button
             onClick={() => setDrawerExpanded(!drawerExpanded)}
-            className="w-full flex flex-col items-center pt-2 pb-1 focus:outline-none"
+            className="w-full flex items-center justify-center pt-2 pb-1 focus:outline-none"
           >
-            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full mb-2" />
-            <div className="flex items-center gap-1 text-muted-foreground">
-              {drawerExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronUp className="h-4 w-4" />
-              )}
-              <span className="text-xs font-medium">
-                {filteredPatios.length} patios
-                {selectedNeighborhood !== "all" && ` in ${selectedNeighborhood}`}
-                {sunnyOnly && ` • sunny only`}
-              </span>
-            </div>
+            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
           </button>
 
-          {/* Drawer Content */}
-          <ScrollArea className={`px-4 ${drawerExpanded ? 'h-[calc(70vh-60px)]' : 'h-[120px]'}`}>
-            <div className="space-y-2 pb-4">
-              {filteredPatios.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  {sunnyOnly ? "No sunny patios right now" : "No patios found"}
-                </div>
-              ) : (
-                filteredPatios.map((patio) => (
-                  <PatioCard
+          {drawerExpanded ? (
+            /* Expanded: full list */
+            <ScrollArea className="px-4 h-[calc(70vh-40px)]">
+              <div className="space-y-2 pb-4">
+                {filteredPatios.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    {sunnyOnly ? "No sunny patios right now" : "No patios found"}
+                  </div>
+                ) : (
+                  filteredPatios.map((patio) => (
+                    <PatioCard
+                      key={patio.id}
+                      patio={patio}
+                      onClick={() => navigate(`/patio/${patio.id}`)}
+                      compact
+                      scoredFor={selectedTime}
+                      resolvedTime={resolvedTime}
+                    />
+                  ))
+                )}
+              </div>
+            </ScrollArea>
+          ) : (
+            /* Collapsed: neighborhood chips + top 3 */
+            <div className="px-4 space-y-2">
+              {/* Neighborhood chips */}
+              <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                <button
+                  onClick={() => setSelectedNeighborhood("all")}
+                  className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    selectedNeighborhood === "all"
+                      ? "bg-amber-500 text-white"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  All
+                </button>
+                {neighborhoods.map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setSelectedNeighborhood(n)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      selectedNeighborhood === n
+                        ? "bg-amber-500 text-white"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+
+              {/* Top 3 ranked patios */}
+              <div className="space-y-1.5">
+                {filteredPatios.slice(0, 3).map((patio, i) => (
+                  <button
                     key={patio.id}
-                    patio={patio}
                     onClick={() => navigate(`/patio/${patio.id}`)}
-                    compact
-                    scoredFor={selectedTime}
-                    resolvedTime={resolvedTime}
-                  />
-                ))
-              )}
+                    className="w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                  >
+                    <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
+                    <span className="bg-amber-100 text-amber-700 font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
+                      {patio.sun_score_live ?? patio.sun_score ?? "–"}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{patio.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {patio.best_time_to_visit ?? "—"}
+                    </span>
+                  </button>
+                ))}
+                {filteredPatios.length === 0 && (
+                  <div className="text-center py-2 text-xs text-muted-foreground">No patios found</div>
+                )}
+              </div>
             </div>
-          </ScrollArea>
+          )}
         </div>
 
         {/* Best Right Now Panel */}
