@@ -81,7 +81,7 @@ export default function PatioDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-[#E5E0D8]">
         <div className="flex items-center justify-between px-4 py-3">
           <button onClick={() => navigate(-1)} className="flex items-center gap-0.5 text-[#C87533] text-sm font-medium">
             <ChevronLeft className="h-5 w-5" />
@@ -125,7 +125,7 @@ export default function PatioDetail() {
       </div>
       
       {/* Hero Section */}
-      <div className="px-5 pt-5 pb-4 border-b">
+      <div className="px-5 pt-5 pb-4 border-b border-[#E5E0D8]">
         <h1 className="text-[24px] font-semibold font-sans leading-tight">{patio.name}</h1>
         <p className="text-[13px] text-gray-400 mt-1">
           {patio.neighborhood}{patio.neighborhood && patio.address ? " · " : ""}{patio.address}
@@ -166,7 +166,7 @@ export default function PatioDetail() {
 
       {/* Crowd Sun Feedback */}
       {settings?.enable_crowd_sun_feedback && (
-        <div className="px-5 py-4 border-b">
+        <div className="px-5 py-4 border-b border-[#E5E0D8]">
           <SunFeedbackWidget
             patioId={patio.id}
             sunnyVotes={sunnyVotes}
@@ -177,13 +177,13 @@ export default function PatioDetail() {
       )}
 
       {/* Sun Forecast */}
-      <div className="border-b">
+      <div className="border-b border-[#E5E0D8]">
         <HourlyForecast />
       </div>
 
       {/* Current Weather */}
       {weather && (
-        <div className="px-5 py-4 border-b">
+        <div className="px-5 py-4 border-b border-[#E5E0D8]">
           <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-3">Current weather</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ export default function PatioDetail() {
 
       {/* Happy Hour */}
       {happyHour && (
-        <div className="px-5 py-4 border-b">
+        <div className="px-5 py-4 border-b border-[#E5E0D8]">
           <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-2">Happy hour</p>
           <div className="bg-[#FDF0E3] rounded-lg px-4 py-3 space-y-1.5">
             {happyHour.days && (
@@ -243,7 +243,7 @@ export default function PatioDetail() {
         </div>
       )}
 
-      <div className="px-5 py-4 border-b space-y-3">
+      <div className="px-5 py-4 border-b border-[#E5E0D8] space-y-3">
         {patio.address && (
           <div className="flex items-start gap-3">
             <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
@@ -280,7 +280,7 @@ export default function PatioDetail() {
 
       {/* Tags */}
       {patio.tags && patio.tags.length > 0 && (
-        <div className="px-5 py-4 border-b">
+        <div className="px-5 py-4 border-b border-[#E5E0D8]">
           <div className="flex flex-wrap gap-1.5">
             {patio.tags.map((tag) => (
               <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-md border border-gray-200">
@@ -292,7 +292,7 @@ export default function PatioDetail() {
       )}
 
       {/* Recent Reports */}
-      <div className="px-5 py-4 border-b">
+      <div className="px-5 py-4 border-b border-[#E5E0D8]">
         <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-3">Recent reports</p>
         {recentReports.length === 0 ? (
           <p className="text-[14px] text-gray-400">No reports yet. Be the first!</p>
