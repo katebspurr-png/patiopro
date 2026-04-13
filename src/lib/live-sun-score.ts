@@ -1,6 +1,8 @@
 import type { PatioWithStatus, SunProfile } from "@/types/patio";
 import type { ResolvedTimeOfDay } from "@/hooks/useTimeOfDay";
+import type { WeatherData } from "@/hooks/useWeather";
 import { getSunDerivedFields } from "./sun-profile";
+import { getWeatherAdjustment } from "./weather-adjustment";
 
 export interface LiveSunOutput {
   sun_score_live: number;
@@ -103,7 +105,8 @@ function generateReasonText(
  */
 export function computeLiveSunScore(
   patio: PatioWithStatus,
-  timeOfDay: ResolvedTimeOfDay
+  timeOfDay: ResolvedTimeOfDay,
+  weather?: WeatherData | null
 ): LiveSunOutput {
   const sunProfile = patio.sun_profile as SunProfile | null;
   const baseFields = getSunDerivedFields(sunProfile);
@@ -115,16 +118,23 @@ export function computeLiveSunScore(
   const orientationNudge = getOrientationNudge(patio.sun_orientation, timeOfDay);
   const timeAlignmentBonus = getTimeAlignmentBonus(sunProfile, timeOfDay);
   
+  // Apply weather adjustment
+  const weatherAdj = getWeatherAdjustment(weather ?? null);
+  
   // Calculate live score, clamped 0-100
-  const rawScore = baseScore + orientationNudge + timeAlignmentBonus;
+  const rawScore = baseScore + orientationNudge + timeAlignmentBonus + weatherAdj.total;
   const sun_score_live = Math.max(0, Math.min(100, rawScore));
   
-  // Generate reason text
-  const sun_score_reason_live = generateReasonText(
+  // Generate reason text with weather context
+  let sun_score_reason_live = generateReasonText(
     sunProfile, 
     timeOfDay, 
     patio.sun_orientation
   );
+  
+  if (weatherAdj.label) {
+    sun_score_reason_live += ` • ${weatherAdj.label}`;
+  }
   
   // Best time can stay static or be computed
   const best_time_to_visit_live = baseFields.best_time_to_visit;
@@ -141,10 +151,11 @@ export function computeLiveSunScore(
  */
 export function computeAllLiveScores(
   patios: PatioWithStatus[],
-  timeOfDay: ResolvedTimeOfDay
+  timeOfDay: ResolvedTimeOfDay,
+  weather?: WeatherData | null
 ): PatioWithLiveScore[] {
   return patios.map((patio) => {
-    const liveOutput = computeLiveSunScore(patio, timeOfDay);
+    const liveOutput = computeLiveSunScore(patio, timeOfDay, weather);
     return {
       ...patio,
       ...liveOutput,
