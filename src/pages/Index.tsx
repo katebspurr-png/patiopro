@@ -139,7 +139,7 @@ const Index = () => {
         {/* Best Right Now — small icon button, top right */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="absolute top-3 right-3 z-[1000] h-9 w-9 rounded-full bg-white backdrop-blur border shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="absolute top-3 right-3 z-[1000] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
           title="Best Right Now"
         >
           <Star className="h-4 w-4 text-amber-500" />
