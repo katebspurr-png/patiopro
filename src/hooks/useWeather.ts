@@ -13,6 +13,29 @@ export interface WeatherData {
   isDay: boolean;
 }
 
+export interface HourlyForecastPoint {
+  time: string; // ISO string
+  hour: number;
+  temperature: number;
+  cloudCover: number;
+  precipitation: number;
+  weatherCode: number;
+  uvIndex: number;
+  windSpeed: number;
+}
+
+export interface TimePeriodForecast {
+  label: string;
+  period: "morning" | "midday" | "afternoon";
+  avgTemp: number;
+  avgCloudCover: number;
+  maxPrecip: number;
+  avgUV: number;
+  dominantWeatherCode: number;
+  sunChance: number; // 0-100 percentage
+  hours: HourlyForecastPoint[];
+}
+
 interface OpenMeteoResponse {
   current: {
     temperature_2m: number;
@@ -26,16 +49,31 @@ interface OpenMeteoResponse {
     weather_code: number;
     is_day: number;
   };
+  hourly?: {
+    time: string[];
+    temperature_2m: number[];
+    cloud_cover: number[];
+    precipitation: number[];
+    weather_code: number[];
+    uv_index: number[];
+    wind_speed_10m: number[];
+  };
 }
 
-const CACHE_KEY = "weather_cache";
+interface CachedWeather {
+  current: WeatherData;
+  forecast: TimePeriodForecast[];
+  timestamp: number;
+}
+
+const CACHE_KEY = "weather_cache_v2";
 const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
-function getCached(): { data: WeatherData; timestamp: number } | null {
+function getCached(): CachedWeather | null {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw);
+    const parsed: CachedWeather = JSON.parse(raw);
     if (Date.now() - parsed.timestamp > CACHE_TTL_MS) return null;
     return parsed;
   } catch {
@@ -43,9 +81,9 @@ function getCached(): { data: WeatherData; timestamp: number } | null {
   }
 }
 
-function setCache(data: WeatherData) {
+function setCache(current: WeatherData, forecast: TimePeriodForecast[]) {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ current, forecast, timestamp: Date.now() }));
   } catch {}
 }
 
@@ -98,15 +136,101 @@ export function getUVLabel(uv: number): { label: string; color: string } {
   return { label: "Extreme", color: "text-purple-600" };
 }
 
+/**
+ * Time period definitions (Halifax Atlantic Time hours)
+ * Morning: 7-11, Midday: 11-14, Afternoon: 14-18
+ */
+const TIME_PERIODS: { period: "morning" | "midday" | "afternoon"; label: string; startHour: number; endHour: number }[] = [
+  { period: "morning", label: "Morning", startHour: 7, endHour: 11 },
+  { period: "midday", label: "Midday", startHour: 11, endHour: 14 },
+  { period: "afternoon", label: "Afternoon", startHour: 14, endHour: 18 },
+];
+
+function avg(arr: number[]): number {
+  if (arr.length === 0) return 0;
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+
+/** Pick the most common weather code from an array */
+function dominantCode(codes: number[]): number {
+  if (codes.length === 0) return 0;
+  const counts = new Map<number, number>();
+  for (const c of codes) counts.set(c, (counts.get(c) ?? 0) + 1);
+  let best = codes[0];
+  let bestCount = 0;
+  for (const [code, count] of counts) {
+    if (count > bestCount) { best = code; bestCount = count; }
+  }
+  return best;
+}
+
+/** Estimate sun chance from cloud cover and precipitation */
+function estimateSunChance(avgCloud: number, maxPrecip: number): number {
+  if (maxPrecip >= 1) return Math.max(0, 20 - maxPrecip * 5);
+  if (avgCloud <= 20) return 90;
+  if (avgCloud <= 40) return 70;
+  if (avgCloud <= 60) return 45;
+  if (avgCloud <= 80) return 20;
+  return 5;
+}
+
+function buildForecast(hourly: OpenMeteoResponse["hourly"]): TimePeriodForecast[] {
+  if (!hourly) return [];
+
+  // Get today's date string for filtering
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+
+  // Parse hourly data into points
+  const points: HourlyForecastPoint[] = hourly.time.map((t, i) => ({
+    time: t,
+    hour: new Date(t).getHours(),
+    temperature: Math.round(hourly.temperature_2m[i]),
+    cloudCover: hourly.cloud_cover[i],
+    precipitation: hourly.precipitation[i],
+    weatherCode: hourly.weather_code[i],
+    uvIndex: hourly.uv_index[i],
+    windSpeed: Math.round(hourly.wind_speed_10m[i]),
+  })).filter(p => p.time.startsWith(todayStr));
+
+  return TIME_PERIODS.map(({ period, label, startHour, endHour }) => {
+    const hours = points.filter(p => p.hour >= startHour && p.hour < endHour);
+    if (hours.length === 0) {
+      return {
+        label, period,
+        avgTemp: 0, avgCloudCover: 100, maxPrecip: 0, avgUV: 0,
+        dominantWeatherCode: 3, sunChance: 0, hours: [],
+      };
+    }
+
+    const avgCloud = Math.round(avg(hours.map(h => h.cloudCover)));
+    const maxPrecip = Math.max(...hours.map(h => h.precipitation));
+
+    return {
+      label,
+      period,
+      avgTemp: Math.round(avg(hours.map(h => h.temperature))),
+      avgCloudCover: avgCloud,
+      maxPrecip: Math.round(maxPrecip * 10) / 10,
+      avgUV: Math.round(avg(hours.map(h => h.uvIndex)) * 10) / 10,
+      dominantWeatherCode: dominantCode(hours.map(h => h.weatherCode)),
+      sunChance: Math.round(estimateSunChance(avgCloud, maxPrecip)),
+      hours,
+    };
+  });
+}
+
 export function useWeather(lat = 44.6488, lng = -63.5752) {
-  const [weather, setWeather] = useState<WeatherData | null>(() => getCached()?.data ?? null);
+  const [weather, setWeather] = useState<WeatherData | null>(() => getCached()?.current ?? null);
+  const [forecast, setForecast] = useState<TimePeriodForecast[]>(() => getCached()?.forecast ?? []);
   const [isLoading, setIsLoading] = useState(!weather);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const cached = getCached();
     if (cached) {
-      setWeather(cached.data);
+      setWeather(cached.current);
+      setForecast(cached.forecast);
       setIsLoading(false);
       return;
     }
@@ -116,7 +240,7 @@ export function useWeather(lat = 44.6488, lng = -63.5752) {
     async function fetchWeather() {
       try {
         setIsLoading(true);
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,cloud_cover,uv_index,precipitation,weather_code,is_day&timezone=auto`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,cloud_cover,uv_index,precipitation,weather_code,is_day&hourly=temperature_2m,cloud_cover,precipitation,weather_code,uv_index,wind_speed_10m&forecast_days=1&timezone=auto`;
         const res = await fetch(url, { signal: controller.signal });
         if (!res.ok) throw new Error("Weather fetch failed");
         const json: OpenMeteoResponse = await res.json();
@@ -133,8 +257,10 @@ export function useWeather(lat = 44.6488, lng = -63.5752) {
           weatherCode: c.weather_code,
           isDay: c.is_day === 1,
         };
+        const forecastData = buildForecast(json.hourly);
         setWeather(data);
-        setCache(data);
+        setForecast(forecastData);
+        setCache(data, forecastData);
         setError(null);
       } catch (e: any) {
         if (e.name !== "AbortError") {
@@ -149,5 +275,5 @@ export function useWeather(lat = 44.6488, lng = -63.5752) {
     return () => controller.abort();
   }, [lat, lng]);
 
-  return { weather, isLoading, error };
+  return { weather, forecast, isLoading, error };
 }
