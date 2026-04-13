@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Wind, Star, Heart } from "lucide-react";
+import { Sun, Wind, Star, Heart, SlidersHorizontal } from "lucide-react";
 import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -160,9 +160,12 @@ const Index = () => {
           {/* Drag Handle */}
           <button
             onClick={() => setDrawerExpanded(!drawerExpanded)}
-            className="w-full flex items-center justify-center focus:outline-none"
+            className="w-full flex items-center justify-center gap-2 focus:outline-none pt-3 pb-2"
           >
-            <div className="w-10 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
+            <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+            {!drawerExpanded && (
+              <SlidersHorizontal className="h-3.5 w-3.5 text-gray-400" />
+            )}
           </button>
 
           {drawerExpanded ? (
