@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Wind, Star, Heart, SlidersHorizontal } from "lucide-react";
+import { Sun, Wind, Star, Heart, SlidersHorizontal, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -154,7 +155,7 @@ const Index = () => {
         {/* Bottom Drawer */}
         <div 
           className={`absolute bottom-0 left-0 right-0 z-[1001] bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] transition-all duration-300 ease-out ${
-            drawerExpanded ? 'h-[70vh]' : 'h-[180px]'
+            drawerExpanded ? 'h-[70vh]' : 'h-[260px]'
           }`}
         >
           {/* Drag Handle */}
