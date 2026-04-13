@@ -19,6 +19,7 @@ import { Header } from "@/components/Header";
 import { TimeOfDayToggle } from "@/components/TimeOfDayToggle";
 import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { WeatherBanner } from "@/components/WeatherBanner";
+import { HourlyForecast } from "@/components/HourlyForecast";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
@@ -123,6 +124,7 @@ const Index = () => {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Header />
       <WeatherBanner />
+      <HourlyForecast />
       
       {/* Map Container */}
       <div className="flex-1 relative">
