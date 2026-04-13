@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
 import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
 import { SunFeedbackWidget } from "@/components/SunFeedbackWidget";
+import { HourlyForecast } from "@/components/HourlyForecast";
 import { usePatio, useSunReports } from "@/hooks/usePatios";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
@@ -195,6 +196,11 @@ export default function PatioDetail() {
             </div>
           </Card>
         )}
+        
+        {/* Hourly Sun Forecast */}
+        <Card className="p-0 overflow-hidden">
+          <HourlyForecast />
+        </Card>
 
         {/* Info */}
         <div className="space-y-3">
