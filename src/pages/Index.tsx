@@ -283,7 +283,7 @@ const Index = () => {
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold truncate">{patio.name}</div>
+                          <div className="text-sm truncate" style={{ fontWeight: 700, color: '#1C1C1A' }}>{patio.name}</div>
                           <div className="text-xs text-muted-foreground truncate">
                             {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                           </div>
@@ -313,7 +313,7 @@ const Index = () => {
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     selectedNeighborhood === "all"
                       ? "bg-[#C87533] text-white"
-                      : "border border-[#D0C8BC] text-[#4A4540] hover:bg-muted/80"
+                      : "bg-[#F0EBE3] border border-[#D5CEC5] text-[#3D3830] hover:bg-[#E8E2D8]"
                   }`}
                 >
                   All
@@ -325,7 +325,7 @@ const Index = () => {
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedNeighborhood === n
                         ? "bg-[#C87533] text-white"
-                        : "border border-[#D0C8BC] text-[#4A4540] hover:bg-muted/80"
+                        : "bg-[#F0EBE3] border border-[#D5CEC5] text-[#3D3830] hover:bg-[#E8E2D8]"
                     }`}
                   >
                     {n}
@@ -346,7 +346,7 @@ const Index = () => {
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold truncate">{patio.name}</div>
+                      <div className="text-sm truncate" style={{ fontWeight: 700, color: '#1C1C1A' }}>{patio.name}</div>
                       <div className="text-xs text-muted-foreground truncate">
                         {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                       </div>
