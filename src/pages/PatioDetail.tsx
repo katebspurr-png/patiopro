@@ -86,6 +86,20 @@ export default function PatioDetail() {
             Back
           </button>
           <div className="flex items-center gap-2">
+            <button
+              className={iconBtnClass}
+              onClick={() => {
+                if (!isLoggedIn) {
+                  toast({ title: "Sign in to save favorites", description: "Create an account to save your favorite patios." });
+                  return;
+                }
+                toggleFavorite();
+              }}
+              disabled={isToggling}
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart className={cn("h-4 w-4 transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground")} />
+            </button>
             {patio.address && (
               <button
                 className={iconBtnClass}
