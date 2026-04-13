@@ -185,76 +185,88 @@ const Index = () => {
             /* Expanded state */
             <ScrollArea className="px-4 h-[calc(70vh-40px)]">
               <div className="space-y-3 pb-4">
-                {/* Time of Day Toggle */}
-                <div className="flex justify-center">
-                  <TimeOfDayToggle 
-                    selectedTime={selectedTime} 
-                    onTimeChange={setSelectedTime} 
-                  />
+                {/* Time of Day pill row */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                  {(["now", "morning", "midday", "afternoon", "evening"] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setSelectedTime(t)}
+                      className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedTime === t
+                          ? "bg-[#C87533] text-white"
+                          : "bg-muted text-gray-400 hover:bg-muted/80"
+                      }`}
+                    >
+                      {t === "now" ? "Now" : t.charAt(0).toUpperCase() + t.slice(1)}
+                    </button>
+                  ))}
                 </div>
 
-
-                {/* Favorites Only Toggle */}
-                {(
-                  <div className="flex items-center gap-2 px-1">
-                    <Switch
-                      id="favorites-only"
-                      checked={favoritesOnly}
-                      onCheckedChange={setFavoritesOnly}
-                      className="data-[state=checked]:bg-red-500"
-                    />
-                    <Label htmlFor="favorites-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
-                      <Heart className="h-4 w-4 text-red-500" />
-                      Favorites
-                    </Label>
-                  </div>
-                )}
-
-                {/* Tag Chips */}
+                {/* Favorites + Tag chips in one row */}
                 <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                  <button
+                    onClick={() => setFavoritesOnly(!favoritesOnly)}
+                    className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      favoritesOnly
+                        ? "bg-[#C87533] text-white"
+                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                    }`}
+                  >
+                    Favorites
+                  </button>
                   {ALLOWED_TAGS.map((tag) => (
-                    <Badge
+                    <button
                       key={tag}
-                      variant={selectedTags.includes(tag) ? "default" : "outline"}
-                      className={`cursor-pointer whitespace-nowrap text-xs px-2 py-1 transition-all ${
-                        selectedTags.includes(tag)
-                          ? "bg-[#C87533] text-white shadow-md"
-                          : "bg-muted hover:bg-muted/80"
-                      }`}
                       onClick={() => toggleTag(tag)}
+                      className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                        selectedTags.includes(tag)
+                          ? "bg-[#C87533] text-white"
+                          : "bg-muted text-gray-400 hover:bg-muted/80"
+                      }`}
                     >
-                      {TAG_LABELS[tag] || tag}
-                      <span className={`ml-1 text-[10px] ${selectedTags.includes(tag) ? "opacity-80" : "opacity-60"}`}>
-                        ({tagCounts[tag] || 0})
-                      </span>
-                    </Badge>
+                      {(TAG_LABELS[tag] || tag).replace(/^[^\s]+\s/, '')}
+                    </button>
                   ))}
                   {selectedTags.length > 0 && (
                     <button
                       onClick={() => setSelectedTags([])}
-                      className="text-xs text-muted-foreground hover:text-foreground px-2 whitespace-nowrap"
+                      className="text-xs text-muted-foreground hover:text-foreground px-2 whitespace-nowrap shrink-0"
                     >
                       Clear
                     </button>
                   )}
                 </div>
 
-                {/* Full patio list */}
-                <div className="space-y-2">
+                {/* Compact patio list */}
+                <div className="space-y-1.5">
                   {filteredPatios.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-center py-8 text-muted-foreground text-sm">
                       {sunnyOnly ? "No sunny patios right now" : "No patios found"}
                     </div>
                   ) : (
-                    filteredPatios.map((patio) => (
-                      <PatioCard
+                    filteredPatios.map((patio, i) => (
+                      <button
                         key={patio.id}
-                        patio={patio}
                         onClick={() => navigate(`/patio/${patio.id}`)}
-                        compact
-                        scoredFor={selectedTime}
-                        resolvedTime={resolvedTime}
-                      />
+                        className="w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                      >
+                        <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
+                        <span className="bg-[#C87533] text-white font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
+                          {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium truncate">{patio.name}</div>
+                          <div className="text-xs text-muted-foreground truncate">
+                            {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
+                          </div>
+                          {happyHourMap[patio.id] && (
+                            <div className="text-[11px] text-gray-400 truncate">{happyHourMap[patio.id]}</div>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground shrink-0 max-w-[100px] truncate text-right">
+                          {patio.best_time_to_visit ?? "—"}
+                        </span>
+                      </button>
                     ))
                   )}
                 </div>
