@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { PatioWithStatus } from '@/types/patio';
@@ -77,6 +77,42 @@ export function PatioMap({ patios, onPatioClick, highlightedIds = [] }: PatioMap
     }).addTo(m);
 
     L.control.zoom({ position: 'topright' }).addTo(m);
+
+    // Add locate-me control
+    const LocateControl = L.Control.extend({
+      options: { position: 'topright' as L.ControlPosition },
+      onAdd() {
+        const btn = L.DomUtil.create('div', 'leaflet-bar');
+        btn.innerHTML = `<a href="#" title="My location" role="button" aria-label="My location" style="
+          display:flex;align-items:center;justify-content:center;
+          width:34px;height:34px;background:white;cursor:pointer;
+          font-size:18px;text-decoration:none;color:#333;
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M2 12h4"/><path d="M18 12h4"/><circle cx="12" cy="12" r="9"/></svg>
+        </a>`;
+        L.DomEvent.disableClickPropagation(btn);
+        btn.querySelector('a')!.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (!navigator.geolocation) return;
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+              m.setView(latlng, 15);
+              // Show a temporary marker
+              const dot = L.circleMarker(latlng, {
+                radius: 8, fillColor: '#3b82f6', fillOpacity: 0.9,
+                color: 'white', weight: 3,
+              }).addTo(m);
+              setTimeout(() => dot.remove(), 10000);
+            },
+            () => {},
+            { enableHighAccuracy: false, timeout: 10000 }
+          );
+        });
+        return btn;
+      },
+    });
+    new LocateControl().addTo(m);
 
     mapRef.current = m;
 
