@@ -302,9 +302,21 @@ export default function PatioDetail() {
           <div className="shrink-0 flex items-center justify-center" style={{ width: 32, height: 32, backgroundColor: '#EDE8E0', borderRadius: 8 }}>
             <Wind className="h-4 w-4" style={{ color: '#9A9490' }} />
           </div>
-          <div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1A' }}>{windExposureLabel}</p>
-            <p style={{ fontSize: 12, color: '#9A9490' }}>Wind exposure</p>
+          <div className="flex-1">
+            <div className="flex items-center justify-between">
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#1C1C1A' }}>{windExposureLabel}</p>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#9A9490' }}>{(patio as any).wind_shelter_score ?? 50}/100</span>
+            </div>
+            <div className="mt-1.5" style={{ height: 6, backgroundColor: '#EDE8E0', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
+                width: `${Math.max(0, Math.min(100, (patio as any).wind_shelter_score ?? 50))}%`,
+                backgroundColor: '#C87533',
+                borderRadius: 3,
+                transition: 'width 0.3s ease',
+              }} />
+            </div>
+            <p style={{ fontSize: 11, color: '#9A9490', marginTop: 2 }}>Wind shelter</p>
           </div>
         </div>
       </div>
