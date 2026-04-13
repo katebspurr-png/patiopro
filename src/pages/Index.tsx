@@ -174,8 +174,8 @@ const Index = () => {
           />
         </div>
         
-        {/* Sunny Only Toggle - Floating on map */}
-        <div className="absolute top-16 left-4 z-10">
+        {/* Sunny Only Toggle + Filters - Floating on map */}
+        <div className="absolute top-16 left-4 z-10 flex items-center gap-2">
           <div className="bg-background/95 backdrop-blur border rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
             <Switch
               id="sunny-only"
@@ -188,6 +188,7 @@ const Index = () => {
               <span className="text-sm font-medium">Sunny Only</span>
             </Label>
           </div>
+          <FilterPanel filters={advancedFilters} onChange={setAdvancedFilters} />
         </div>
 
         {/* Search and Neighborhood Filters */}
