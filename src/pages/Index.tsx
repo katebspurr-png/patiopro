@@ -174,18 +174,19 @@ const Index = () => {
 
         {/* Bottom Drawer */}
         <div 
-          className={`absolute bottom-0 left-0 right-0 z-[1001] bg-[#FAFAF8] rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] border-t-[1.5px] border-[#E5E0D8] transition-all duration-300 ease-out ${
+          className={`absolute bottom-0 left-0 right-0 z-[1001] rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.3)] border-t-[1.5px] border-[#2E2E2C] transition-all duration-300 ease-out text-white ${
             drawerExpanded ? 'h-[65vh]' : 'h-[260px]'
           }`}
+          style={{ backgroundColor: '#1C1C1A' }}
         >
           {/* Drag Handle */}
           <button
             onClick={() => setDrawerExpanded(!drawerExpanded)}
             className="w-full flex items-center justify-center gap-2 focus:outline-none pt-3 pb-2"
           >
-            <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
+            <div className="w-10 h-1.5 rounded-full" style={{ backgroundColor: '#4A4A48' }} />
             {!drawerExpanded && (
-              <SlidersHorizontal className="h-3.5 w-3.5 text-gray-400" />
+              <SlidersHorizontal className="h-3.5 w-3.5" style={{ color: '#4A4A48' }} />
             )}
           </button>
 
@@ -202,7 +203,7 @@ const Index = () => {
                       className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                         selectedTime === t
                           ? "bg-[#C87533] text-white"
-                          : "bg-muted text-gray-400 hover:bg-muted/80"
+                          : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                       }`}
                     >
                       {t === "now" ? "Now" : t.charAt(0).toUpperCase() + t.slice(1)}
@@ -217,7 +218,7 @@ const Index = () => {
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       sunnyOnly
                         ? "bg-[#C87533] text-white"
-                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                     }`}
                   >
                     Sunny Only
@@ -227,7 +228,7 @@ const Index = () => {
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       favoritesOnly
                         ? "bg-[#C87533] text-white"
-                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                     }`}
                   >
                     Favorites
@@ -237,7 +238,7 @@ const Index = () => {
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       happyHourOnly
                         ? "bg-[#C87533] text-white"
-                        : "bg-muted text-gray-400 hover:bg-muted/80"
+                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                     }`}
                   >
                     Happy Hour
@@ -249,7 +250,7 @@ const Index = () => {
                       className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                         selectedTags.includes(tag)
                           ? "bg-[#C87533] text-white"
-                          : "bg-muted text-gray-400 hover:bg-muted/80"
+                          : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                       }`}
                     >
                       {(TAG_LABELS[tag] || tag).replace(/^[^\s]+\s/, '')}
@@ -258,7 +259,7 @@ const Index = () => {
                   {selectedTags.length > 0 && (
                     <button
                       onClick={() => setSelectedTags([])}
-                      className="text-xs text-muted-foreground hover:text-foreground px-2 whitespace-nowrap shrink-0"
+                      className="text-xs text-[#8A8480] hover:text-white px-2 whitespace-nowrap shrink-0"
                     >
                       Clear
                     </button>
@@ -266,9 +267,9 @@ const Index = () => {
                 </div>
 
                 {/* Compact patio list */}
-                <div className="space-y-1.5">
+                <div className="divide-y divide-[#2E2E2C]">
                   {filteredPatios.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground text-sm">
+                    <div className="text-center py-8 text-[#8A8480] text-sm">
                       {sunnyOnly ? "No sunny patios right now" : "No patios found"}
                     </div>
                   ) : (
@@ -276,24 +277,24 @@ const Index = () => {
                       <button
                         key={patio.id}
                         onClick={() => navigate(`/patio/${patio.id}`)}
-                        className="w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 px-2 py-2 hover:bg-white/5 transition-colors text-left"
                       >
-                        <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
-                        <span className="bg-[#C87533] text-white font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
+                        <span className="text-xs font-bold text-[#8A8480] w-4 text-center">{i + 1}</span>
+                        <span className="text-white font-bold text-xs px-2 py-0.5 min-w-[36px] text-center" style={{ backgroundColor: '#C87533', borderRadius: '8px' }}>
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm truncate" style={{ fontWeight: 700, color: '#1C1C1A' }}>{patio.name}</div>
-                          <div className="text-xs text-muted-foreground truncate">
+                          <div className="truncate" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{patio.name}</div>
+                          <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                             {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                           </div>
                           {(happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]) && (
-                            <div className="text-[11px] text-gray-400 truncate">
+                            <div className="text-[11px] text-[#6A6460] truncate">
                               {happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]}
                             </div>
                           )}
                         </div>
-                        <span className="text-xs text-muted-foreground shrink-0 max-w-[100px] truncate text-right">
+                        <span className="shrink-0 max-w-[100px] truncate text-right" style={{ fontSize: '12px', color: '#C87533' }}>
                           {patio.best_time_to_visit ?? "—"}
                         </span>
                       </button>
@@ -313,7 +314,7 @@ const Index = () => {
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     selectedNeighborhood === "all"
                       ? "bg-[#C87533] text-white"
-                      : "bg-[#F0EBE3] border border-[#D5CEC5] text-[#3D3830] hover:bg-[#E8E2D8]"
+                      : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                   }`}
                 >
                   All
@@ -325,7 +326,7 @@ const Index = () => {
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedNeighborhood === n
                         ? "bg-[#C87533] text-white"
-                        : "bg-[#F0EBE3] border border-[#D5CEC5] text-[#3D3830] hover:bg-[#E8E2D8]"
+                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
                     }`}
                   >
                     {n}
@@ -334,24 +335,24 @@ const Index = () => {
               </div>
 
               {/* Top 3 ranked patios */}
-              <div className="space-y-1.5">
+              <div className="divide-y divide-[#2E2E2C]">
                 {filteredPatios.slice(0, 3).map((patio, i) => (
                   <button
                     key={patio.id}
                     onClick={() => navigate(`/patio/${patio.id}`)}
-                    className="w-full flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 px-2 py-2 hover:bg-white/5 transition-colors text-left"
                   >
-                    <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
-                    <span className="bg-[#C87533] text-white font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
+                    <span className="text-xs font-bold text-[#8A8480] w-4 text-center">{i + 1}</span>
+                    <span className="text-white font-bold text-xs px-2 py-0.5 min-w-[36px] text-center" style={{ backgroundColor: '#C87533', borderRadius: '8px' }}>
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm truncate" style={{ fontWeight: 700, color: '#1C1C1A' }}>{patio.name}</div>
-                      <div className="text-xs text-muted-foreground truncate">
+                      <div className="truncate" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{patio.name}</div>
+                      <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                         {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
                       </div>
                     </div>
-                    <span className="text-xs text-muted-foreground shrink-0">
+                    <span className="shrink-0" style={{ fontSize: '12px', color: '#C87533' }}>
                       {patio.best_time_to_visit ?? "—"}
                     </span>
                   </button>
