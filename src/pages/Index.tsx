@@ -20,6 +20,7 @@ import { TimeOfDayToggle } from "@/components/TimeOfDayToggle";
 import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { WeatherBanner } from "@/components/WeatherBanner";
 import { HourlyForecast } from "@/components/HourlyForecast";
+import { FilterPanel, type AdvancedFilters, DEFAULT_FILTERS } from "@/components/FilterPanel";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
@@ -47,6 +48,7 @@ const Index = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
   const [showBestRightNow, setShowBestRightNow] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(DEFAULT_FILTERS);
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
@@ -111,9 +113,29 @@ const Index = () => {
       );
     }
     
+    // Advanced filters
+    if (advancedFilters.minSunScore > 0) {
+      filtered = filtered.filter(p => p.sun_score_live >= advancedFilters.minSunScore);
+    }
+    if (advancedFilters.shadeTypes.length > 0) {
+      filtered = filtered.filter(p => 
+        advancedFilters.shadeTypes.includes((p as any).shade_context || "unknown")
+      );
+    }
+    if (advancedFilters.sunProfiles.length > 0) {
+      filtered = filtered.filter(p => 
+        advancedFilters.sunProfiles.includes(p.sun_profile || "unknown")
+      );
+    }
+    if (advancedFilters.priceRanges.length > 0) {
+      filtered = filtered.filter(p => 
+        advancedFilters.priceRanges.includes((p as any).price_range || "unknown")
+      );
+    }
+    
     // Sort by live score descending
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
+  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags, advancedFilters]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -152,8 +174,8 @@ const Index = () => {
           />
         </div>
         
-        {/* Sunny Only Toggle - Floating on map */}
-        <div className="absolute top-16 left-4 z-10">
+        {/* Sunny Only Toggle + Filters - Floating on map */}
+        <div className="absolute top-16 left-4 z-10 flex items-center gap-2">
           <div className="bg-background/95 backdrop-blur border rounded-full px-4 py-2 shadow-lg flex items-center gap-2">
             <Switch
               id="sunny-only"
@@ -166,6 +188,7 @@ const Index = () => {
               <span className="text-sm font-medium">Sunny Only</span>
             </Label>
           </div>
+          <FilterPanel filters={advancedFilters} onChange={setAdvancedFilters} />
         </div>
 
         {/* Search and Neighborhood Filters */}
