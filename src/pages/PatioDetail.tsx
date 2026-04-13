@@ -77,7 +77,12 @@ export default function PatioDetail() {
   
   const sunnyVotes = (patio as any).sunny_votes ?? 0;
   const notSunnyVotes = (patio as any).not_sunny_votes ?? 0;
-  const lastSunCheckAt = (patio as any).last_sun_check_at ?? null;
+  const windExposure = (patio as any).wind_exposure as string | null;
+  const windExposureLabel = windExposure === 'exposed' ? 'Exposed' : windExposure === 'sheltered' ? 'Sheltered' : 'Partial shelter';
+  
+  const liveResult = patio && statusResult
+    ? computeLiveSunScore({ ...patio, ...statusResult } as any, resolvedTime, weather)
+    : null;
 
   const iconBtnClass = "h-9 w-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors";
   
