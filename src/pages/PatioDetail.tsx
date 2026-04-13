@@ -1,5 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets } from "lucide-react";
+import { ChevronLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets, Heart } from "lucide-react";
+import { useIsFavorite } from "@/hooks/useFavorites";
+import { toast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
 import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
@@ -22,6 +24,7 @@ export default function PatioDetail() {
   const { data: reports, isLoading: reportsLoading } = useSunReports(id);
   const { data: settings } = useAppSettings();
   const { weather } = useWeather(patio?.lat, patio?.lng);
+  const { isFavorite, isLoggedIn, toggle: toggleFavorite, isToggling } = useIsFavorite(id);
   
   const isLoading = patioLoading || reportsLoading;
   
@@ -83,6 +86,20 @@ export default function PatioDetail() {
             Back
           </button>
           <div className="flex items-center gap-2">
+            <button
+              className={iconBtnClass}
+              onClick={() => {
+                if (!isLoggedIn) {
+                  toast({ title: "Sign in to save favorites", description: "Create an account to save your favorite patios." });
+                  return;
+                }
+                toggleFavorite();
+              }}
+              disabled={isToggling}
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart className={cn("h-4 w-4 transition-colors", isFavorite ? "fill-red-500 text-red-500" : "text-muted-foreground")} />
+            </button>
             {patio.address && (
               <button
                 className={iconBtnClass}
