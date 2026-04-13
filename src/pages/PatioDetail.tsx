@@ -143,6 +143,9 @@ export default function PatioDetail() {
               {statusResult && (
                 <SunStatusBadge status={statusResult.status} confidence={statusResult.confidence} size="md" />
               )}
+              {statusResult?.confidence && (
+                <span className="text-xs text-muted-foreground capitalize">{statusResult.confidence}</span>
+              )}
             </div>
           </div>
         </div>
@@ -275,7 +278,7 @@ export default function PatioDetail() {
         <div className="px-5 py-4 border-b">
           <div className="flex flex-wrap gap-1.5">
             {patio.tags.map((tag) => (
-              <span key={tag} className="bg-muted rounded-md px-2.5 py-1 text-xs text-muted-foreground">
+              <span key={tag} className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-md border border-gray-200">
                 {tag.replace("_", " ")}
               </span>
             ))}

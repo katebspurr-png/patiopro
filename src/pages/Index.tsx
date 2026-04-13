@@ -145,7 +145,7 @@ const Index = () => {
         {/* Best Right Now — bottom right */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="absolute bottom-[200px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+          className="absolute bottom-[200px] right-3 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
           title="Best Right Now"
         >
           <Star className="h-4 w-4 text-amber-500" />
@@ -160,9 +160,9 @@ const Index = () => {
           {/* Drag Handle */}
           <button
             onClick={() => setDrawerExpanded(!drawerExpanded)}
-            className="w-full flex items-center justify-center pt-2 pb-1 focus:outline-none"
+            className="w-full flex items-center justify-center focus:outline-none"
           >
-            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+            <div className="w-10 h-1.5 bg-gray-300 rounded-full mx-auto mt-3 mb-2" />
           </button>
 
           {drawerExpanded ? (
