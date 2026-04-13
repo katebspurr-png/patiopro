@@ -1,22 +1,16 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, MapPin, Search, X, Wind } from "lucide-react";
+import { Sun, Wind, Star } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PatioMap } from "@/components/PatioMap";
 import { PatioCard } from "@/components/PatioCard";
 import { Header } from "@/components/Header";
 import { TimeOfDayToggle } from "@/components/TimeOfDayToggle";
-import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
-import { FilterPanel, type AdvancedFilters, DEFAULT_FILTERS } from "@/components/FilterPanel";
-import { getWeatherLabel, getWindLabel } from "@/hooks/useWeather";
+import { BestRightNowPanel } from "@/components/BestRightNowPanel";
+import { getWeatherLabel } from "@/hooks/useWeather";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
@@ -44,15 +38,12 @@ const Index = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [drawerExpanded, setDrawerExpanded] = useState(false);
   const [showBestRightNow, setShowBestRightNow] = useState(false);
-  const [searchExpanded, setSearchExpanded] = useState(false);
-  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(DEFAULT_FILTERS);
   
   const { data: patios, isLoading, error } = usePatiosWithStatus();
   const topPatioIds = useTopPatioIds(3);
   const { selectedTime, setSelectedTime, resolvedTime } = useTimeOfDay();
   const { weather } = useWeather();
   
-  // Extract unique neighborhoods
   const neighborhoods = useMemo(() => {
     const uniqueNeighborhoods = new Set<string>();
     patios.forEach(p => {
@@ -61,7 +52,6 @@ const Index = () => {
     return Array.from(uniqueNeighborhoods).sort();
   }, [patios]);
 
-  // Calculate tag counts
   const tagCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     ALLOWED_TAGS.forEach(tag => {
@@ -72,22 +62,17 @@ const Index = () => {
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
     );
   };
   
-  // Compute live scores based on resolved time
   const patiosWithLiveScores = useMemo(() => {
     return computeAllLiveScores(patios, resolvedTime, weather);
   }, [patios, resolvedTime, weather]);
   
-  // Filter and sort patios
   const filteredPatios = useMemo(() => {
     let filtered = patiosWithLiveScores;
     
-    // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
       filtered = filtered.filter(p => 
@@ -96,43 +81,20 @@ const Index = () => {
         p.tags?.some(tag => tag.toLowerCase().includes(query))
       );
     }
-    
     if (sunnyOnly) {
       filtered = filtered.filter(p => p.currentStatus === "sunny");
     }
     if (selectedNeighborhood !== "all") {
       filtered = filtered.filter(p => p.neighborhood === selectedNeighborhood);
     }
-    // Tag filter - patio must have ALL selected tags
     if (selectedTags.length > 0) {
       filtered = filtered.filter(p => 
         selectedTags.every(tag => p.tags?.includes(tag))
       );
     }
     
-    // Advanced filters
-    if (advancedFilters.minSunScore > 0) {
-      filtered = filtered.filter(p => p.sun_score_live >= advancedFilters.minSunScore);
-    }
-    if (advancedFilters.shadeTypes.length > 0) {
-      filtered = filtered.filter(p => 
-        advancedFilters.shadeTypes.includes((p as any).shade_context || "unknown")
-      );
-    }
-    if (advancedFilters.sunProfiles.length > 0) {
-      filtered = filtered.filter(p => 
-        advancedFilters.sunProfiles.includes(p.sun_profile || "unknown")
-      );
-    }
-    if (advancedFilters.priceRanges.length > 0) {
-      filtered = filtered.filter(p => 
-        advancedFilters.priceRanges.includes((p as any).price_range || "unknown")
-      );
-    }
-    
-    // Sort by live score descending
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags, advancedFilters]);
+  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
@@ -145,18 +107,6 @@ const Index = () => {
       
       {/* Map Container */}
       <div className="flex-1 relative">
-        {/* Floating Weather Pill */}
-        {weather && (
-          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-white/90 backdrop-blur px-3 py-1.5 shadow-md flex items-center gap-2 text-xs text-foreground">
-            <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-            <span className="font-medium">{weather.temperature}°C</span>
-            <span className="text-muted-foreground">·</span>
-            <span>{getWeatherLabel(weather.weatherCode).label}</span>
-            <span className="text-muted-foreground">|</span>
-            <Wind className="h-3 w-3 text-muted-foreground" />
-            <span>{weather.windSpeed} km/h</span>
-          </div>
-        )}
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -172,114 +122,28 @@ const Index = () => {
             highlightedIds={topPatioIds}
           />
         )}
-        
-        {/* Unified Filter Bar - Top center */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] rounded-full bg-background/95 backdrop-blur border shadow-md px-3 py-1.5 flex items-center gap-2">
-          {/* Expandable Search */}
-          <div className="flex items-center">
-            {searchExpanded ? (
-              <div className="relative flex items-center">
-                <Search className="absolute left-2 h-3.5 w-3.5 text-muted-foreground" />
-                <input
-                  autoFocus
-                  type="text"
-                  placeholder="Search…"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onBlur={() => { if (!searchQuery) setSearchExpanded(false); }}
-                  className="w-[130px] pl-7 pr-6 py-0.5 text-xs bg-transparent border-b border-muted-foreground/30 focus:outline-none focus:border-primary"
-                />
-                <button
-                  onClick={() => { setSearchQuery(""); setSearchExpanded(false); }}
-                  className="absolute right-0.5 p-0.5 hover:bg-muted rounded"
-                >
-                  <X className="h-3 w-3 text-muted-foreground" />
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => setSearchExpanded(true)} className="p-1 hover:bg-muted rounded-full">
-                <Search className="h-4 w-4 text-muted-foreground" />
-              </button>
-            )}
+
+        {/* Weather Pill — top left */}
+        {weather && (
+          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-white/90 backdrop-blur border shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-foreground">
+            <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+            <span className="font-medium">{weather.temperature}°C</span>
+            <span className="text-muted-foreground">·</span>
+            <span>{getWeatherLabel(weather.weatherCode).label}</span>
+            <span className="text-muted-foreground">·</span>
+            <Wind className="h-3 w-3 text-muted-foreground" />
+            <span>{weather.windSpeed} km/h</span>
           </div>
+        )}
 
-          <span className="h-4 w-px bg-border shrink-0" />
-
-          {/* Neighborhood */}
-          <Select value={selectedNeighborhood} onValueChange={setSelectedNeighborhood}>
-            <SelectTrigger className="h-auto border-0 shadow-none bg-transparent px-1 py-0 text-xs gap-1 w-auto min-w-0 focus:ring-0">
-              <MapPin className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <SelectValue placeholder="All Areas" />
-            </SelectTrigger>
-            <SelectContent className="bg-background border shadow-lg z-50">
-              <SelectItem value="all">All Areas</SelectItem>
-              {neighborhoods.map((neighborhood) => (
-                <SelectItem key={neighborhood} value={neighborhood}>
-                  {neighborhood}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <span className="h-4 w-px bg-border shrink-0" />
-
-          {/* Sunny Only */}
-          <button
-            onClick={() => setSunnyOnly(!sunnyOnly)}
-            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium transition-colors ${
-              sunnyOnly ? "bg-amber-100 text-amber-700" : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Sun className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Sunny</span>
-          </button>
-
-          <FilterPanel filters={advancedFilters} onChange={setAdvancedFilters} />
-        </div>
-
-        {/* Time of Day Toggle */}
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 z-[1000]">
-          <TimeOfDayToggle 
-            selectedTime={selectedTime} 
-            onTimeChange={setSelectedTime} 
-          />
-        </div>
-
-        {/* Tag Filter Chips - Bottom positioned above drawer */}
-        <div className="absolute bottom-[188px] left-4 right-4 z-[1000]">
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-            {ALLOWED_TAGS.map((tag) => (
-              <Badge
-                key={tag}
-                variant={selectedTags.includes(tag) ? "default" : "outline"}
-                className={`cursor-pointer whitespace-nowrap text-xs px-2 py-1 transition-all ${
-                  selectedTags.includes(tag)
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-background/95 backdrop-blur hover:bg-muted"
-                }`}
-                onClick={() => toggleTag(tag)}
-              >
-                {TAG_LABELS[tag] || tag}
-                <span className={`ml-1 text-[10px] ${selectedTags.includes(tag) ? "opacity-80" : "opacity-60"}`}>
-                  ({tagCounts[tag] || 0})
-                </span>
-              </Badge>
-            ))}
-            {selectedTags.length > 0 && (
-              <button
-                onClick={() => setSelectedTags([])}
-                className="text-xs text-muted-foreground hover:text-foreground px-2 whitespace-nowrap"
-              >
-                Clear all
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Best Right Now Button - Floating on map */}
-        <div className="absolute top-4 right-4 z-[1000]">
-          <BestRightNowButton onClick={() => setShowBestRightNow(true)} />
-        </div>
+        {/* Best Right Now — small icon button, top right */}
+        <button
+          onClick={() => setShowBestRightNow(true)}
+          className="absolute top-3 right-3 z-[1000] h-9 w-9 rounded-full bg-white/90 backdrop-blur border shadow-sm flex items-center justify-center hover:bg-white transition-colors"
+          title="Best Right Now"
+        >
+          <Star className="h-4 w-4 text-amber-500" />
+        </button>
 
         {/* Bottom Drawer */}
         <div 
@@ -296,29 +160,83 @@ const Index = () => {
           </button>
 
           {drawerExpanded ? (
-            /* Expanded: full list */
+            /* Expanded state */
             <ScrollArea className="px-4 h-[calc(70vh-40px)]">
-              <div className="space-y-2 pb-4">
-                {filteredPatios.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {sunnyOnly ? "No sunny patios right now" : "No patios found"}
-                  </div>
-                ) : (
-                  filteredPatios.map((patio) => (
-                    <PatioCard
-                      key={patio.id}
-                      patio={patio}
-                      onClick={() => navigate(`/patio/${patio.id}`)}
-                      compact
-                      scoredFor={selectedTime}
-                      resolvedTime={resolvedTime}
-                    />
-                  ))
-                )}
+              <div className="space-y-3 pb-4">
+                {/* Time of Day Toggle */}
+                <div className="flex justify-center">
+                  <TimeOfDayToggle 
+                    selectedTime={selectedTime} 
+                    onTimeChange={setSelectedTime} 
+                  />
+                </div>
+
+                {/* Sunny Only Toggle */}
+                <div className="flex items-center gap-2 px-1">
+                  <Switch
+                    id="sunny-only"
+                    checked={sunnyOnly}
+                    onCheckedChange={setSunnyOnly}
+                    className="data-[state=checked]:bg-amber-500"
+                  />
+                  <Label htmlFor="sunny-only" className="flex items-center gap-1.5 cursor-pointer text-sm">
+                    <Sun className="h-4 w-4 text-amber-500" />
+                    Sunny Only
+                  </Label>
+                </div>
+
+                {/* Tag Chips */}
+                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                  {ALLOWED_TAGS.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant={selectedTags.includes(tag) ? "default" : "outline"}
+                      className={`cursor-pointer whitespace-nowrap text-xs px-2 py-1 transition-all ${
+                        selectedTags.includes(tag)
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "bg-muted hover:bg-muted/80"
+                      }`}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {TAG_LABELS[tag] || tag}
+                      <span className={`ml-1 text-[10px] ${selectedTags.includes(tag) ? "opacity-80" : "opacity-60"}`}>
+                        ({tagCounts[tag] || 0})
+                      </span>
+                    </Badge>
+                  ))}
+                  {selectedTags.length > 0 && (
+                    <button
+                      onClick={() => setSelectedTags([])}
+                      className="text-xs text-muted-foreground hover:text-foreground px-2 whitespace-nowrap"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {/* Full patio list */}
+                <div className="space-y-2">
+                  {filteredPatios.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      {sunnyOnly ? "No sunny patios right now" : "No patios found"}
+                    </div>
+                  ) : (
+                    filteredPatios.map((patio) => (
+                      <PatioCard
+                        key={patio.id}
+                        patio={patio}
+                        onClick={() => navigate(`/patio/${patio.id}`)}
+                        compact
+                        scoredFor={selectedTime}
+                        resolvedTime={resolvedTime}
+                      />
+                    ))
+                  )}
+                </div>
               </div>
             </ScrollArea>
           ) : (
-            /* Collapsed: neighborhood chips + top 3 */
+            /* Collapsed state */
             <div className="px-4 space-y-2">
               {/* Neighborhood chips */}
               <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
@@ -357,7 +275,7 @@ const Index = () => {
                   >
                     <span className="text-xs font-bold text-muted-foreground w-4 text-center">{i + 1}</span>
                     <span className="bg-amber-100 text-amber-700 font-bold text-xs px-2 py-0.5 rounded-xl min-w-[36px] text-center">
-                      {patio.sun_score_live ?? patio.sun_score ?? "–"}
+                      {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium truncate">{patio.name}</div>
