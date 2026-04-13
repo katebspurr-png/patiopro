@@ -1,8 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets, Cloud, Thermometer } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { ChevronLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SunStatusBadge } from "@/components/SunStatusBadge";
 import { ConfidenceLevelBadge } from "@/components/ConfidenceLevelBadge";
@@ -11,7 +8,6 @@ import { HourlyForecast } from "@/components/HourlyForecast";
 import { usePatio, useSunReports } from "@/hooks/usePatios";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
-import { getSunScoreColor } from "@/lib/sun-profile";
 import { calculateSeasonalScore } from "@/lib/seasonal-adjustment";
 import { cn } from "@/lib/utils";
 import { useWeather, getWeatherLabel, getWindLabel, getUVLabel } from "@/hooks/useWeather";
@@ -33,7 +29,6 @@ export default function PatioDetail() {
     ? calculateSunStatus(reports, patio.sun_profile as SunProfile | null)
     : null;
   
-  // Calculate seasonal score if enabled
   const seasonalResult = patio && settings?.enable_seasonal_adjustment
     ? calculateSeasonalScore(
         (patio as any).sun_score_base ?? patio.sun_score,
@@ -53,10 +48,10 @@ export default function PatioDetail() {
   if (!patio) {
     return (
       <div className="min-h-screen bg-background p-4">
-        <Button variant="ghost" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-amber-600 text-sm font-medium">
+          <ChevronLeft className="h-5 w-5" />
           Back
-        </Button>
+        </button>
         <p className="text-center text-muted-foreground mt-8">Patio not found.</p>
       </div>
     );
@@ -64,258 +59,250 @@ export default function PatioDetail() {
   
   const recentReports = reports?.slice(0, 10) || [];
   
-  // Determine which score to display
   const displayScore = settings?.enable_seasonal_adjustment && seasonalResult
     ? seasonalResult.sunScoreTuned
     : (patio.sun_score ?? 50);
   
-  // Get confidence level from patio data (if feature enabled)
   const confidenceLevel = settings?.enable_confidence_level
     ? ((patio as any).confidence_level as ConfidenceLevel | null)
     : null;
   
-  // Get crowd feedback data
   const sunnyVotes = (patio as any).sunny_votes ?? 0;
   const notSunnyVotes = (patio as any).not_sunny_votes ?? 0;
   const lastSunCheckAt = (patio as any).last_sun_check_at ?? null;
+
+  const iconBtnClass = "h-9 w-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-muted transition-colors";
   
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background border-b">
-        <div className="flex items-center gap-2 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="font-display font-semibold text-lg truncate">{patio.name}</h1>
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
+        <div className="flex items-center justify-between px-4 py-3">
+          <button onClick={() => navigate(-1)} className="flex items-center gap-0.5 text-amber-600 text-sm font-medium">
+            <ChevronLeft className="h-5 w-5" />
+            Back
+          </button>
+          <div className="flex items-center gap-2">
+            {patio.address && (
+              <button
+                className={iconBtnClass}
+                onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(patio.address!)}`, "_blank")}
+                title="Directions"
+              >
+                <Navigation className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+            {patio.phone && (
+              <button className={iconBtnClass} onClick={() => window.open(`tel:${patio.phone}`, "_self")} title="Call">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+            {patio.website && (
+              <button className={iconBtnClass} onClick={() => window.open(patio.website!, "_blank")} title="Website">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+            {patio.instagram && (
+              <button className={iconBtnClass} onClick={() => window.open(`https://instagram.com/${patio.instagram}`, "_blank")} title="Instagram">
+                <Instagram className="h-4 w-4 text-muted-foreground" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
       
-      <div className="p-4 max-w-lg mx-auto space-y-6">
-        {/* Status Card */}
-        <Card className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={cn("flex items-center gap-2 text-2xl font-bold", getSunScoreColor(displayScore))}>
-                <Sun className="h-6 w-6" />
-                <span>{displayScore}</span>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <span className="block font-medium">
-                  {settings?.enable_seasonal_adjustment ? 'Sun Score (seasonal)' : 'Sun Score'}
-                </span>
-                {settings?.enable_seasonal_adjustment && seasonalResult?.seasonalAdjustmentNotes ? (
-                  <span className="text-xs">{seasonalResult.seasonalAdjustmentNotes}</span>
-                ) : (
-                  <span className="text-xs">{patio.sun_score_reason || 'sun unknown'}</span>
-                )}
-              </div>
-            </div>
-            {statusResult && (
-              <SunStatusBadge
-                status={statusResult.status}
-                confidence={statusResult.confidence}
-                size="md"
-              />
-            )}
-          </div>
-          
-          {/* Confidence Level Badge (gated) */}
-          {settings?.enable_confidence_level && confidenceLevel && (
-            <div className="mb-4">
-              <ConfidenceLevelBadge level={confidenceLevel} />
-            </div>
-          )}
-          
-          <div className="flex items-center justify-between pt-3 border-t">
-            <div>
-              <span className="text-sm font-medium">Best time</span>
-              <p className="text-lg font-semibold">{patio.best_time_to_visit || 'check recent visits'}</p>
-            </div>
-            {statusResult?.lastReportTime && (
-              <p className="text-sm text-muted-foreground">
-                Last report: {formatTimeAgo(statusResult.lastReportTime)}
-              </p>
-            )}
-          </div>
-          
-          {statusResult?.confidence === "low" && (
-            <p className="text-xs text-muted-foreground mt-3 pt-3 border-t">
-              Based on patio profile — add a report to improve accuracy.
+      {/* Hero Section */}
+      <div className="px-5 pt-5 pb-4 border-b">
+        <h1 className="text-[26px] font-medium leading-tight">{patio.name}</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          {patio.neighborhood}{patio.neighborhood && patio.address ? " · " : ""}{patio.address}
+        </p>
+
+        {/* Score row */}
+        <div className="flex items-center gap-4 mt-4">
+          <span className="text-[40px] font-medium leading-none text-amber-600">{displayScore}</span>
+          <div>
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">Sun score</p>
+            <p className="text-sm text-foreground mt-0.5">
+              {settings?.enable_seasonal_adjustment && seasonalResult?.seasonalAdjustmentNotes
+                ? seasonalResult.seasonalAdjustmentNotes
+                : (patio.sun_score_reason || "Based on patio profile")}
             </p>
+          </div>
+          {statusResult && (
+            <div className="ml-auto">
+              <SunStatusBadge status={statusResult.status} confidence={statusResult.confidence} size="md" />
+            </div>
           )}
-        </Card>
-        
-        {/* Crowd Sun Feedback Widget (gated) */}
-        {settings?.enable_crowd_sun_feedback && (
+        </div>
+
+        {/* Confidence Level */}
+        {settings?.enable_confidence_level && confidenceLevel && (
+          <div className="mt-3">
+            <ConfidenceLevelBadge level={confidenceLevel} />
+          </div>
+        )}
+
+        {/* Best time pill */}
+        <div className="bg-amber-50 rounded-lg px-3 py-2 mt-4">
+          <p className="text-[11px] uppercase tracking-wider text-amber-600 font-medium">Best time</p>
+          <p className="text-[15px] font-medium text-amber-700 mt-0.5">
+            {patio.best_time_to_visit || "Check recent visits"}
+          </p>
+        </div>
+
+        {statusResult?.lastReportTime && (
+          <p className="text-xs text-muted-foreground mt-3">
+            Last report: {formatTimeAgo(statusResult.lastReportTime)}
+          </p>
+        )}
+        {statusResult?.confidence === "low" && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Based on patio profile — add a report to improve accuracy.
+          </p>
+        )}
+      </div>
+
+      {/* Crowd Sun Feedback */}
+      {settings?.enable_crowd_sun_feedback && (
+        <div className="px-5 py-4 border-b">
           <SunFeedbackWidget
             patioId={patio.id}
             sunnyVotes={sunnyVotes}
             notSunnyVotes={notSunnyVotes}
             lastSunCheckAt={lastSunCheckAt}
           />
-        )}
-        
-        {/* Current Weather */}
-        {weather && (
-          <Card className="p-4">
-            <h2 className="font-display font-semibold mb-3 text-sm">Current Weather</h2>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{getWeatherLabel(weather.weatherCode).emoji}</span>
-                <div>
-                  <p className="text-sm font-medium">{getWeatherLabel(weather.weatherCode).label}</p>
-                  <p className="text-xs text-muted-foreground">{weather.temperature}°C (feels {weather.feelsLike}°C)</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sun className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className={cn("text-sm font-medium", getUVLabel(weather.uvIndex).color)}>
-                    UV {weather.uvIndex} — {getUVLabel(weather.uvIndex).label}
-                  </p>
-                  <p className="text-xs text-muted-foreground">Cloud cover {weather.cloudCover}%</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Wind className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">{getWindLabel(weather.windSpeed)}</p>
-                  <p className="text-xs text-muted-foreground">{weather.windSpeed} km/h</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Droplets className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Humidity {weather.humidity}%</p>
-                  {weather.precipitation > 0 && (
-                    <p className="text-xs text-muted-foreground">{weather.precipitation}mm precip</p>
-                  )}
-                </div>
+        </div>
+      )}
+
+      {/* Sun Forecast */}
+      <div className="px-5 py-4 border-b">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-3">Sun forecast today</p>
+        <HourlyForecast />
+      </div>
+
+      {/* Current Weather */}
+      {weather && (
+        <div className="px-5 py-4 border-b">
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-3">Current weather</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{getWeatherLabel(weather.weatherCode).emoji}</span>
+              <div>
+                <p className="text-sm font-medium">{getWeatherLabel(weather.weatherCode).label}</p>
+                <p className="text-xs text-muted-foreground">{weather.temperature}°C (feels {weather.feelsLike}°C)</p>
               </div>
             </div>
-          </Card>
-        )}
-        
-        {/* Hourly Sun Forecast */}
-        <Card className="p-0 overflow-hidden">
-          <HourlyForecast />
-        </Card>
-
-        {/* Info */}
-        <div className="space-y-3">
-          {patio.address && (
-            <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div className="flex items-center gap-2">
+              <Sun className="h-5 w-5 text-muted-foreground" />
               <div>
-                <p className="text-sm">{patio.address}</p>
-                {patio.neighborhood && (
-                  <p className="text-xs text-muted-foreground">{patio.neighborhood}</p>
+                <p className={cn("text-sm font-medium", getUVLabel(weather.uvIndex).color)}>
+                  UV {weather.uvIndex} — {getUVLabel(weather.uvIndex).label}
+                </p>
+                <p className="text-xs text-muted-foreground">Cloud cover {weather.cloudCover}%</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Wind className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">{getWindLabel(weather.windSpeed)}</p>
+                <p className="text-xs text-muted-foreground">{weather.windSpeed} km/h</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Droplets className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm font-medium">Humidity {weather.humidity}%</p>
+                {weather.precipitation > 0 && (
+                  <p className="text-xs text-muted-foreground">{weather.precipitation}mm precip</p>
                 )}
               </div>
             </div>
-          )}
-          
-          {patio.hours && (
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <p className="text-sm">{patio.hours}</p>
-            </div>
-          )}
-          
-          {patio.sun_notes && (
-            <div className="bg-muted/50 rounded-lg p-3">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium">Sun profile:</span> {patio.sun_notes}
-              </p>
-            </div>
-          )}
+          </div>
         </div>
-        
-        {/* Tags */}
-        {patio.tags && patio.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+      )}
+
+      {/* Info */}
+      <div className="px-5 py-4 border-b space-y-3">
+        {patio.address && (
+          <div className="flex items-start gap-3">
+            <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-sm">{patio.address}</p>
+              {patio.neighborhood && (
+                <p className="text-xs text-muted-foreground">{patio.neighborhood}</p>
+              )}
+            </div>
+          </div>
+        )}
+        {patio.hours && (
+          <div className="flex items-center gap-3">
+            <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+            <p className="text-sm">{patio.hours}</p>
+          </div>
+        )}
+        {patio.sun_notes && (
+          <div className="flex items-start gap-3">
+            <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <Sun className="h-3.5 w-3.5 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-sm">{patio.sun_notes}</p>
+              <p className="text-xs text-muted-foreground">Sun profile</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Tags */}
+      {patio.tags && patio.tags.length > 0 && (
+        <div className="px-5 py-4 border-b">
+          <div className="flex flex-wrap gap-1.5">
             {patio.tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
+              <span key={tag} className="bg-muted rounded-md px-2.5 py-1 text-xs text-muted-foreground">
                 {tag.replace("_", " ")}
-              </Badge>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent Reports */}
+      <div className="px-5 py-4 border-b">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium mb-3">Recent reports</p>
+        {recentReports.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No reports yet. Be the first!</p>
+        ) : (
+          <div className="divide-y">
+            {recentReports.map((report) => (
+              <div key={report.id} className="py-3 first:pt-0 last:pb-0">
+                <div className="flex items-center justify-between">
+                  <SunStatusBadge status={report.status} size="sm" />
+                  <span className="text-xs text-muted-foreground">
+                    {formatTimeAgo(report.reported_at || report.created_at || "")}
+                  </span>
+                </div>
+                {report.notes && (
+                  <p className="text-sm text-muted-foreground mt-1.5">{report.notes}</p>
+                )}
+              </div>
             ))}
           </div>
         )}
-        
-        {/* Actions */}
-        <div className="flex gap-2">
-          {patio.address && (
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(patio.address!)}`, "_blank")}
-            >
-              <Navigation className="h-4 w-4 mr-2" />
-              Directions
-            </Button>
-          )}
-          {patio.phone && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => window.open(`tel:${patio.phone}`, "_self")}
-            >
-              <Phone className="h-4 w-4" />
-            </Button>
-          )}
-          {patio.website && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => window.open(patio.website!, "_blank")}
-            >
-              <Globe className="h-4 w-4" />
-            </Button>
-          )}
-          {patio.instagram && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => window.open(`https://instagram.com/${patio.instagram}`, "_blank")}
-            >
-              <Instagram className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-        
-        {/* Recent Reports */}
-        <div>
-          <h2 className="font-display font-semibold mb-3">Recent Reports</h2>
-          {recentReports.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No reports yet. Be the first!</p>
-          ) : (
-            <div className="space-y-2">
-              {recentReports.map((report) => (
-                <Card key={report.id} className="p-3">
-                  <div className="flex items-center justify-between">
-                    <SunStatusBadge status={report.status} size="sm" />
-                    <span className="text-xs text-muted-foreground">
-                      {formatTimeAgo(report.reported_at || report.created_at || "")}
-                    </span>
-                  </div>
-                  {report.notes && (
-                    <p className="text-sm text-muted-foreground mt-2">{report.notes}</p>
-                  )}
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-        
-        {/* CTA */}
-        <Button
-          className="w-full"
-          size="lg"
+      </div>
+
+      {/* CTA */}
+      <div className="px-5 py-5">
+        <button
           onClick={() => navigate(`/report?patio=${patio.id}`)}
+          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded-xl transition-colors text-sm"
         >
           Add a sun report
-        </Button>
+        </button>
       </div>
     </div>
   );
