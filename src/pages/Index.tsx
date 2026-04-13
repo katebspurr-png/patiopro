@@ -95,9 +95,12 @@ const Index = () => {
         selectedTags.every(tag => p.tags?.includes(tag))
       );
     }
+    if (favoritesOnly && favoriteIds.length > 0) {
+      filtered = filtered.filter(p => favoriteIds.includes(p.id));
+    }
     
     return sortByLiveScore(filtered);
-  }, [patiosWithLiveScores, sunnyOnly, selectedNeighborhood, searchQuery, selectedTags]);
+  }, [patiosWithLiveScores, sunnyOnly, favoritesOnly, favoriteIds, selectedNeighborhood, searchQuery, selectedTags]);
 
   const handlePatioSelect = (patioId: string) => {
     setShowBestRightNow(false);
