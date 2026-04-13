@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun } from "lucide-react";
+import { ArrowLeft, MapPin, Phone, Globe, Instagram, Clock, Navigation, Sun, Wind, Droplets, Cloud, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { calculateSunStatus, formatTimeAgo } from "@/lib/sun-status";
 import { getSunScoreColor } from "@/lib/sun-profile";
 import { calculateSeasonalScore } from "@/lib/seasonal-adjustment";
 import { cn } from "@/lib/utils";
+import { useWeather, getWeatherLabel, getWindLabel, getUVLabel } from "@/hooks/useWeather";
 import type { SunProfile } from "@/types/patio";
 import type { ConfidenceLevel } from "@/types/app-settings";
 
@@ -23,6 +24,7 @@ export default function PatioDetail() {
   const { data: patio, isLoading: patioLoading } = usePatio(id!);
   const { data: reports, isLoading: reportsLoading } = useSunReports(id);
   const { data: settings } = useAppSettings();
+  const { weather } = useWeather(patio?.lat, patio?.lng);
   
   const isLoading = patioLoading || reportsLoading;
   
@@ -153,6 +155,47 @@ export default function PatioDetail() {
           />
         )}
         
+        {/* Current Weather */}
+        {weather && (
+          <Card className="p-4">
+            <h2 className="font-display font-semibold mb-3 text-sm">Current Weather</h2>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{getWeatherLabel(weather.weatherCode).emoji}</span>
+                <div>
+                  <p className="text-sm font-medium">{getWeatherLabel(weather.weatherCode).label}</p>
+                  <p className="text-xs text-muted-foreground">{weather.temperature}°C (feels {weather.feelsLike}°C)</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sun className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className={cn("text-sm font-medium", getUVLabel(weather.uvIndex).color)}>
+                    UV {weather.uvIndex} — {getUVLabel(weather.uvIndex).label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Cloud cover {weather.cloudCover}%</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Wind className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">{getWindLabel(weather.windSpeed)}</p>
+                  <p className="text-xs text-muted-foreground">{weather.windSpeed} km/h</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Droplets className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Humidity {weather.humidity}%</p>
+                  {weather.precipitation > 0 && (
+                    <p className="text-xs text-muted-foreground">{weather.precipitation}mm precip</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Info */}
         <div className="space-y-3">
           {patio.address && (
