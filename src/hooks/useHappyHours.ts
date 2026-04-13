@@ -32,3 +32,22 @@ export function useHappyHours() {
     },
   });
 }
+
+export function useHappyHourByPatioId(patioId: string | undefined) {
+  return useQuery({
+    queryKey: ["happy-hour-patio", patioId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("happy_hours")
+        .select("*")
+        .eq("patio_id", patioId!)
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data as HappyHour | null;
+    },
+    enabled: !!patioId,
+  });
+}
