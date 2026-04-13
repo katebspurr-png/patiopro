@@ -126,7 +126,7 @@ const Index = () => {
         {/* Weather Pill — top left */}
         {weather && (
           <div className="absolute top-3 left-3 z-[1000] rounded-full bg-white/90 backdrop-blur border shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-foreground">
-            <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0" />
             <span className="font-medium">{weather.temperature}°C</span>
             <span className="text-muted-foreground">·</span>
             <span>{getWeatherLabel(weather.weatherCode).label}</span>
@@ -139,7 +139,7 @@ const Index = () => {
         {/* Best Right Now — small icon button, top right */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="absolute top-3 right-3 z-[1000] h-9 w-9 rounded-full bg-white/90 backdrop-blur border shadow-sm flex items-center justify-center hover:bg-white transition-colors"
+          className="absolute top-3 right-3 z-[1000] h-9 w-9 rounded-full bg-white backdrop-blur border shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
           title="Best Right Now"
         >
           <Star className="h-4 w-4 text-amber-500" />
@@ -156,7 +156,7 @@ const Index = () => {
             onClick={() => setDrawerExpanded(!drawerExpanded)}
             className="w-full flex items-center justify-center pt-2 pb-1 focus:outline-none"
           >
-            <div className="w-12 h-1.5 bg-muted-foreground/30 rounded-full" />
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
           </button>
 
           {drawerExpanded ? (

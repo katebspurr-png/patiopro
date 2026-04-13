@@ -32,9 +32,9 @@ function createMarkerIcon(patio: PatioWithStatus, isHighlighted: boolean): L.Div
     textColor = '#fff';
     borderColor = '#E8B86D';
   } else {
-    bg = '#e2e8f0';
-    textColor = '#94a3b8';
-    borderColor = '#cbd5e1';
+    bg = '#E5E7EB';
+    textColor = '#6B7280';
+    borderColor = '#D1D5DB';
   }
 
   const size = isHighlighted ? 38 : 30;
