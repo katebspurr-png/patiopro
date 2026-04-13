@@ -126,14 +126,14 @@ export default function PatioDetail() {
       
       {/* Hero Section */}
       <div className="px-5 pt-5 pb-4 border-b">
-        <h1 className="text-[24px] font-medium font-sans leading-tight">{patio.name}</h1>
+        <h1 className="text-[24px] font-semibold font-sans leading-tight">{patio.name}</h1>
         <p className="text-[13px] text-gray-400 mt-1">
           {patio.neighborhood}{patio.neighborhood && patio.address ? " · " : ""}{patio.address}
         </p>
 
         {/* Score row */}
         <div className="flex items-center gap-4 mt-4">
-          <span className="text-[40px] font-medium leading-none text-[#C87533]">{displayScore}</span>
+          <span className="text-[48px] font-semibold leading-none text-[#C87533]">{displayScore}</span>
           <div>
             <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium">Sun score</p>
             <div className="flex items-center gap-2 mt-0.5">
