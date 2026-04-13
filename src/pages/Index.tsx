@@ -19,7 +19,7 @@ import { Header } from "@/components/Header";
 import { TimeOfDayToggle } from "@/components/TimeOfDayToggle";
 import { BestRightNowPanel, BestRightNowButton } from "@/components/BestRightNowPanel";
 import { FilterPanel, type AdvancedFilters, DEFAULT_FILTERS } from "@/components/FilterPanel";
-import { FilterPanel, type AdvancedFilters, DEFAULT_FILTERS } from "@/components/FilterPanel";
+import { getWeatherLabel, getWindLabel } from "@/hooks/useWeather";
 import { usePatiosWithStatus } from "@/hooks/usePatios";
 import { useTopPatioIds } from "@/hooks/useBestRightNow";
 import { useTimeOfDay } from "@/hooks/useTimeOfDay";
@@ -144,11 +144,21 @@ const Index = () => {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Header />
-      <WeatherBanner />
-      <HourlyForecast />
       
       {/* Map Container */}
       <div className="flex-1 relative">
+        {/* Floating Weather Pill */}
+        {weather && (
+          <div className="absolute top-3 left-3 z-10 rounded-full bg-white/90 backdrop-blur px-3 py-1.5 shadow-md flex items-center gap-2 text-xs text-foreground">
+            <span className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
+            <span className="font-medium">{weather.temperature}°C</span>
+            <span className="text-muted-foreground">·</span>
+            <span>{getWeatherLabel(weather.weatherCode).label}</span>
+            <span className="text-muted-foreground">|</span>
+            <Wind className="h-3 w-3 text-muted-foreground" />
+            <span>{weather.windSpeed} km/h</span>
+          </div>
+        )}
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
