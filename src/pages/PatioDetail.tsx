@@ -222,7 +222,27 @@ export default function PatioDetail() {
         </div>
       )}
 
-      {/* Info */}
+      {/* Happy Hour */}
+      {happyHour && (
+        <div className="px-5 py-4 border-b">
+          <p className="text-[11px] uppercase tracking-wider text-gray-400 font-medium mb-2">Happy hour</p>
+          <div className="bg-[#FDF0E3] rounded-lg px-4 py-3 space-y-1.5">
+            {happyHour.days && (
+              <p className="text-[14px] font-medium text-gray-800">{happyHour.days}</p>
+            )}
+            {happyHour.time_range && (
+              <p className="text-[14px] text-[#C87533] font-medium">{happyHour.time_range}</p>
+            )}
+            {happyHour.details && (
+              <p className="text-[13px] text-gray-600">{happyHour.details}</p>
+            )}
+            {happyHour.needs_verification && (
+              <p className="text-[11px] text-gray-400 italic mt-1">Details may have changed — check with the venue.</p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="px-5 py-4 border-b space-y-3">
         {patio.address && (
           <div className="flex items-start gap-3">
