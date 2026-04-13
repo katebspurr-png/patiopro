@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Wind, Star, Heart, SlidersHorizontal, Search } from "lucide-react";
+import { Sun, Wind, Star, Heart, SlidersHorizontal, Search, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useFavoriteIds } from "@/hooks/useFavoriteIds";
 import { useHappyHours } from "@/hooks/useHappyHours";
@@ -316,6 +316,17 @@ const Index = () => {
                     />
                     <Label htmlFor="favorites-collapsed" className="flex items-center gap-1 cursor-pointer text-xs whitespace-nowrap">
                       <Heart className="h-3.5 w-3.5 text-red-500" />
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Switch
+                      id="happy-hour-collapsed"
+                      checked={happyHourOnly}
+                      onCheckedChange={setHappyHourOnly}
+                      className="data-[state=checked]:bg-[#C87533] scale-90"
+                    />
+                    <Label htmlFor="happy-hour-collapsed" className="flex items-center gap-1 cursor-pointer text-xs whitespace-nowrap">
+                      <Clock className="h-3.5 w-3.5 text-[#C87533]" />
                     </Label>
                   </div>
                   <div className="flex items-center gap-1.5">
