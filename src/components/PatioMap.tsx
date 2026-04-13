@@ -19,7 +19,7 @@ function escapeHtml(unsafe: string): string {
 }
 
 function createMarkerIcon(patio: PatioWithStatus, isHighlighted: boolean): L.DivIcon {
-  const score = patio.sun_score_live ?? patio.sun_score ?? 0;
+  const score = (patio as any).sun_score_live ?? patio.sun_score ?? 0;
   const scoreText = score > 0 ? String(Math.round(score)) : '–';
 
   let bg: string, textColor: string, borderColor: string;
