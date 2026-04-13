@@ -88,9 +88,9 @@ export default function PatioDetail() {
   const iconBtnClass = "h-9 w-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors";
   
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F0E8' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: '#F5F0E8' }}>
       {/* Header */}
-      <div className="sticky top-0 z-50 backdrop-blur border-b border-[#E5E0D8]" style={{ backgroundColor: '#1C1C1A' }}>
+      <div className="sticky top-0 z-50" style={{ backgroundColor: '#1C1C1A' }}>
         <div className="flex items-center justify-between px-4 py-3">
           <button onClick={() => navigate(-1)} className="flex items-center gap-0.5 text-[#C87533] text-sm font-medium">
             <ChevronLeft className="h-5 w-5" />
