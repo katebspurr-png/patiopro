@@ -1,6 +1,8 @@
 import type { PatioWithStatus, SunProfile, ConfidenceLevel } from "@/types/patio";
 import type { AppSettings } from "@/types/app-settings";
+import type { WeatherData } from "@/hooks/useWeather";
 import { calculateSeasonalScore } from "./seasonal-adjustment";
+import { getWeatherAdjustment } from "./weather-adjustment";
 
 type TimeOfDay = 'morning' | 'midday' | 'afternoon';
 type SunOrientation = 'east' | 'south' | 'west' | 'north' | 'unknown';
@@ -146,6 +148,7 @@ export interface RightNowResult {
     shadeContext: number;
     crowdFeedback: number;
     confidence: number;
+    weather: number;
   };
 }
 
@@ -219,7 +222,8 @@ function generateWhyNowText(
 export function calculateRightNowScore(
   patio: PatioWithStatus,
   settings: AppSettings,
-  now: Date = new Date()
+  now: Date = new Date(),
+  weather?: WeatherData | null
 ): RightNowResult {
   const currentTimeBucket = getCurrentTimeBucket(now);
   
@@ -267,12 +271,16 @@ export function calculateRightNowScore(
     confidence = getConfidenceAdjustment(patio.confidence_level as ConfidenceLevel);
   }
   
+  // Step 7: Weather adjustment
+  const weatherAdj = getWeatherAdjustment(weather ?? null);
+  const weatherBonus = weatherAdj.total;
+  
   // Calculate total and clamp
-  const rawScore = baseScore + timeAlignment + orientation + shadeContext + crowdFeedback + confidence;
+  const rawScore = baseScore + timeAlignment + orientation + shadeContext + crowdFeedback + confidence + weatherBonus;
   const rightNowScore = Math.max(0, Math.min(100, rawScore));
   
-  // Generate explanation
-  const whyNowText = generateWhyNowText(
+  // Generate explanation (add weather context)
+  let whyNowText = generateWhyNowText(
     patio,
     currentTimeBucket,
     crowdFeedback,
@@ -280,6 +288,10 @@ export function calculateRightNowScore(
     orientation,
     baseScore
   );
+  
+  if (weatherAdj.label) {
+    whyNowText += ` • ${weatherAdj.label}`;
+  }
   
   return {
     patio,
@@ -292,6 +304,7 @@ export function calculateRightNowScore(
       shadeContext,
       crowdFeedback,
       confidence,
+      weather: weatherBonus,
     },
   };
 }
@@ -303,7 +316,8 @@ export function getBestRightNow(
   patios: PatioWithStatus[],
   settings: AppSettings,
   now: Date = new Date(),
-  limit: number = 5
+  limit: number = 5,
+  weather?: WeatherData | null
 ): RightNowResult[] {
   const currentTimeBucket = getCurrentTimeBucket(now);
   
@@ -321,7 +335,7 @@ export function getBestRightNow(
   });
   
   // Calculate scores
-  const scored = eligiblePatios.map(patio => calculateRightNowScore(patio, settings, now));
+  const scored = eligiblePatios.map(patio => calculateRightNowScore(patio, settings, now, weather));
   
   // Separate unknown-profile patios with no data
   const withData = scored.filter(r => {
