@@ -301,8 +301,14 @@ const Index = () => {
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
                             )}
                           </div>
-                          <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
+                          <div className="flex items-center gap-1.5 truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            <span>{patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}</span>
+                            {weather && weather.windSpeed > 0 && (
+                              <span className="inline-flex items-center gap-0.5 shrink-0">
+                                <Wind className="h-2.5 w-2.5" style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }} />
+                                <span style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }}>{weather.windSpeed}</span>
+                              </span>
+                            )}
                           </div>
                           {(happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]) && (
                             <div className="text-[11px] text-[#6A6460] truncate">
@@ -369,8 +375,14 @@ const Index = () => {
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
                         )}
                       </div>
-                      <div className="truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                        {patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}
+                      <div className="flex items-center gap-1.5 truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        <span>{patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}</span>
+                        {weather && weather.windSpeed > 0 && (
+                          <span className="inline-flex items-center gap-0.5 shrink-0">
+                            <Wind className="h-2.5 w-2.5" style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }} />
+                            <span style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }}>{weather.windSpeed}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                     <span className="shrink-0" style={{ fontSize: '12px', color: '#C87533' }}>
