@@ -295,7 +295,7 @@ const Index = () => {
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {patio.name}
                             {(patio as any).wind_exposure === 'sheltered' && weather && weather.windSpeed > 20 && (
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
@@ -363,7 +363,7 @@ const Index = () => {
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {patio.name}
                         {(patio as any).wind_exposure === 'sheltered' && weather && weather.windSpeed > 20 && (
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
