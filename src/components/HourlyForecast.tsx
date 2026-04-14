@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 
 function SunChanceBar({ chance }: { chance: number }) {
   const color = chance >= 70
-    ? "bg-[#C87533]"
+    ? "bg-primary"
     : chance >= 40
-      ? "bg-[#C87533]/60"
+      ? "bg-primary/60"
       : chance >= 15
-        ? "bg-slate-300"
-        : "bg-slate-400";
+        ? "bg-muted-foreground/30"
+        : "bg-muted-foreground/40";
 
   return (
     <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
@@ -29,25 +29,25 @@ function PeriodCard({ period, isNow }: { period: TimePeriodForecast; isNow: bool
     <div
       className={cn(
         "flex-1 rounded-lg border p-3 text-center transition-all",
-        isNow ? "border-[#F0D5B0] bg-[#FDF0E3] shadow-sm" : "bg-[#FAFAF8]"
+        isNow ? "border-primary/40 bg-primary/10 shadow-sm" : "bg-card"
       )}
     >
       {isNow && (
-        <div className="text-[10px] uppercase tracking-wider text-[#C87533] font-medium mb-1">NOW</div>
+        <div className="text-[10px] uppercase tracking-wider text-primary font-medium mb-1">NOW</div>
       )}
       <p className="text-xs font-semibold mt-0.5">{period.label}</p>
       <span className="text-2xl leading-none block my-1.5">{emoji}</span>
       <p className="text-sm font-bold">{period.avgTemp}°C</p>
 
       <div className="mt-2 space-y-1">
-        <div className="flex items-center justify-center gap-1 text-[11px] text-gray-400">
-          <Sun className="h-3 w-3 text-[#C87533]" />
+        <div className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground">
+          <Sun className="h-3 w-3 text-primary" />
           <span className="font-medium">{period.sunChance}%</span>
         </div>
         <SunChanceBar chance={period.sunChance} />
       </div>
 
-      <div className="mt-1.5 flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+      <div className="mt-1.5 flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
         <span><Cloud className="h-2.5 w-2.5 inline" /> {period.avgCloudCover}%</span>
         {hasPrecip && (
           <span><CloudRain className="h-2.5 w-2.5 inline" /> {period.maxPrecip}mm</span>
@@ -77,7 +77,7 @@ export function HourlyForecast() {
 
   return (
     <div className="px-4 py-3">
-      <h3 className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: '#1C1C1A' }}>
+      <h3 className="text-[11px] font-bold uppercase tracking-wider mb-2 text-foreground">
         Sun forecast today
       </h3>
       <div className="flex gap-2">
