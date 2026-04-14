@@ -30,7 +30,7 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-all hover:shadow-md hover:border-[#C87533]/30",
+        "cursor-pointer transition-all hover:shadow-md hover:border-primary/30",
         compact ? "p-3" : "p-4"
       )}
       onClick={onClick}
@@ -42,14 +42,14 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
             <span className="truncate">{patio.name}</span>
           </h3>
           {patio.neighborhood && (
-            <div className="flex items-center gap-1 text-[13px] text-gray-400 mt-0.5">
+            <div className="flex items-center gap-1 text-[13px] text-muted-foreground mt-0.5">
               <MapPin className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">{patio.neighborhood}</span>
             </div>
           )}
         </div>
         <div className="flex flex-col items-end gap-1">
-          <div className="flex items-center gap-1 font-semibold text-[#C87533]">
+          <div className="flex items-center gap-1 font-semibold text-primary">
             <Sun className="h-4 w-4" />
             <span className={compact ? "text-sm" : "text-base"}>{displayScore}</span>
           </div>
@@ -62,16 +62,16 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
       </div>
       
       <div className="mt-2 space-y-1">
-        <p className="text-xs font-medium text-gray-400">
+        <p className="text-xs font-medium text-muted-foreground">
           {displayReason}
         </p>
         
-        <div className="flex items-center gap-2 text-xs text-gray-400">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>{displayBestTime}</span>
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs text-gray-400/70">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
             <Clock className="h-3 w-3" />
             {patio.lastReportTime
               ? formatTimeAgo(patio.lastReportTime)
@@ -79,7 +79,7 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
           </div>
           
           {scoredFor && (
-            <span className="text-[10px] text-gray-400/60 italic">
+            <span className="text-[10px] text-muted-foreground/60 italic">
               {scoredFor === "now" 
                 ? `Scored for now (${TIME_OF_DAY_LABELS[resolvedTime || "midday"]})`
                 : `Scored for ${TIME_OF_DAY_LABELS[scoredFor as ResolvedTimeOfDay]}`}
@@ -99,7 +99,7 @@ export function PatioCard({ patio, onClick, compact = false, scoredFor, resolved
           </div>
         )}
         {weather && (
-          <div className="flex items-center gap-1 text-[10px] text-gray-400 ml-auto">
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground ml-auto">
             <span>{getWeatherLabel(weather.weatherCode).emoji}</span>
             <span>{weather.temperature}°C</span>
             {weather.cloudCover > 0 && (

@@ -20,41 +20,21 @@ interface BestRightNowPanelProps {
 
 type ViewMode = "right-now" | "near-you";
 
-/**
- * Get time-of-day specific subtext
- */
 function getTimeSubtext(bucket: "morning" | "midday" | "afternoon"): string {
   const hour = new Date().getHours();
-  
-  // Early morning (before 9am)
-  if (hour < 9) {
-    return "Good spots as the day brightens";
-  }
-  
-  // Evening (after 6pm)
-  if (hour >= 18) {
-    return "Nice light to finish the day";
-  }
-  
-  // Normal times
+  if (hour < 9) return "Good spots as the day brightens";
+  if (hour >= 18) return "Nice light to finish the day";
   const subtexts: Record<typeof bucket, string> = {
     morning: "Great light for this time of day",
     midday: "Bright right now",
     afternoon: "Perfect afternoon sun"
   };
-  
   return subtexts[bucket];
 }
 
 function RightNowResultCard({ 
-  result, 
-  onView, 
-  onDirections 
-}: { 
-  result: RightNowResult; 
-  onView: () => void;
-  onDirections: () => void;
-}) {
+  result, onView, onDirections 
+}: { result: RightNowResult; onView: () => void; onDirections: () => void }) {
   const { patio, rightNowScore, whyNowText } = result;
   
   return (
@@ -73,7 +53,7 @@ function RightNowResultCard({
       </div>
       
       <div className="mt-3 space-y-1">
-        <p className="text-sm font-medium text-[#C87533]">{whyNowText}</p>
+        <p className="text-sm font-medium text-primary">{whyNowText}</p>
         <p className="text-xs text-muted-foreground">{patio.best_time_to_visit || "Check recent visits"}</p>
       </div>
       
@@ -92,14 +72,8 @@ function RightNowResultCard({
 }
 
 function NearYouResultCard({ 
-  result, 
-  onView, 
-  onDirections 
-}: { 
-  result: NearYouResult; 
-  onView: () => void;
-  onDirections: () => void;
-}) {
+  result, onView, onDirections 
+}: { result: NearYouResult; onView: () => void; onDirections: () => void }) {
   const { patio, distanceMeters, whyNearText } = result;
   
   return (
@@ -152,11 +126,9 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
   const rightNow = useBestRightNow(5);
   const nearYou = useBestNearYou(5);
   
-  // Determine effective view mode
   const effectiveMode: ViewMode = manualMode ?? (rightNow.shouldFallback ? "near-you" : "right-now");
   const isNearYouMode = effectiveMode === "near-you";
   
-  // Reset state when panel closes
   useEffect(() => {
     if (!isOpen) {
       setManualMode(null);
@@ -183,12 +155,10 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
   
   return (
     <div className="absolute bottom-0 left-0 right-0 z-30 bg-background rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.2)] animate-in slide-in-from-bottom duration-300 max-h-[70vh] flex flex-col">
-      {/* Drag handle */}
       <div className="flex justify-center pt-2 pb-1">
         <div className="w-10 h-1 bg-muted-foreground/30 rounded-full" />
       </div>
       
-      {/* Header */}
       <div className="px-4 pb-3 border-b">
         <div className="flex items-center justify-between">
           <div>
@@ -216,7 +186,6 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
         </div>
       </div>
       
-      {/* Results */}
       <ScrollArea className="flex-1 px-4">
         <div className="py-4 space-y-3">
           {isLoading ? (
@@ -258,7 +227,6 @@ export function BestRightNowPanel({ isOpen, onClose, onPatioSelect }: BestRightN
         </div>
       </ScrollArea>
       
-      {/* Footer */}
       {!isLoading && !error && displayResults.length > 0 && (
         <div className="px-4 py-3 border-t bg-background">
           <div className="flex gap-2">

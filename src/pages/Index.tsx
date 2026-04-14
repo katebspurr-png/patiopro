@@ -155,8 +155,8 @@ const Index = () => {
 
         {/* Weather Pill — top left */}
         {weather && (
-          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-[#1C1C1A] backdrop-blur border border-white/10 shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-white">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#C87533] shrink-0" />
+          <div className="absolute top-3 left-3 z-[1000] rounded-full bg-foreground backdrop-blur border border-white/10 shadow-sm px-3 py-1.5 flex items-center gap-2 text-xs text-white">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
             <span className="font-medium">{weather.temperature}°C</span>
             <span className="text-white/50">·</span>
             <span>{getWeatherLabel(weather.weatherCode).label}</span>
@@ -169,26 +169,25 @@ const Index = () => {
         {/* Best Right Now — fixed above drawer */}
         <button
           onClick={() => setShowBestRightNow(true)}
-          className="fixed right-4 z-[1002] h-9 w-9 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-300 ease-out"
+          className="fixed right-4 z-[1002] h-9 w-9 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-muted transition-all duration-300 ease-out"
           style={{ bottom: drawerExpanded ? 'calc(65vh + 12px)' : 'calc(260px + 12px)' }}
           title="Best Right Now"
         >
-          <Star className="h-4 w-4 text-[#C87533]" />
+          <Star className="h-4 w-4 text-primary" />
         </button>
 
         {/* Bottom Drawer */}
         <div 
-          className={`absolute bottom-0 left-0 right-0 z-[1001] rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.3)] border-t-[1.5px] border-[#2E2E2C] transition-all duration-300 ease-out text-white ${
+          className={`absolute bottom-0 left-0 right-0 z-[1001] rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.3)] border-t-[1.5px] border-white/10 transition-all duration-300 ease-out text-white bg-foreground ${
             drawerExpanded ? 'h-[65vh]' : 'h-[260px]'
           }`}
-          style={{ backgroundColor: '#1C1C1A' }}
         >
           {/* Drag Handle */}
           <button
             onClick={() => setDrawerExpanded(!drawerExpanded)}
             className="w-full flex items-center justify-center gap-2 focus:outline-none pt-3 pb-2"
           >
-            <div className="w-10 h-1.5 rounded-full" style={{ backgroundColor: '#4A4A48' }} />
+            <div className="w-10 h-1.5 rounded-full bg-white/20" />
           </button>
 
           {drawerExpanded ? (
@@ -203,8 +202,8 @@ const Index = () => {
                       onClick={() => setSelectedTime(t)}
                       className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                         selectedTime === t
-                          ? "bg-[#C87533] text-white"
-                          : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                          ? "bg-primary text-white"
+                          : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                       }`}
                     >
                       {t === "now" ? "Now" : t.charAt(0).toUpperCase() + t.slice(1)}
@@ -218,8 +217,8 @@ const Index = () => {
                     onClick={() => setSunnyOnly(!sunnyOnly)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       sunnyOnly
-                        ? "bg-[#C87533] text-white"
-                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                        ? "bg-primary text-white"
+                        : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                     }`}
                   >
                     Sunny Only
@@ -228,8 +227,8 @@ const Index = () => {
                     onClick={() => setFavoritesOnly(!favoritesOnly)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       favoritesOnly
-                        ? "bg-[#C87533] text-white"
-                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                        ? "bg-primary text-white"
+                        : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                     }`}
                   >
                     Favorites
@@ -238,8 +237,8 @@ const Index = () => {
                     onClick={() => setHappyHourOnly(!happyHourOnly)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       happyHourOnly
-                        ? "bg-[#C87533] text-white"
-                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                        ? "bg-primary text-white"
+                        : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                     }`}
                   >
                     Happy Hour
@@ -248,8 +247,8 @@ const Index = () => {
                     onClick={() => setShelteredOnly(!shelteredOnly)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       shelteredOnly
-                        ? "bg-[#C87533] text-white"
-                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                        ? "bg-primary text-white"
+                        : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                     }`}
                   >
                     Sheltered
@@ -260,8 +259,8 @@ const Index = () => {
                       onClick={() => toggleTag(tag)}
                       className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                         selectedTags.includes(tag)
-                          ? "bg-[#C87533] text-white"
-                          : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                          ? "bg-primary text-white"
+                          : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                       }`}
                     >
                       {(TAG_LABELS[tag] || tag).replace(/^[^\s]+\s/, '')}
@@ -270,7 +269,7 @@ const Index = () => {
                   {selectedTags.length > 0 && (
                     <button
                       onClick={() => setSelectedTags([])}
-                      className="text-xs text-[#8A8480] hover:text-white px-2 whitespace-nowrap shrink-0"
+                      className="text-xs text-white/40 hover:text-white px-2 whitespace-nowrap shrink-0"
                     >
                       Clear
                     </button>
@@ -278,9 +277,9 @@ const Index = () => {
                 </div>
 
                 {/* Compact patio list */}
-                <div className="divide-y divide-[#2E2E2C]">
+                <div className="divide-y divide-white/10">
                   {filteredPatios.length === 0 ? (
-                    <div className="text-center py-8 text-[#8A8480] text-sm">
+                    <div className="text-center py-8 text-white/40 text-sm">
                       {sunnyOnly ? "No sunny patios right now" : "No patios found"}
                     </div>
                   ) : (
@@ -290,33 +289,33 @@ const Index = () => {
                         onClick={() => navigate(`/patio/${patio.id}`)}
                         className="w-full flex items-center gap-3 px-2 py-2 hover:bg-white/5 transition-colors text-left"
                       >
-                        <span className="text-xs font-bold text-[#8A8480] w-4 text-center">{i + 1}</span>
-                        <span className="text-white font-bold text-xs px-2 py-0.5 min-w-[36px] text-center" style={{ backgroundColor: '#C87533', borderRadius: '8px' }}>
+                        <span className="text-xs font-bold text-white/40 w-4 text-center">{i + 1}</span>
+                        <span className="text-white font-bold text-xs px-2 py-0.5 min-w-[36px] text-center bg-primary rounded-lg">
                           {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                         </span>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div className="flex items-center gap-1.5 text-[15px] font-bold text-white uppercase tracking-[0.03em] overflow-hidden text-ellipsis whitespace-nowrap">
                             {patio.name}
                             {(patio as any).wind_exposure === 'sheltered' && weather && weather.windSpeed > 20 && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-primary text-white leading-none">sheltered</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-1.5 truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          <div className="flex items-center gap-1.5 truncate text-[11px] text-white/40 uppercase tracking-[0.05em]">
                             <span>{patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}</span>
                             {weather && weather.windSpeed > 0 && (
                               <span className="inline-flex items-center gap-0.5 shrink-0">
-                                <Wind className="h-2.5 w-2.5" style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }} />
-                                <span style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }}>{weather.windSpeed}</span>
+                                <Wind className={`h-2.5 w-2.5 ${weather.windSpeed > 20 ? 'text-primary' : 'text-white/40'}`} />
+                                <span className={weather.windSpeed > 20 ? 'text-primary' : 'text-white/40'}>{weather.windSpeed}</span>
                               </span>
                             )}
                           </div>
                           {(happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]) && (
-                            <div className="text-[11px] text-[#6A6460] truncate">
+                            <div className="text-[11px] text-white/30 truncate">
                               {happyHourMap.byPatioId[patio.id] || happyHourMap.byName[patio.name.toLowerCase()]}
                             </div>
                           )}
                         </div>
-                        <span className="shrink-0 max-w-[100px] truncate text-right" style={{ fontSize: '12px', color: '#C87533' }}>
+                        <span className="shrink-0 max-w-[100px] truncate text-right text-xs text-primary">
                           {patio.best_time_to_visit ?? "—"}
                         </span>
                       </button>
@@ -335,8 +334,8 @@ const Index = () => {
                   onClick={() => setSelectedNeighborhood("all")}
                   className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                     selectedNeighborhood === "all"
-                      ? "bg-[#C87533] text-white"
-                      : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                      ? "bg-primary text-white"
+                      : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                   }`}
                 >
                   All
@@ -347,8 +346,8 @@ const Index = () => {
                     onClick={() => setSelectedNeighborhood(n)}
                     className={`shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                       selectedNeighborhood === n
-                        ? "bg-[#C87533] text-white"
-                        : "bg-[#2E2E2C] text-[#A09890] border border-[#3A3A38] hover:bg-[#3A3A38]"
+                        ? "bg-primary text-white"
+                        : "bg-white/10 text-white/50 border border-white/10 hover:bg-white/15"
                     }`}
                   >
                     {n}
@@ -357,35 +356,35 @@ const Index = () => {
               </div>
 
               {/* Top 3 ranked patios */}
-              <div className="divide-y divide-[#2E2E2C]">
+              <div className="divide-y divide-white/10">
                 {filteredPatios.slice(0, 3).map((patio, i) => (
                   <button
                     key={patio.id}
                     onClick={() => navigate(`/patio/${patio.id}`)}
                     className="w-full flex items-center gap-3 px-2 py-2 hover:bg-white/5 transition-colors text-left"
                   >
-                    <span className="text-xs font-bold text-[#8A8480] w-4 text-center">{i + 1}</span>
-                    <span className="text-white font-bold text-xs px-2 py-0.5 min-w-[36px] text-center" style={{ backgroundColor: '#C87533', borderRadius: '8px' }}>
+                    <span className="text-xs font-bold text-white/40 w-4 text-center">{i + 1}</span>
+                    <span className="text-white font-bold text-xs px-2 py-0.5 min-w-[36px] text-center bg-primary rounded-lg">
                       {(patio as any).sun_score_live ?? patio.sun_score ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5" style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF', textTransform: 'uppercase', letterSpacing: '0.03em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div className="flex items-center gap-1.5 text-[15px] font-bold text-white uppercase tracking-[0.03em] overflow-hidden text-ellipsis whitespace-nowrap">
                         {patio.name}
                         {(patio as any).wind_exposure === 'sheltered' && weather && weather.windSpeed > 20 && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider" style={{ backgroundColor: '#C87533', color: '#fff', fontSize: '9px', lineHeight: 1 }}>sheltered</span>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-primary text-white leading-none">sheltered</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5 truncate" style={{ fontSize: '11px', color: '#8A8480', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      <div className="flex items-center gap-1.5 truncate text-[11px] text-white/40 uppercase tracking-[0.05em]">
                         <span>{patio.neighborhood ?? "Unknown"} · {patio.sun_profile ?? "mixed"}</span>
                         {weather && weather.windSpeed > 0 && (
                           <span className="inline-flex items-center gap-0.5 shrink-0">
-                            <Wind className="h-2.5 w-2.5" style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }} />
-                            <span style={{ color: weather.windSpeed > 20 ? '#C87533' : '#8A8480' }}>{weather.windSpeed}</span>
+                            <Wind className={`h-2.5 w-2.5 ${weather.windSpeed > 20 ? 'text-primary' : 'text-white/40'}`} />
+                            <span className={weather.windSpeed > 20 ? 'text-primary' : 'text-white/40'}>{weather.windSpeed}</span>
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className="shrink-0" style={{ fontSize: '12px', color: '#C87533' }}>
+                    <span className="shrink-0 text-xs text-primary">
                       {patio.best_time_to_visit ?? "—"}
                     </span>
                   </button>

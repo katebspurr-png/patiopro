@@ -126,24 +126,24 @@ export function SunFeedbackWidget({
           <div className="flex gap-2">
             <Button
               variant="outline"
-              className="flex-1 h-12 border border-gray-200 text-gray-700 rounded-xl bg-white"
+              className="flex-1 h-12 rounded-xl"
               onClick={() => handleSunnyChoice(true)}
             >
-              <Sun className="h-5 w-5 mr-2 text-[#C87533]" />
+              <Sun className="h-5 w-5 mr-2 text-primary" />
               Yes ☀️
             </Button>
             <Button
               variant="outline"
-              className="flex-1 h-12 border border-gray-200 text-gray-700 rounded-xl bg-white"
+              className="flex-1 h-12 rounded-xl"
               onClick={() => handleSunnyChoice(false)}
             >
-              <Cloud className="h-5 w-5 mr-2 text-gray-400" />
+              <Cloud className="h-5 w-5 mr-2 text-muted-foreground" />
               No ☁️
             </Button>
           </div>
           
           {totalVotes > 0 && (
-            <p className="text-[13px] text-gray-400 text-center">
+            <p className="text-[13px] text-muted-foreground text-center">
               Recent reports: {sunnyVotes} sunny / {notSunnyVotes} not sunny
               {lastSunCheckAt && (
                 <> · Last report: {new Date(lastSunCheckAt).toLocaleDateString()}</>
@@ -155,7 +155,7 @@ export function SunFeedbackWidget({
       
       {step === 'time' && (
         <div className="space-y-3">
-          <p className="text-[14px] text-gray-400 flex items-center gap-2">
+          <p className="text-[14px] text-muted-foreground flex items-center gap-2">
             <Clock className="h-4 w-4" />
             When did you visit?
           </p>
@@ -165,7 +165,7 @@ export function SunFeedbackWidget({
                 key={time}
                 variant="outline"
                 size="sm"
-                className="flex-1 border border-gray-200 text-gray-700 rounded-xl bg-white"
+                className="flex-1 rounded-xl"
                 onClick={() => handleTimeChoice(time)}
               >
                 {time.charAt(0).toUpperCase() + time.slice(1)}
@@ -192,7 +192,7 @@ export function SunFeedbackWidget({
               ← Back
             </Button>
             <Button
-              className="flex-1 bg-[#C87533] hover:bg-[#A86020] text-white rounded-xl"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
               onClick={handleSubmit}
               disabled={submitMutation.isPending}
             >

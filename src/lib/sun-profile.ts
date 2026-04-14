@@ -77,5 +77,5 @@ export function normalizeTags(tags: string[] | null | undefined): string[] {
 }
 
 export function getSunScoreColor(score: number): string {
-  return 'text-[#C87533]';
+  return 'text-primary';
 }
