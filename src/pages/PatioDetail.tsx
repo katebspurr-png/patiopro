@@ -199,6 +199,9 @@ export default function PatioDetail() {
 
       {/* Sun Forecast */}
       <div className="border-b border-[#E5E0D8]">
+        <div className="px-5 pt-4">
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#1C1C1A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sun forecast today</p>
+        </div>
         <HourlyForecast />
       </div>
 
