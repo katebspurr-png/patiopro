@@ -21,6 +21,8 @@ export default function Admin() {
   const [backfilling, setBackfilling] = useState(false);
   const [backfillResult, setBackfillResult] = useState<number | null>(null);
   const [selectedPatio, setSelectedPatio] = useState<typeof patios[0] | null>(null);
+  const [includeReports, setIncludeReports] = useState(false);
+  const [reportsDays, setReportsDays] = useState(30);
 
   const handleRecalculateSunFields = async () => {
     setRecalculating(true);
@@ -110,14 +112,43 @@ export default function Admin() {
     try {
       const { data, error } = await supabase.from("patios").select("*").order("name");
       if (error) throw error;
-      const rows = data || [];
+      const patioRows = data || [];
       const ts = new Date().toISOString().slice(0, 10);
-      if (format === "json") {
-        triggerDownload(JSON.stringify(rows, null, 2), `patios-${ts}.json`, "application/json");
-      } else {
-        triggerDownload(toCSV(rows), `patios-${ts}.csv`, "text/csv");
+
+      let reportsByPatio: Record<string, any[]> = {};
+      let reportRows: any[] = [];
+      if (includeReports) {
+        const sinceIso = new Date(Date.now() - reportsDays * 86400000).toISOString();
+        const { data: rData, error: rErr } = await supabase
+          .from("sun_reports")
+          .select("*")
+          .gte("reported_at", sinceIso)
+          .order("reported_at", { ascending: false });
+        if (rErr) throw rErr;
+        reportRows = rData || [];
+        reportsByPatio = reportRows.reduce((acc: Record<string, any[]>, r: any) => {
+          (acc[r.patio_id] ||= []).push(r);
+          return acc;
+        }, {});
       }
-      toast({ title: "Export ready", description: `Downloaded ${rows.length} patios as ${format.toUpperCase()}.` });
+
+      if (format === "json") {
+        const payload = includeReports
+          ? patioRows.map((p: any) => ({ ...p, recent_sun_reports: reportsByPatio[p.id] || [] }))
+          : patioRows;
+        triggerDownload(JSON.stringify(payload, null, 2), `patios-${ts}.json`, "application/json");
+      } else {
+        triggerDownload(toCSV(patioRows), `patios-${ts}.csv`, "text/csv");
+        if (includeReports) {
+          triggerDownload(toCSV(reportRows), `sun-reports-${ts}.csv`, "text/csv");
+        }
+      }
+      toast({
+        title: "Export ready",
+        description: includeReports
+          ? `Downloaded ${patioRows.length} patios + ${reportRows.length} reports (${reportsDays}d).`
+          : `Downloaded ${patioRows.length} patios as ${format.toUpperCase()}.`,
+      });
     } catch (err) {
       console.error("Export failed:", err);
       toast({ title: "Error", description: "Export failed. Check console.", variant: "destructive" });
@@ -178,7 +209,7 @@ export default function Admin() {
           {/* Patios List Tab */}
           <TabsContent value="patios" className="space-y-4">
             <Card className="p-4">
-              <div className="flex items-center justify-between mb-4 gap-2">
+              <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
                 <h2 className="font-semibold">All Patios ({patios?.length || 0})</h2>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => handleExport("csv")}>
@@ -189,6 +220,26 @@ export default function Admin() {
                   </Button>
                 </div>
               </div>
+              <label className="flex flex-wrap items-center gap-2 mb-4 text-xs text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={includeReports}
+                  onChange={(e) => setIncludeReports(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                Include recent sun reports from last
+                <input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={reportsDays}
+                  onChange={(e) => setReportsDays(Math.max(1, Number(e.target.value) || 1))}
+                  disabled={!includeReports}
+                  className="w-16 px-2 py-1 border rounded bg-background disabled:opacity-50"
+                />
+                days
+                <span className="opacity-70">(JSON nests them; CSV gets a second file)</span>
+              </label>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {patios?.map((patio) => (
                   <div
