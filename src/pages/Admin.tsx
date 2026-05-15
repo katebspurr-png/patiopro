@@ -93,12 +93,9 @@ export default function Admin() {
 
   const toCSV = (rows: Record<string, any>[]) => {
     if (!rows.length) return "";
-    const keys = Array.from(
-      rows.reduce((set, r) => {
-        Object.keys(r).forEach((k) => set.add(k));
-        return set;
-      }, new Set<string>())
-    );
+    const keySet = new Set<string>();
+    rows.forEach((r) => Object.keys(r).forEach((k) => keySet.add(k)));
+    const keys = Array.from(keySet);
     const escape = (val: any) => {
       if (val === null || val === undefined) return "";
       const s = typeof val === "object" ? JSON.stringify(val) : String(val);
