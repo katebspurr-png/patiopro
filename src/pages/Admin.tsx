@@ -79,6 +79,54 @@ export default function Admin() {
     setSelectedPatio(null);
   };
 
+  const triggerDownload = (content: string, filename: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const toCSV = (rows: Record<string, any>[]) => {
+    if (!rows.length) return "";
+    const keys = Array.from(
+      rows.reduce((set, r) => {
+        Object.keys(r).forEach((k) => set.add(k));
+        return set;
+      }, new Set<string>())
+    );
+    const escape = (val: any) => {
+      if (val === null || val === undefined) return "";
+      const s = typeof val === "object" ? JSON.stringify(val) : String(val);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = keys.join(",");
+    const body = rows.map((r) => keys.map((k) => escape(r[k])).join(",")).join("\n");
+    return `${header}\n${body}`;
+  };
+
+  const handleExport = async (format: "csv" | "json") => {
+    try {
+      const { data, error } = await supabase.from("patios").select("*").order("name");
+      if (error) throw error;
+      const rows = data || [];
+      const ts = new Date().toISOString().slice(0, 10);
+      if (format === "json") {
+        triggerDownload(JSON.stringify(rows, null, 2), `patios-${ts}.json`, "application/json");
+      } else {
+        triggerDownload(toCSV(rows), `patios-${ts}.csv`, "text/csv");
+      }
+      toast({ title: "Export ready", description: `Downloaded ${rows.length} patios as ${format.toUpperCase()}.` });
+    } catch (err) {
+      console.error("Export failed:", err);
+      toast({ title: "Error", description: "Export failed. Check console.", variant: "destructive" });
+    }
+  };
+
   if (roleLoading) {
     return (
       <div className="min-h-screen bg-background p-4 flex items-center justify-center">
