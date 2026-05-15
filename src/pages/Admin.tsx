@@ -209,7 +209,7 @@ export default function Admin() {
           {/* Patios List Tab */}
           <TabsContent value="patios" className="space-y-4">
             <Card className="p-4">
-              <div className="flex items-center justify-between mb-4 gap-2">
+              <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
                 <h2 className="font-semibold">All Patios ({patios?.length || 0})</h2>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => handleExport("csv")}>
@@ -220,6 +220,26 @@ export default function Admin() {
                   </Button>
                 </div>
               </div>
+              <label className="flex flex-wrap items-center gap-2 mb-4 text-xs text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={includeReports}
+                  onChange={(e) => setIncludeReports(e.target.checked)}
+                  className="h-4 w-4"
+                />
+                Include recent sun reports from last
+                <input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={reportsDays}
+                  onChange={(e) => setReportsDays(Math.max(1, Number(e.target.value) || 1))}
+                  disabled={!includeReports}
+                  className="w-16 px-2 py-1 border rounded bg-background disabled:opacity-50"
+                />
+                days
+                <span className="opacity-70">(JSON nests them; CSV gets a second file)</span>
+              </label>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {patios?.map((patio) => (
                   <div
