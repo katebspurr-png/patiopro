@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, RefreshCw, Sun, CheckCircle, Database, Plus, List } from "lucide-react";
+import { ArrowLeft, RefreshCw, Sun, CheckCircle, Database, Plus, List, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -79,6 +79,51 @@ export default function Admin() {
     setSelectedPatio(null);
   };
 
+  const triggerDownload = (content: string, filename: string, mime: string) => {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const toCSV = (rows: Record<string, any>[]) => {
+    if (!rows.length) return "";
+    const keySet = new Set<string>();
+    rows.forEach((r) => Object.keys(r).forEach((k) => keySet.add(k)));
+    const keys = Array.from(keySet);
+    const escape = (val: any) => {
+      if (val === null || val === undefined) return "";
+      const s = typeof val === "object" ? JSON.stringify(val) : String(val);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const header = keys.join(",");
+    const body = rows.map((r) => keys.map((k) => escape(r[k])).join(",")).join("\n");
+    return `${header}\n${body}`;
+  };
+
+  const handleExport = async (format: "csv" | "json") => {
+    try {
+      const { data, error } = await supabase.from("patios").select("*").order("name");
+      if (error) throw error;
+      const rows = data || [];
+      const ts = new Date().toISOString().slice(0, 10);
+      if (format === "json") {
+        triggerDownload(JSON.stringify(rows, null, 2), `patios-${ts}.json`, "application/json");
+      } else {
+        triggerDownload(toCSV(rows), `patios-${ts}.csv`, "text/csv");
+      }
+      toast({ title: "Export ready", description: `Downloaded ${rows.length} patios as ${format.toUpperCase()}.` });
+    } catch (err) {
+      console.error("Export failed:", err);
+      toast({ title: "Error", description: "Export failed. Check console.", variant: "destructive" });
+    }
+  };
+
   if (roleLoading) {
     return (
       <div className="min-h-screen bg-background p-4 flex items-center justify-center">
@@ -133,7 +178,17 @@ export default function Admin() {
           {/* Patios List Tab */}
           <TabsContent value="patios" className="space-y-4">
             <Card className="p-4">
-              <h2 className="font-semibold mb-4">All Patios ({patios?.length || 0})</h2>
+              <div className="flex items-center justify-between mb-4 gap-2">
+                <h2 className="font-semibold">All Patios ({patios?.length || 0})</h2>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => handleExport("csv")}>
+                    <Download className="h-4 w-4 mr-1" /> CSV
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleExport("json")}>
+                    <Download className="h-4 w-4 mr-1" /> JSON
+                  </Button>
+                </div>
+              </div>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {patios?.map((patio) => (
                   <div
