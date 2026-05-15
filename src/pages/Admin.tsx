@@ -112,14 +112,43 @@ export default function Admin() {
     try {
       const { data, error } = await supabase.from("patios").select("*").order("name");
       if (error) throw error;
-      const rows = data || [];
+      const patioRows = data || [];
       const ts = new Date().toISOString().slice(0, 10);
-      if (format === "json") {
-        triggerDownload(JSON.stringify(rows, null, 2), `patios-${ts}.json`, "application/json");
-      } else {
-        triggerDownload(toCSV(rows), `patios-${ts}.csv`, "text/csv");
+
+      let reportsByPatio: Record<string, any[]> = {};
+      let reportRows: any[] = [];
+      if (includeReports) {
+        const sinceIso = new Date(Date.now() - reportsDays * 86400000).toISOString();
+        const { data: rData, error: rErr } = await supabase
+          .from("sun_reports")
+          .select("*")
+          .gte("reported_at", sinceIso)
+          .order("reported_at", { ascending: false });
+        if (rErr) throw rErr;
+        reportRows = rData || [];
+        reportsByPatio = reportRows.reduce((acc: Record<string, any[]>, r: any) => {
+          (acc[r.patio_id] ||= []).push(r);
+          return acc;
+        }, {});
       }
-      toast({ title: "Export ready", description: `Downloaded ${rows.length} patios as ${format.toUpperCase()}.` });
+
+      if (format === "json") {
+        const payload = includeReports
+          ? patioRows.map((p: any) => ({ ...p, recent_sun_reports: reportsByPatio[p.id] || [] }))
+          : patioRows;
+        triggerDownload(JSON.stringify(payload, null, 2), `patios-${ts}.json`, "application/json");
+      } else {
+        triggerDownload(toCSV(patioRows), `patios-${ts}.csv`, "text/csv");
+        if (includeReports) {
+          triggerDownload(toCSV(reportRows), `sun-reports-${ts}.csv`, "text/csv");
+        }
+      }
+      toast({
+        title: "Export ready",
+        description: includeReports
+          ? `Downloaded ${patioRows.length} patios + ${reportRows.length} reports (${reportsDays}d).`
+          : `Downloaded ${patioRows.length} patios as ${format.toUpperCase()}.`,
+      });
     } catch (err) {
       console.error("Export failed:", err);
       toast({ title: "Error", description: "Export failed. Check console.", variant: "destructive" });
