@@ -21,6 +21,8 @@ export default function Admin() {
   const [backfilling, setBackfilling] = useState(false);
   const [backfillResult, setBackfillResult] = useState<number | null>(null);
   const [selectedPatio, setSelectedPatio] = useState<typeof patios[0] | null>(null);
+  const [includeReports, setIncludeReports] = useState(false);
+  const [reportsDays, setReportsDays] = useState(30);
 
   const handleRecalculateSunFields = async () => {
     setRecalculating(true);
