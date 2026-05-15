@@ -178,7 +178,17 @@ export default function Admin() {
           {/* Patios List Tab */}
           <TabsContent value="patios" className="space-y-4">
             <Card className="p-4">
-              <h2 className="font-semibold mb-4">All Patios ({patios?.length || 0})</h2>
+              <div className="flex items-center justify-between mb-4 gap-2">
+                <h2 className="font-semibold">All Patios ({patios?.length || 0})</h2>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => handleExport("csv")}>
+                    <Download className="h-4 w-4 mr-1" /> CSV
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => handleExport("json")}>
+                    <Download className="h-4 w-4 mr-1" /> JSON
+                  </Button>
+                </div>
+              </div>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {patios?.map((patio) => (
                   <div
